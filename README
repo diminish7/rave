@@ -1,0 +1,3 @@
+This gem provides a Google Wave API.  See http://wave.google.com/ for details Google Wave details.
+Rave is a port of the Wave Robot Python Client library.  
+	See http://wave-robot-python-client.googlecode.com/svn/trunk/pydocs/index.html for details
