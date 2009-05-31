@@ -2,6 +2,12 @@ require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Blip do
   
+  before :all do
+    @class = Rave::Models::Blip
+  end
+  
+  it_should_behave_like "UniqueId"
+  
   describe "root?()" do
     
     it "should return true if a blip has no parent blip id" do

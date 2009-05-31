@@ -18,7 +18,12 @@ module Rave
       
       #Find the root wavelet if it exists in this context
       def root_wavelet
-        @wavelets.values.find { |wavelet| wavelet.id =~ Rave::Constants::ROOT_WAVELET_ID_SUFFIX }
+        @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }
+      end
+      
+      #Add a new operation to the queue
+      def add_operation
+        #TODO
       end
       
     end

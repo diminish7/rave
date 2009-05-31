@@ -2,14 +2,22 @@
 module Rave
   module Models
     class Wave
+      include Rave::Mixins::UniqueId
+      
       attr_reader :id, :wavelet_ids
       
       #Options include:
-      # - :id
       # - :wavelet_ids
+      # - :context
       def initialize(options = {})
-        @id = options[:id]
+        generate_id
         @wavelet_ids = Set.new(options[:wavelet_ids])
+        @context = options[:context]
+      end
+      
+      #Creates a new wavelet belonging to this wave
+      def create_wavelet
+        #TODO
       end
       
     end
