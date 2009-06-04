@@ -17,7 +17,7 @@ describe Rave::Models::Robot do
   end
   
   before :each do
-    @obj = @class.new
+    @obj = @class.new(:name => "testbot", :profile_url => "http://localhost/profile", :image_url => "http://localhost/image")
   end
   
   describe "register_handler()" do
@@ -69,6 +69,54 @@ describe Rave::Models::Robot do
         @handled.should == [:handler1]
       end
     end
+  end
+  
+  describe "register_cron_job()" do
+    it "should add the job to the list of cron jobs" do
+      @obj.register_cron_job("path", 60)
+      @obj.instance_eval do
+        @cron_jobs.should == [{ :path => "path", :seconds => 60}]
+      end
+    end
+  end
+  
+  describe "capabilities_xml()" do
+    it "should return the list of capabilities" do
+      event1 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
+      event2 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      cron1 = ["path1", 60]
+      cron2 = ["path2", 3600]
+      @obj.register_handler(event1.type, :handler1)
+      @obj.register_handler(event2.type, :handler2)
+      @obj.register_cron_job(*cron1)
+      @obj.register_cron_job(*cron2)
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron timeinseconds=\"60\" path=\"path1\"/><w:cron timeinseconds=\"3600\" path=\"path2\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image\" profileurl=\"http://localhost/profile\"/></w:robot>"
+    end
+    
+    it "should not include an empty crons tag" do
+      event1 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
+      event2 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      @obj.register_handler(event1.type, :handler1)
+      @obj.register_handler(event2.type, :handler2)
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image\" profileurl=\"http://localhost/profile\"/></w:robot>"
+    end
+    
+    it "should not include empty profile or image urls" do
+      @obj.instance_eval do
+        @image_url = nil
+        @profile_url = nil
+      end
+      event1 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
+      event2 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      cron1 = ["path1", 60]
+      cron2 = ["path2", 3600]
+      @obj.register_handler(event1.type, :handler1)
+      @obj.register_handler(event2.type, :handler2)
+      @obj.register_cron_job(*cron1)
+      @obj.register_cron_job(*cron2)
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron timeinseconds=\"60\" path=\"path1\"/><w:cron timeinseconds=\"3600\" path=\"path2\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
+    end
+    
   end
   
 end

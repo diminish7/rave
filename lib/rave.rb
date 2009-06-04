@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'set'
+require 'builder'
+require 'json'
 
 here = File.dirname(__FILE__)
 mixins = File.join(here, "mixins")
