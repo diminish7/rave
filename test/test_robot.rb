@@ -1,5 +1,5 @@
-require File.join(File.dirname(__FILE__), "helper")
 
+require File.join(File.dirname(__FILE__), "helper")
 describe Rave::Models::Robot do
   
   before :all do
@@ -117,6 +117,12 @@ describe Rave::Models::Robot do
       @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron timeinseconds=\"60\" path=\"path1\"/><w:cron timeinseconds=\"3600\" path=\"path2\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
     end
     
+  end
+  
+  describe "profile_json()" do
+    it "should return the robot's profile information in json format" do
+      @obj.profile_json.should == "{\"name\":\"testbot\",\"profile_url\":\"http:\\/\\/localhost\\/profile\",\"imageurl\":\"http:\\/\\/localhost\\/image\"}"
+    end
   end
   
 end

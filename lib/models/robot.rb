@@ -65,7 +65,14 @@ module Rave
         end
       end
       
-      
+      #Returns the robot's profile in json format
+      def profile_json
+        {
+          "name" => @name,
+          "imageurl" => @image_url,
+          "profile_url" => @profile_url
+        }.to_json
+      end
       
     end
   end
