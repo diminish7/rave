@@ -6,8 +6,8 @@ module Rave
                   :participants, :root_blip_id, :title, :version, :wave_id, :id
       attr_accessor :context  #Context needs to be able to set this
       
-      ROOT_ID_SUFFIX = "!conv+root"   #The suffix for the root wavelet in a wave]
-      ROOT_ID_REGEXP = /!conv\+root$/
+      ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
+      ROOT_ID_REGEXP = /conv\+root$/
       
       # Options include:
       # - :creator
