@@ -13,6 +13,6 @@ require File.join(here, 'exceptions')
   require File.join(mixins, dep)
 end
 
-%w( annotation blip context document event operation robot wave wavelet).each do |dep|
+%w( annotation blip blip_operations context document event operation robot wave wavelet).each do |dep|
   require File.join(models, dep)
 end

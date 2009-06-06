@@ -4,6 +4,7 @@ module Rave
     class Blip
       attr_reader :id, :annotations, :child_blip_ids, :content, :constributors, :creator,
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id, :wavelet_id
+      attr_accessor :context
       
       #Options include:
       # - :annotations
@@ -18,6 +19,7 @@ module Rave
       # - :wave_id
       # - :wavelet_id
       # - :id
+      # - :context
       def initialize(options = {})
         @annotations = options[:annotations] || []
         @child_blip_ids = Set.new(options[:child_blip_ids])
@@ -31,6 +33,7 @@ module Rave
         @wave_id = options[:wave_id]
         @wavelet_id = options[:wavelet_id]
         @id = options[:id]
+        @context = options[:context]
       end
       
       #Returns true if this is a root blip (no parent blip)

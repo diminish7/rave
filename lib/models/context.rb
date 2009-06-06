@@ -11,9 +11,11 @@ module Rave
       # - :operations
       def initialize(options = {})
         @waves = options[:waves] || {}
+        @waves.values.each { |wave| wave.context = self }          #Set up self as this wave's context
         @wavelets = options[:wavelets] || {}
         @wavelets.values.each { |wavelet| wavelet.context = self } #Set up self as this wavelet's context
         @blips = options[:blips] || {}
+        @blips.values.each { |blip| blip.context = self }          #Set up self as this blip's context
         @operations = options[:operations] || []
       end
       
@@ -22,11 +24,22 @@ module Rave
         @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }
       end
       
-      #Add a new operation to the queue
-      def add_operation
-        #TODO
+      #Serializes the context to JSON format
+      def to_json
+        self.to_hash.to_json
       end
       
+      #Serialize the context to a hash map
+      def to_hash
+        hash = {
+          'operations' => { 'javaClass' => 'java.util.ArrayList', 'list' => [] },
+          'javaClass' => 'com.google.wave.api.impl.OperationMessageBundle'
+         }
+        @operations.each do |op|
+          hash['operations']['list'] << op.to_hash
+        end
+        hash
+      end
     end
   end
 end

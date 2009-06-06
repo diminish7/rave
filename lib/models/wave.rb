@@ -4,14 +4,14 @@ module Rave
     class Wave
       attr_reader :id, :wavelet_ids
       
+      attr_accessor :context
+      
       #Options include:
       # - :wavelet_ids
-      # - :context
       # - :id
       def initialize(options = {})
         @id = options[:id]
         @wavelet_ids = Set.new(options[:wavelet_ids])
-        @context = options[:context]
       end
       
     end

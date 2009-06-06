@@ -19,4 +19,14 @@ describe Rave::Models::Blip do
     
   end
   
+  describe "set_text()" do
+    it "should set the content of the blip" do
+      blip = Blip.new
+      blip.context = Context.new
+      blip.content.should be_nil
+      blip.set_text "What up, blip?"
+      blip.content.should == "What up, blip?"
+    end
+  end
+  
 end
