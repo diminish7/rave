@@ -9,10 +9,10 @@ models = File.join(here, "models")
 
 require File.join(here, 'exceptions')
 
-%w( unique_id ).each do |dep|
+%w( data_format).each do |dep|
   require File.join(mixins, dep)
 end
 
-%w( blip context document event operation robot wave wavelet ).each do |dep|
+%w( annotation blip context document event operation robot wave wavelet).each do |dep|
   require File.join(models, dep)
 end

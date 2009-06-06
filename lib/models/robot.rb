@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Robot
+      include Rave::Mixins::DataFormat
+      
       attr_reader :name, :image_url, :profile_url
       
       #Options include:
@@ -39,39 +41,6 @@ module Rave
       #Registers a cron job
       def register_cron_job(path, seconds)
         @cron_jobs << {:path => path, :seconds => seconds}
-      end
-      
-      #Returns this robot's capabilities in XML
-      def capabilities_xml
-        xml = Builder::XmlMarkup.new
-        xml.instruct!
-        xml.tag!("w:robot", "xmlns:w" => "http://wave.google.com/extensions/robots/1.0") do
-          xml.tag!("w:capabilities") do
-            @handlers.keys.each do |capability|
-              xml.tag!("w:capability", "name" => capability)
-            end  
-          end
-          unless @cron_jobs.empty?
-            xml.tag!("w:crons") do
-              @cron_jobs.each do |job|
-                xml.tag!("w:cron", "path" => job[:path], "timeinseconds" => job[:seconds])
-              end
-            end
-          end
-          attrs = { "name" => @name }
-          attrs["imageurl"] = @image_url if @image_url
-          attrs["profileurl"] = @profile_url if @profile_url
-          xml.tag!("w:profile", attrs)
-        end
-      end
-      
-      #Returns the robot's profile in json format
-      def profile_json
-        {
-          "name" => @name,
-          "imageurl" => @image_url,
-          "profile_url" => @profile_url
-        }.to_json
       end
       
     end

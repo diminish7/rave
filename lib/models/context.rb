@@ -12,6 +12,7 @@ module Rave
       def initialize(options = {})
         @waves = options[:waves] || {}
         @wavelets = options[:wavelets] || {}
+        @wavelets.values.each { |wavelet| wavelet.context = self } #Set up self as this wavelet's context
         @blips = options[:blips] || {}
         @operations = options[:operations] || []
       end

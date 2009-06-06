@@ -2,10 +2,9 @@
 module Rave
   module Models
     class Wavelet
-      include Rave::Mixins::UniqueId
-      
       attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
                   :participants, :root_blip_id, :title, :version, :wave_id, :id
+      attr_accessor :context  #Context needs to be able to set this
       
       ROOT_ID_SUFFIX = "!conv+root"   #The suffix for the root wavelet in a wave]
       ROOT_ID_REGEXP = /!conv\+root$/
@@ -21,7 +20,7 @@ module Rave
       # - :version
       # - :wave_id
       # - :context
-      # - :root
+      # - :id
       def initialize(options = {})
         @creator = options[:creator]
         @creation_time = options[:creation_time] || Time.now
@@ -33,8 +32,7 @@ module Rave
         @version = options[:version] || 0
         @wave_id = options[:wave_id]
         @context = options[:context]
-        generate_id
-        @id += ROOT_ID_SUFFIX if options[:root]
+        @id = options[:id]
       end
       
       #Creates a blip for this wavelet

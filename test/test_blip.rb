@@ -6,8 +6,6 @@ describe Rave::Models::Blip do
     @class = Rave::Models::Blip
   end
   
-  it_should_behave_like "UniqueId"
-  
   describe "root?()" do
     
     it "should return true if a blip has no parent blip id" do

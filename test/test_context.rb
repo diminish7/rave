@@ -16,7 +16,7 @@ describe Rave::Models::Context do
     
     it "should return a wavelet if its id ends in the root suffix" do
       foo = Wavelet.new
-      bar = Wavelet.new(:root => true)
+      bar = Wavelet.new(:id => "123" + Wavelet::ROOT_ID_SUFFIX)
       context = Context.new( :wavelets => { foo.id => foo, bar.id => bar } )
       root = context.root_wavelet
       root.should == bar

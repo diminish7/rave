@@ -125,4 +125,24 @@ describe Rave::Models::Robot do
     end
   end
   
+  describe "parse_json_body()" do
+    it "should parse the json into context and events" do
+      #Response JSON taken from Google's Python tests
+      json = '{"blips":{"map":{"wdykLROk*13":{"lastModifiedTime":1242079608457,"contributors":{"javaClass":"java.util.ArrayList","list":["davidbyttow@google.com"]},"waveletId":"conv+root","waveId":"wdykLROk*11","parentBlipId":null,"version":3,"creator":"davidbyttow@google.com","content":"\n","blipId":"wdykLROk*13","javaClass":"com.google.wave.api.impl.BlipData","annotations":{"javaClass":"java.util.ArrayList","list":[{"range":{"start":0,"javaClass":"com.google.wave.api.Range","end":1},"name":"user/e/davidbyttow@google.com","value":"David","javaClass":"com.google.wave.api.Annotation"}]},"elements":{"map":{},"javaClass":"java.util.HashMap"},"childBlipIds":{"javaClass":"java.util.ArrayList","list":[]}}},"javaClass":"java.util.HashMap"},"events":{"javaClass":"java.util.ArrayList","list":[{"timestamp":1242079611003,"modifiedBy":"davidbyttow@google.com","javaClass":"com.google.wave.api.impl.EventData","properties":{"map":{"participantsRemoved":{"javaClass":"java.util.ArrayList","list":[]},"participantsAdded":{"javaClass":"java.util.ArrayList","list":["monty@appspot.com"]}},"javaClass":"java.util.HashMap"},"type":"WAVELET_PARTICIPANTS_CHANGED"}]},"wavelet":{"lastModifiedTime":1242079611003,"title":"","waveletId":"conv+root","rootBlipId":"wdykLROk*13","javaClass":"com.google.wave.api.impl.WaveletData","dataDocuments":null,"creationTime":1242079608457,"waveId":"wdykLROk*11","participants":{"javaClass":"java.util.ArrayList","list":["davidbyttow@google.com","monty@appspot.com"]},"creator":"davidbyttow@google.com","version":5}}'
+      context, events = @obj.parse_json_body(json)
+      #Test blips
+      blips = context.blips
+      blips.length.should == 1
+      blip = blips.values.first
+      blip.id.should == 'wdykLROk*13'
+      blip.wave_id.should == 'wdykLROk*11'
+      blip.wavelet_id.should == 'conv+root'
+      #Test events
+      events.length.should == 1
+      event = events.first
+      event.type.should == Event::WAVELET_PARTICIPANTS_CHANGED
+      event.properties.should == {'participantsRemoved' => [], 'participantsAdded' => ['monty@appspot.com']}
+    end
+  end
+  
 end
