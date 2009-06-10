@@ -6,6 +6,7 @@ require 'json'
 here = File.dirname(__FILE__)
 mixins = File.join(here, "mixins")
 models = File.join(here, "models")
+ops = File.join(here, "ops")
 
 require File.join(here, 'exceptions')
 
@@ -13,6 +14,10 @@ require File.join(here, 'exceptions')
   require File.join(mixins, dep)
 end
 
-%w( annotation blip blip_operations context document event operation robot wave wavelet).each do |dep|
+%w( annotation blip context document event operation robot wave wavelet).each do |dep|
   require File.join(models, dep)
+end
+
+%w( blip_ops ).each do |dep|
+  require File.join(ops, dep)
 end
