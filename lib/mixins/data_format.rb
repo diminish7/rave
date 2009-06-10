@@ -48,7 +48,6 @@ module Rave
       
     protected
       def context_from_json(json)
-        #Python: context = ops.CreateContext(data)
         blips = {}
         blips_from_json(json).each do |blip|
           blips[blip.id] = blip
@@ -125,6 +124,7 @@ module Rave
       
       def wavelets_from_json(json)
         #Currently only one wavelet is sent back
+        #TODO: should this look at the wavelet's children too?
         wavelet = json['wavelet']
         if wavelet
           [

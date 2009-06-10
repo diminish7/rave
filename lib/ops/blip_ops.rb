@@ -33,7 +33,84 @@ module Rave
       def set_text(text)
         clear
         insert_text(text, 0)
-        #optimistically set the text
+      end
+      
+      #Deletes the text in a given range and replaces it with the given text
+      def set_text_in_range(text, range)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Appends text to the end of the content
+      def append_text(text)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Deletes text in the given range
+      def delete_range(range)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Annotates the entire content
+      def annotate_document(name, value)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Deletes the annotation with the given name
+      def delete_annotation_by_name(name)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Deletes the annotations with the given key in the given range
+      def delete_annotation_in_range(range, name)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Appends an inline blip to this blip
+      def append_inline_blip
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Deletes an inline blip from this blip
+      def delete_inline_blip(blip_id)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Inserts an inline blip at the given position
+      def insert_inline_blip(position)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Deletes an element at the given position
+      def delete_element(position)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Inserts the given element in the given position
+      def insert_element(position, element)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Replaces the element at the given position with the given element
+      def replace_element(position, element)
+        #TODO
+        raise "This hasn't been implemented yet"
+      end
+      
+      #Appends an element
+      def append_element(element)
+        #TODO
+        raise "This hasn't been implemented yet"
       end
       
     end

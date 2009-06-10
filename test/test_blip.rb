@@ -19,6 +19,15 @@ describe Rave::Models::Blip do
     
   end
   
+  describe "has_annotation?()" do
+    it "should return true if the blip has an annotation with the given name" do
+      blip = Blip.new
+      blip.has_annotation?("test").should be_false
+      blip.annotations << Annotation.new(:name => "test")
+      blip.has_annotation?("test").should be_true
+    end
+  end
+  
   describe "set_text()" do
     it "should set the content of the blip" do
       blip = Blip.new

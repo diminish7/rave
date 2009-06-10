@@ -41,6 +41,11 @@ module Rave
         @parent_blip_id.nil?
       end
       
+      #Returns true if an annotation with the given name exists in this blip
+      def has_annotation?(name)
+        @annotations.any? { |a| a.name == name }
+      end
+      
       #Creates a child blip under this blip
       def create_child_blip
         #TODO
