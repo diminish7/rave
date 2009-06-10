@@ -36,21 +36,34 @@ module Rave
       end
       
       #Deletes the text in a given range and replaces it with the given text
-      def set_text_in_range(text, range)
-        #TODO
-        raise "This hasn't been implemented yet"
+      def set_text_in_range(range, text)
+        delete_range(range)
+        insert_text(text, range.first)
       end
       
       #Appends text to the end of the content
       def append_text(text)
-        #TODO
-        raise "This hasn't been implemented yet"
+        @context.operations << Operation.new(
+                                    :type => Operation::DOCUMENT_APPEND, 
+                                    :blip_id => @id, 
+                                    :wavelet_id => @wavelet_id, 
+                                    :wave_id => @wave_id,
+                                    :property => text
+                                  )
+        @content = @content + text
       end
       
       #Deletes text in the given range
       def delete_range(range)
-        #TODO
-        raise "This hasn't been implemented yet"
+        @context.operations << Operation.new(
+                                    :type => Operation::DOCUMENT_DELETE, 
+                                    :blip_id => @id, 
+                                    :wavelet_id => @wavelet_id, 
+                                    :wave_id => @wave_id,
+                                    :index => range.first, 
+                                    :property => range
+                                  )
+        @content = @content[0..range.first-1] + @content[range.last+1..@content.length-1]
       end
       
       #Annotates the entire content
