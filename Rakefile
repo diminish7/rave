@@ -2,6 +2,10 @@ require 'rubygems'
 require 'rake/rdoctask' 
 require 'rake/gempackagetask'
  
+deps = {
+    'rack' => '~>1.0'
+  }
+
 spec = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = '>= 1.8.6'
@@ -17,6 +21,9 @@ spec = Gem::Specification.new do |s|
   s.executables = []
   s.require_path = "lib"
   s.has_rdoc = true
+  deps.each { | name, version | s.add_runtime_dependency( name, version ) }
+  s.bin_dir = 'bin'
+  s.executables = 'rave'
 end
  
 task :package => :clean do

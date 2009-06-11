@@ -3,6 +3,7 @@ module Rave
   module Models
     class Robot
       include Rave::Mixins::DataFormat
+      include Rave::Mixins::Controller
       
       attr_reader :name, :image_url, :profile_url
       
