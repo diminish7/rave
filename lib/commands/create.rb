@@ -40,7 +40,8 @@ end
   options_str = options.collect { |key, val| ":#{key} => \"#{val}\"" }.join(", ")
   File.open(config, "w") do |f|
     f.puts <<-CONFIG
-#\\ -p 3000
+options[:Port] = 3000
+require 'robot'
 run #{robot_class_name}.new( #{options_str} )
     CONFIG
   end

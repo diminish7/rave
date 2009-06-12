@@ -4,7 +4,7 @@ module Rave
     module Controller
       
       def call(env)
-        #TODO
+        [200, {'Content-Type' => 'text/plain'}, "Hello world!" ]
       end
       
     end 

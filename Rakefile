@@ -3,7 +3,9 @@ require 'rake/rdoctask'
 require 'rake/gempackagetask'
  
 deps = {
-    'rack' => '~>1.0'
+    'rack' => '>=1.0',
+    'builder' => '>=2.1.2',
+    'json-jruby' => '>=1.1.6'
   }
 
 spec = Gem::Specification.new do |s|
