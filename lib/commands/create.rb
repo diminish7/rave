@@ -1,3 +1,4 @@
+require 'ftools'
 
 def create_robot(args)
   robot_name = args.first
@@ -9,8 +10,13 @@ def create_robot(args)
     options[key.to_sym] = value
   end
   dir = File.join(".", robot_name)
+  lib = File.join(dir, "lib")
+  config_dir = File.join(dir, "config")
   file = File.join(dir, "robot.rb")
   config = File.join(dir, "config.ru")
+  here = File.dirname(__FILE__)
+  jar_dir = File.join(here, "..", "jars")
+  jars = %w( appengine-api-1.0-sdk-1.2.1.jar )
   #Create the project dir
   puts "Creating directory #{File.expand_path(dir)}"
   Dir.mkdir(dir)
@@ -43,5 +49,24 @@ end
 require 'robot'
 run #{robot_class_name}.new( #{options_str} )
     CONFIG
+  end
+  #Copy jars over
+  puts "Creating lib directory #{File.expand_path(lib)}"
+  Dir.mkdir(lib)
+  jars.each do |jar|
+    puts "Adding jar #{jar}"
+    File.copy(File.join(jar_dir, jar), File.join(lib, jar))
+  end
+  #Make the wabler config file
+  puts "Creating config directory #{File.expand_path(config_dir)}"
+  Dir.mkdir(config_dir)
+  warble_file = File.join(config_dir, "warble.rb")
+  puts "Creating warble config file #{File.expand_path(warble_file)}"
+  File.open(warble_file, "w") do |f|
+    f.puts <<-WARBLE
+Warbler::Config.new do |config|
+  config.gems = ['rave']
+end
+    WARBLE
   end
 end

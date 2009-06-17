@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 here = File.dirname(__FILE__)
-%w( create server usage ).each do |cmd|
+%w( create server usage war ).each do |cmd|
 	require File.join(here, "..", "lib", "commands", cmd)
 end
 
@@ -14,6 +14,8 @@ if cmd
 		create_robot(args)
 	when "server"
 		start_robot(args)
+	when "war"
+		create_war(args)
 	else
 		display_usage
 	end

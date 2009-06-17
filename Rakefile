@@ -5,7 +5,8 @@ require 'rake/gempackagetask'
 deps = {
     'rack' => '>=1.0',
     'builder' => '>=2.1.2',
-    'json-jruby' => '>=1.1.6'
+    'json-jruby' => '>=1.1.6',
+    'warbler' => '>=0.9.13'
   }
 
 spec = Gem::Specification.new do |s|
@@ -17,14 +18,14 @@ spec = Gem::Specification.new do |s|
   s.authors = ["Jason Rush", "Jay Donnell"]
   s.email = 'diminish7@gmail.com'
   s.homepage = 'http://github.com/diminish7/rave'
-  s.summary = "A Google Wave API for Ruby"
+  s.summary = "A Google Wave robot client API for Ruby"
+  s.description = "A toolkit for building Google Wave robots in Ruby"
   s.files = Dir['*/**/*']
   s.bindir = 'bin'
   s.executables = []
   s.require_path = "lib"
   s.has_rdoc = true
   deps.each { | name, version | s.add_runtime_dependency( name, version ) }
-  s.bin_dir = 'bin'
   s.executables = 'rave'
 end
  
@@ -37,7 +38,9 @@ task :clean do
 end
  
 task :install => :package do
-  system 'sudo gem install ./*.gem'
+  cmd = "gem install ./*.gem"
+  cmd = "jruby -S " + cmd if RUBY_PLATFORM == 'java'
+  system cmd
 end
  
 desc "create .gemspec file (useful for github)"

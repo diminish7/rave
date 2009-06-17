@@ -1,5 +1,5 @@
 require 'rubygems'
-require '../../lib/rave'
+require 'rave'
 
 module Casey
   class Robot < Rave::Models::Robot

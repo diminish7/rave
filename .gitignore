@@ -1,2 +1,4 @@
 .loadpath
 .project
+*.gem
+examples/casey/tmp
