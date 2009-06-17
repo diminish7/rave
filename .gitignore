@@ -2,3 +2,4 @@
 .project
 *.gem
 examples/casey/tmp
+examples/casey/casey.war
