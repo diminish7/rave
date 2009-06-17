@@ -65,7 +65,8 @@ run #{robot_class_name}.new( #{options_str} )
   File.open(warble_file, "w") do |f|
     f.puts <<-WARBLE
 Warbler::Config.new do |config|
-  config.gems = ['rave']
+  config.gems = %w( rave )
+  config.includes = %w( robot.rb )
 end
     WARBLE
   end

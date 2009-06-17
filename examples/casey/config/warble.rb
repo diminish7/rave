@@ -1,3 +1,4 @@
 Warbler::Config.new do |config|
-  config.gems = ['rave']
+  config.gems = %w( rave )
+  config.includes = %w( robot.rb )
 end
