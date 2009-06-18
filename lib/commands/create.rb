@@ -13,10 +13,11 @@ def create_robot(args)
   lib = File.join(dir, "lib")
   config_dir = File.join(dir, "config")
   file = File.join(dir, "robot.rb")
+  appengine_web = File.join(dir, "appengine-web.xml")
   config = File.join(dir, "config.ru")
   here = File.dirname(__FILE__)
   jar_dir = File.join(here, "..", "jars")
-  jars = %w( appengine-api-1.0-sdk-1.2.1.jar )
+  jars = %w( appengine-api-1.0-sdk-1.2.1.jar jruby-core.jar ruby-stdlib.jar )
   #Create the project dir
   puts "Creating directory #{File.expand_path(dir)}"
   Dir.mkdir(dir)
@@ -50,6 +51,17 @@ require 'robot'
 run #{robot_class_name}.new( #{options_str} )
     CONFIG
   end
+  #Make the appengine web xml file
+  puts "Creating appengine config file #{File.expand_path(appengine_web)}"
+  File.open(appengine_web, "w") do |f|
+    f.puts <<-APPENGINE
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+    <application>#{robot_name}</application>
+    <version>1</version>
+</appengine-web-app>
+    APPENGINE
+  end
   #Copy jars over
   puts "Creating lib directory #{File.expand_path(lib)}"
   Dir.mkdir(lib)
@@ -66,7 +78,7 @@ run #{robot_class_name}.new( #{options_str} )
     f.puts <<-WARBLE
 Warbler::Config.new do |config|
   config.gems = %w( rave )
-  config.includes = %w( robot.rb )
+  config.includes = %w( robot.rb appengine-web.xml )
 end
     WARBLE
   end
