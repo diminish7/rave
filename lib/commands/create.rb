@@ -59,6 +59,23 @@ run #{robot_class_name}.new( #{options_str} )
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
     <application>#{robot_name}</application>
     <version>1</version>
+    <static-files />
+    <resource-files />
+    <sessions-enabled>false</sessions-enabled>
+    <system-properties>
+      <property name="jruby.management.enabled" value="false" />
+      <property name="os.arch" value="" />
+      <property name="jruby.compile.mode" value="JIT"/> <!-- JIT|FORCE|OFF -->
+      <property name="jruby.compile.fastest" value="true"/>
+      <property name="jruby.compile.frameless" value="true"/>
+      <property name="jruby.compile.positionless" value="true"/>
+      <property name="jruby.compile.threadless" value="false"/>
+      <property name="jruby.compile.fastops" value="false"/>
+      <property name="jruby.compile.fastcase" value="false"/>
+      <property name="jruby.compile.chainsize" value="500"/>
+      <property name="jruby.compile.lazyHandles" value="false"/>
+      <property name="jruby.compile.peephole" value="true"/>
+   </system-properties>
 </appengine-web-app>
     APPENGINE
   end

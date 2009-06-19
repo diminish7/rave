@@ -1,17 +1,21 @@
 require 'rubygems'
 require 'rave'
 
-module Casey
+module AppropriateCasey
   class Robot < Rave::Models::Robot
+    
+    LOGGER = java.util.logging.Logger.getLogger("Robot")
     
     def initialize(options={})
       super(options)
+      LOGGER.info "Registering Handlers"
       register_handler(Rave::Models::Event::DOCUMENT_CHANGED, :doc_changed)
     end
     
     #This is a very simple robot that tries to tone down yelling in waves
     def doc_changed(event, context)
-      context.blips.each do |blip|
+      LOGGER.info("doc_changed() called")
+      context.blips.each do |blip_id, blip|
         #Get rid of multiple exclamation points, replace with a period
         content = blip.content.gsub(/!+/, ".")
         #Set the case on each sentence
@@ -22,6 +26,6 @@ module Casey
         blip.set_text(appropriate)
       end
     end
-    
+
   end
 end
