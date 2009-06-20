@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rave'
 
-module Casey
+module AppropriateCasey
   class Robot < Rave::Models::Robot
     
     LOGGER = java.util.logging.Logger.getLogger("Robot")

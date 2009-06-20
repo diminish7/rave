@@ -16,13 +16,8 @@
   <context-param>
     <param-name>rackup</param-name>
     <param-value>require 'robot'
-run Casey::Robot.new( :name =&gt; &quot;casey&quot; )
+run AppropriateCasey::Robot.new( :name =&gt; &quot;casey&quot; )
 </param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>jruby.init.serial</param-name>
-    <param-value>true</param-value>
   </context-param>
 
 
