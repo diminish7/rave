@@ -1,5 +1,171 @@
-This gem provides a Google Wave API.  See http://wave.google.com/ for details Google Wave details.
-Rave is a port of the Wave Robot Python Client library.  
-	See http://wave-robot-python-client.googlecode.com/svn/trunk/pydocs/index.html for details
+= Rave: A Google Wave robot client framework for Ruby
+
+Rave is a framework for building robot applications to participate in Google Wave conversations.
+See http://wave.google.com/ for details Google Wave details. Or if you are interested in the ins-and-outs
+of the Google Wave protocol, check out http://www.waveprotocol.org/
+
+== Warning!
+
+Both Rave and Google Wave are super-alpha. There are a lot of things in the protocol that aren't
+implemented in Rave yet. And the protocol is changing, so the things that are implemented are
+likely to break at some point. I will try to keep up, but if you notice anything broken, or if
+you have a need for something that isn't implemented yet, shoot me an email: diminish7 at gmail dot com.
+
+Okay.  You've been warned.
 	
-== TODO
+== The Basics
+
+Since Google currently requires that all robots run on App Engine, this tutorial assumes you are using JRuby.
+You should have JRuby already installed, and you should have the App Engine SDK installed.  You can find more
+information on JRuby at http://jruby.org/, and you can find more information about the App Engine SDK at
+http://code.google.com/appengine/downloads.html
+
+=== Install Rave
+
+   sudo jruby -S gem install rave
+
+=== Start a new Rave Project
+
+Rave comes with a "rave" executable that, among other things, sets up the project structure for you. 
+Setting up a new project looks like this:
+
+   jruby -S rave create [robot_name] [options]
+
+The options include profile_url and image_url, which will set the URL for the robot's profile and avatar, 
+respectively. Here's how the example project "appropriate casey" was set up:
+
+   jruby -S rave create appropriate-casey profile_url=http://appropriate-casey.appspot.com/_wave/robot/profile image_url=http://appropriate-casey.appspot.com/image.png
+   
+This will stub out a project called "appropriate-casey".  It automatically creates a robot class AppropriateCasey,
+creates the config files for both Rack and Warbler, and creates the appengine-web.xml file that App Engine will need.
+For the App Engine file, it assumes that the App Engine project name is the same as the robot's name.  So in this
+case, the application name is appropriate-casey, which means I have to have the URL http://appropriate-casey.appspot.com.
+If you name your robot something different than the App Engine application ID, just change the <application> line
+in appengine-web.xml.
+
+=== Build your robot!
+
+The robot.rb file that Rave created contains a class that extends Rave::Models::Robot. All of the logic needed
+for your robot to talk to App Engine is included in Rave::Models::Robot, so all you really need to do now
+is define your robot's event listeners.  Here is a list of the events that Google Wave can send your robot:
+
+ * WAVELET_BLIP_CREATED
+ * WAVELET_BLIP_REMOVED
+ * WAVELET_PARTICIPANTS_CHANGED
+ * WAVELET_TIMESTAMP_CHANGED
+ * WAVELET_TITLE_CHANGED
+ * WAVELET_VERSION_CHANGED
+ * BLIP_CONTRIBUTORS_CHANGED
+ * BLIP_DELETED
+ * BLIP_SUBMITTED
+ * BLIP_TIMESTAMP_CHANGED
+ * BLIP_VERSION_CHANGED
+ * DOCUMENT_CHANGED
+ * FORM_BUTTON_CLICKED
+
+To add a listener to your robot that will respond to a given event, just define a method with the lower-case
+version of the event name, that accepts an event and a context.  So, I want appropriate-casey to do something
+whenever a document is changed (the DOCUMENT_CHANGED event), so I add the following method to my robot:
+
+   def document_changed(event, context)
+      # Do some stuff
+   end
+   
+The Event object contains the following properties:
+
+ * type (The type of event, "DOCUMENT_CHANGED" in this case)
+ * timestamp (the timestamp that the event occurred)
+ * modified_by (the user ID of the user who modified the document)
+ * properties (Varies by event type, but this will be a range of affected text in this case)
+ 
+The Context object contains the following properties:
+
+ * waves (A hash - the keys are the wave IDs, and the values are the waves)
+ * wavelets (A hash - the keys are the wavelet IDs, and the values are the wavelets)
+ * blips (A hash - the keys are the blip IDs, and the values are the blips)
+ * operations (An array of operations)
+
+See the Google Wave documentation for definitions of each of these things...
+
+So, with Appropriate Casey, I want to create a robot that looks for people "shouting" in Waves
+(i.e. writing in all caps with a lot of exclamation points) and convert the text into a more
+appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yelling."  To do this, 
+I just create a document_changed method in my robot that looks something like this:
+
+   def document_changed(event, context)
+      context.blips.each do |blip_id, blip|
+        #Get rid of multiple exclamation points, replace with a period
+        if blip.content
+          content = blip.content.gsub(/!+/, ".")
+          ends_with_period = content[content.length-1, 1] == "."
+          #Set the case on each sentence
+          appropriate = content.split(".").collect do |sentence|
+            next if sentence.nil? || sentence.strip.empty?
+            sentence.strip!
+            sentence[0, 1].upcase + sentence[1, sentence.length-1].downcase
+          end.join(". ")
+          appropriate += "." if ends_with_period
+          blip.set_text(appropriate)
+        end
+      end
+    end
+    
+For simplicity's sake, I'm brute-forcing this a bit. It would be better to look at the event properties
+and just change the range of text that the event is telling me about.
+
+So that's it, my robot is now ready to go: just 17 lines of code.
+
+=== Packaging for deploy
+
+I'm assuming that you have an application set up on App Engine already.  Again, for the time being, all robots
+have to be on App Engine to work with Google Wave.
+
+First of all, we need to turn our project into the correct format for App Engine.  There is a utility
+in the "rave" executable for this, so from your robot's top-level folder, run:
+
+   jruby -S rave war
+
+This is basically just a wrapper around the warbler gem, but with some additional cleanup to get things
+in the right format for App Engine.  For example, the complete JRuby jar is too large for App Engine,
+so Rave replaces it with two jars.  Once you've run "rave war", you'll see a tmp/ folder, and a .war file. 
+You can ignore the .war file, as App Engine needs the unpacked version. The tmp/ folder is what will get deployed.
+
+=== Testing
+
+The worst part about App Engine is testing... 
+
+Rave includes a "server" command that starts up Rack for your application, but that is of limited use, since
+App Engine has many App Engine-specific issues. Better to use the App Engine SDK (which is still not a perfect
+match to the deployed environment, but it's better).  The App Engine SDK comes with a dev_server.  
+From your project directory run:
+
+   path/to/appengine_sdk/bin/dev_server tmp/war
+   
+This will start the development server on port 8080.  You can now hit the following three URLs:
+
+  * http://localhost:8080/_wave/capabilities.xml
+  * http://localhost:8080/_wave/robot/profile
+  * http://localhost:8080/_wave/robot/jsonrpc
+
+The first two are GETs, but the last one requires a POST. See the Google Wave protocol for the expected body
+of the POST if you want to test locally.
+
+=== Deploying
+
+Use the App Engine SDK to deploy.  From your project directory run:
+
+  path/to/appengine_sdk/bin/appcfg update tmp/war
+  
+=== Using the robot
+
+From a Google Wave client, start a new wave, and invite your robot as a participant.  Your robot's 
+user name will be [robot_name]@appspot.com.  So Casey is at appropriate-casey@appspot.com.
+
+=== The End
+
+That's it.  Enjoy!
+   
+= TODO
+
+ * Allow other URLs to be set up
+ * Finish porting the existing Python API functionality
