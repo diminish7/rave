@@ -24,7 +24,38 @@ def create_robot(args)
   puts "Creating robot class #{File.expand_path(file)}"
   #Make the base robot class
   File.open(file, "w") do |f|
-    f.puts <<-ROBOT
+    f.puts robot_file_contents(module_name)
+  end
+  #Make the rackup config file
+  puts "Creating rackup config file #{File.expand_path(config)}"
+  options_str = options.collect { |key, val| ":#{key} => \"#{val}\"" }.join(", ")
+  File.open(config, "w") do |f|
+    f.puts config_file_contents(robot_class_name, options_str)
+  end
+  #Make the appengine web xml file
+  puts "Creating appengine config file #{File.expand_path(appengine_web)}"
+  File.open(appengine_web, "w") do |f|
+    f.puts appengine_web_contents(robot_name)
+  end
+  #Copy jars over
+  puts "Creating lib directory #{File.expand_path(lib)}"
+  Dir.mkdir(lib)
+  jars.each do |jar|
+    puts "Adding jar #{jar}"
+    File.copy(File.join(jar_dir, jar), File.join(lib, jar))
+  end
+  #Make the wabler config file
+  puts "Creating config directory #{File.expand_path(config_dir)}"
+  Dir.mkdir(config_dir)
+  warble_file = File.join(config_dir, "warble.rb")
+  puts "Creating warble config file #{File.expand_path(warble_file)}"
+  File.open(warble_file, "w") do |f|
+    f.puts warble_config_contents()
+  end
+end
+
+def robot_file_contents(module_name)
+  <<-ROBOT
 require 'rubygems'
 require 'rave'
 
@@ -40,21 +71,18 @@ module #{module_name}
     
   end
 end
-    ROBOT
-  end
-  #Make the rackup config file
-  puts "Creating rackup config file #{File.expand_path(config)}"
-  options_str = options.collect { |key, val| ":#{key} => \"#{val}\"" }.join(", ")
-  File.open(config, "w") do |f|
-    f.puts <<-CONFIG
+ROBOT
+end
+
+def config_file_contents(robot_class_name, options_str)
+  <<-CONFIG
 require 'robot'
 run #{robot_class_name}.new( #{options_str} )
-    CONFIG
-  end
-  #Make the appengine web xml file
-  puts "Creating appengine config file #{File.expand_path(appengine_web)}"
-  File.open(appengine_web, "w") do |f|
-    f.puts <<-APPENGINE
+CONFIG
+end
+
+def appengine_web_contents(robot_name)
+  <<-APPENGINE
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
     <application>#{robot_name}</application>
@@ -77,26 +105,14 @@ run #{robot_class_name}.new( #{options_str} )
       <property name="jruby.compile.peephole" value="true"/>
    </system-properties>
 </appengine-web-app>
-    APPENGINE
-  end
-  #Copy jars over
-  puts "Creating lib directory #{File.expand_path(lib)}"
-  Dir.mkdir(lib)
-  jars.each do |jar|
-    puts "Adding jar #{jar}"
-    File.copy(File.join(jar_dir, jar), File.join(lib, jar))
-  end
-  #Make the wabler config file
-  puts "Creating config directory #{File.expand_path(config_dir)}"
-  Dir.mkdir(config_dir)
-  warble_file = File.join(config_dir, "warble.rb")
-  puts "Creating warble config file #{File.expand_path(warble_file)}"
-  File.open(warble_file, "w") do |f|
-    f.puts <<-WARBLE
+APPENGINE
+end
+
+def warble_config_contents
+  <<-WARBLE
 Warbler::Config.new do |config|
   config.gems = %w( rave )
   config.includes = %w( robot.rb appengine-web.xml )
 end
-    WARBLE
-  end
+WARBLE
 end
