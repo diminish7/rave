@@ -26,6 +26,6 @@ module AppropriateCasey
         blip.set_text(appropriate)
       end
     end
-
+    
   end
 end

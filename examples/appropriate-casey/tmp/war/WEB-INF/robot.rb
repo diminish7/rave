@@ -8,7 +8,6 @@ module AppropriateCasey
     
     def initialize(options={})
       super(options)
-      LOGGER.info "Registering Handlers"
       register_handler(Rave::Models::Event::DOCUMENT_CHANGED, :doc_changed)
     end
     
@@ -26,6 +25,6 @@ module AppropriateCasey
         blip.set_text(appropriate)
       end
     end
-
+    
   end
 end

@@ -1,2 +1,2 @@
 require 'robot'
-run AppropriateCasey::Robot.new( :name => "casey" )
+run AppropriateCasey::Robot.new( :name => "appropriate-casey" )

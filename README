@@ -3,5 +3,3 @@ Rave is a port of the Wave Robot Python Client library.
 	See http://wave-robot-python-client.googlecode.com/svn/trunk/pydocs/index.html for details
 	
 == TODO
- * Make sure you didn't break anything in the app engine debug-blitz
- * Need to change the path to ext/generator.jar and ext/parser.jar in json-jruby

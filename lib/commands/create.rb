@@ -1,8 +1,13 @@
 require 'ftools'
 
+#Creates a project for a robot.  Args are:
+# => robot_name (required)
+# => image_url=http://imageurl.com/ (optional)
+# => profile_url=http://profileurl.com/ (optional)
+# e.g. rave my_robot image_url=http://appropriate-casey.appspot.com/image.png profile_url=http://appropriate-casey.appspot.com/profile.json
 def create_robot(args)
   robot_name = args.first
-  module_name = robot_name.split("_").collect { |word| word[0, 1].upcase + word[1, word.length-1] }.join("")
+  module_name = robot_name.split(/_|-/).collect { |word| word[0, 1].upcase + word[1, word.length-1] }.join("")
   robot_class_name = "#{module_name}::Robot"
   options = { :name => robot_name }
   args[1, args.length-1].each do |arg|
@@ -111,7 +116,7 @@ end
 def warble_config_contents
   <<-WARBLE
 Warbler::Config.new do |config|
-  config.gems = %w( rave )
+  config.gems = %w( rave json-jruby rack builder )
   config.includes = %w( robot.rb appengine-web.xml )
 end
 WARBLE

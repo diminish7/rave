@@ -16,7 +16,7 @@
   <context-param>
     <param-name>rackup</param-name>
     <param-value>require 'robot'
-run AppropriateCasey::Robot.new( :name =&gt; &quot;casey&quot; )
+run AppropriateCasey::Robot.new( :name =&gt; &quot;appropriate-casey&quot; )
 </param-value>
   </context-param>
 

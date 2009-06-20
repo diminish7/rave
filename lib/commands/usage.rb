@@ -1,4 +1,4 @@
-
+#Display usage for rave command
 def display_usage
   puts "Useage: rave [create | server | war] [robot_name] [options]"
   puts "'create' generates a Google Wave robot client stub application."
