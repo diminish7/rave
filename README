@@ -4,6 +4,4 @@ Rave is a port of the Wave Robot Python Client library.
 	
 == TODO
  * Make sure you didn't break anything in the app engine debug-blitz
- * Break up the create command into multiple methods
- * After warble, break up jruby jar in both the warbler gem and lib
  * Need to change the path to ext/generator.jar and ext/parser.jar in json-jruby
