@@ -67,12 +67,34 @@ require 'rave'
 module #{module_name}
   class Robot < Rave::Models::Robot
     
-    def initialize(options={})
-      super(options)
-      #TODO: register handlers here.
-      # e.g. If a DOCUMENT_CHANGED event should trigger a method called doc_changed(event, context):
-      #      register_handler(Rave::Models::Event::DOCUMENT_CHANGED, :doc_changed)
-    end
+    #Define handlers here:
+    # e.g. if the robot should act on a DOCUMENT_CHANGED event:
+    # 
+    # def document_changed(event, context)
+    #   #Do some stuff
+    # end
+    # 
+    # Events are: 
+    # 
+    # WAVELET_BLIP_CREATED, WAVELET_BLIP_REMOVED, WAVELET_PARTICIPANTS_CHANGED,
+    # WAVELET_TIMESTAMP_CHANGED, WAVELET_TITLE_CHANGED, WAVELET_VERSION_CHANGED,
+    # BLIP_CONTRIBUTORS_CHANGED, BLIP_DELETED, BLIP_SUBMITTED, BLIP_TIMESTAMP_CHANGED,
+    # BLIP_VERSION_CHANGED, DOCUMENT_CHANGED, FORM_BUTTON_CLICKED
+    #
+    # If you want to name your event handler something other than the default name, 
+    # or you need to have more than one handler for an event, you can register handlers
+    # in the robot's constructor:
+    #
+    # def initialize(options={})
+    #   super
+    #   register_handler(Rave::Models::Event::DOCUMENT_CHANGED, :custom_doc_changed_handler)
+    # end
+    # 
+    # def custom_doc_changed_handler(event, context)
+    #   #Do some stuff
+    # end
+    # 
+    # Note: Don't forget to call super if you define #initialize
     
   end
 end
@@ -116,7 +138,7 @@ end
 def warble_config_contents
   <<-WARBLE
 Warbler::Config.new do |config|
-  config.gems = %w( rave )
+  config.gems = %w( rave json-jruby rack builder )
   config.includes = %w( robot.rb appengine-web.xml )
 end
 WARBLE

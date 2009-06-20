@@ -17,6 +17,7 @@ module Rave
         @profile_url = options[:profile_url]
         @handlers = {}
         @cron_jobs = []
+        register_default_handlers
       end
       
       #Register a handler
@@ -42,6 +43,17 @@ module Rave
       #Registers a cron job
       def register_cron_job(path, seconds)
         @cron_jobs << {:path => path, :seconds => seconds}
+      end
+      
+    protected
+      #Register any handlers that are defined through naming convention
+      def register_default_handlers
+        Event::VALID_EVENTS.each do |event|
+          listener = event.downcase.to_sym
+          if respond_to?(listener)
+            register_handler(event, listener)
+          end
+        end
       end
       
     end

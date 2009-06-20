@@ -3,6 +3,8 @@ module Rave
   module Mixins
     module DataFormat
       
+      LOGGER = java.util.logging.Logger.getLogger("DataFormat") unless defined?(LOGGER)
+      
       #Returns this robot's capabilities in XML
       def capabilities_xml
         xml = Builder::XmlMarkup.new
@@ -38,6 +40,8 @@ module Rave
       
       #Parses context and event info from JSON input
       def parse_json_body(json)
+        LOGGER.info("Parsing JSON:")
+        LOGGER.info(json.to_s)
         data = JSON.parse(json)
         #Create Context
         context = context_from_json(data)
