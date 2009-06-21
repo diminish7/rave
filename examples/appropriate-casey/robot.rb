@@ -14,6 +14,7 @@ module AppropriateCasey
         if blip.content
           content = blip.content.gsub(/!+/, ".")
           ends_with_period = content[content.length-1, 1] == "."
+          trailing_whitespace = (index = content =~ /\s$/) ? content[index, content.length-1] : nil
           #Set the case on each sentence
           appropriate = content.split(".").collect do |sentence|
             next if sentence.nil? || sentence.strip.empty?
@@ -21,6 +22,7 @@ module AppropriateCasey
             sentence[0, 1].upcase + sentence[1, sentence.length-1].downcase
           end.join(". ")
           appropriate += "." if ends_with_period
+          appropriate += trailing_whitespace if trailing_whitespace
           LOGGER.info("Setting blip's text to #{appropriate.to_s}")
           blip.set_text(appropriate)
         else
