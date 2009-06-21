@@ -128,7 +128,7 @@ in the "rave" executable for this, so from your robot's top-level folder, run:
 This is basically just a wrapper around the warbler gem, but with some additional cleanup to get things
 in the right format for App Engine.  For example, the complete JRuby jar is too large for App Engine,
 so Rave replaces it with two jars.  Once you've run "rave war", you'll see a tmp/ folder, and a .war file. 
-You can ignore the .war file, as App Engine needs the unpacked version. The tmp/ folder is what will get deployed.
+You can ignore the .war file, as App Engine needs the unpacked version. The tmp/war folder is what will get deployed.
 
 === Testing
 
@@ -136,7 +136,7 @@ The worst part about App Engine is testing...
 
 Rave includes a "server" command that starts up Rack for your application, but that is of limited use, since
 App Engine has many App Engine-specific issues. Better to use the App Engine SDK (which is still not a perfect
-match to the deployed environment, but it's better).  The App Engine SDK comes with a dev_server.  
+match to the deployed environment, but it's better).  The App Engine SDK comes with a dev_server command.  
 From your project directory run:
 
    path/to/appengine_sdk/bin/dev_server tmp/war
