@@ -8,7 +8,7 @@ module AppropriateCasey
     
     #This is a very simple robot that tries to tone down yelling in waves
     def document_changed(event, context)
-      LOGGER.info("document_changed() called!!")
+      LOGGER.info("document_changed() called")
       context.blips.each do |blip_id, blip|
         #Get rid of multiple exclamation points, replace with a period
         if blip.content
