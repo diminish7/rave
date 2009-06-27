@@ -77,7 +77,7 @@ module Rave
           json['blips']['map'].values.collect do |blip_data|
             blip = Rave::Models::Blip.new(
                   :id => blip_data['blipId'],
-                  :annotations => annotations_from_json(json),
+                  :annotations => annotations_from_json(blip_data),
                   :child_blip_ids => blip_data['childBlipIds'],
                   :content => blip_data['content'],
                   :contributors => blip_data['contributors'],
@@ -96,8 +96,8 @@ module Rave
       end
       
       def annotations_from_json(json)
-        if json['annotation']
-          json['annotations'].collect do |annotation|
+        if json['annotation'] && json['annotations']['list']
+          json['annotations']['list'].collect do |annotation|
             Rave::Models::Annotation.new(
                   :name => annotation['name'], 
                   :value => annotation['value'], 

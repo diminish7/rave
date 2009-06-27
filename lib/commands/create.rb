@@ -67,6 +67,8 @@ require 'rave'
 module #{module_name}
   class Robot < Rave::Models::Robot
     
+    ME = "appropriate-casey@appspot.com"
+    
     #Define handlers here:
     # e.g. if the robot should act on a DOCUMENT_CHANGED event:
     # 
