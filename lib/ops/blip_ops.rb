@@ -37,8 +37,11 @@ module Rave
       
       #Deletes the text in a given range and replaces it with the given text
       def set_text_in_range(range, text)
-        delete_range(range)
+        #Note: I'm doing this in the opposite order from the python API, because
+        # otherwise, if you are setting text at the end of the content, the cursor
+        # gets moved to the start of the range...
         insert_text(text, range.first)
+        delete_range(range.first+text.length..range.last+text.length)
       end
       
       #Appends text to the end of the content
