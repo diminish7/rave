@@ -1,5 +1,5 @@
 .loadpath
 .project
 *.gem
-examples/casey/tmp
-examples/casey/casey.war
+examples/appropriate-casey/tmp
+examples/appropriate-casey/appropriate-casey.war
