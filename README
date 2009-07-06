@@ -1,7 +1,7 @@
 = Rave: A Google Wave robot client framework for Ruby
 
 Rave is a framework for building robot applications to participate in Google Wave conversations.
-See http://wave.google.com/ for details Google Wave details. Or if you are interested in the ins-and-outs
+See http://wave.google.com/ for Google Wave details. Or if you are interested in the ins-and-outs
 of the Google Wave protocol, check out http://www.waveprotocol.org/
 
 == Warning!
@@ -76,7 +76,7 @@ The Event object contains the following properties:
  * type (The type of event, "DOCUMENT_CHANGED" in this case)
  * timestamp (the timestamp that the event occurred)
  * modified_by (the user ID of the user who modified the document)
- * properties (Varies by event type, but this will be a range of affected text in this case)
+ * properties (Varies by event type, but this will be a hash with blipID in this case)
  
 The Context object contains the following properties:
 
@@ -93,25 +93,38 @@ appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yell
 I just create a document_changed method in my robot that looks something like this:
 
    def document_changed(event, context)
-      context.blips.each do |blip_id, blip|
-        #Get rid of multiple exclamation points, replace with a period
-        if blip.content
-          content = blip.content.gsub(/!+/, ".")
-          ends_with_period = content[content.length-1, 1] == "."
-          #Set the case on each sentence
-          appropriate = content.split(".").collect do |sentence|
-            next if sentence.nil? || sentence.strip.empty?
-            sentence.strip!
-            sentence[0, 1].upcase + sentence[1, sentence.length-1].downcase
-          end.join(". ")
-          appropriate += "." if ends_with_period
-          blip.set_text(appropriate)
+      unless event.modified_by == "appropriate-casey@appspot.com" || event.modified_by == "spelly@gwave.com"
+        context.blips.values.each do |blip|
+          if blip.content
+            new_sentence = true
+            blip.content.length.times do |index|
+              range = index..index+1
+              char = blip.content[index, 1]
+              if char =~ /[A-Z]/ && !new_sentence
+                blip.set_text_in_range(range, char.downcase)
+              elsif char =~ /[a-z]/ && new_sentence
+                blip.set_text_in_range(range, char.upcase)
+              elsif char == "!"
+                if new_sentence
+                  blip.delete_range(range)
+                else
+                  blip.set_text_in_range(range, ".")
+                end
+              end
+              new_sentence = (char =~ /\.!?/ || (char =~ /\s/ && new_sentence))
+            end
+          end
         end
       end
     end
     
-For simplicity's sake, I'm brute-forcing this a bit. It would be better to look at the event properties
-and just change the range of text that the event is telling me about.
+Here's what's going on: first, I'm bailing if the blip was modified by either Appropriate Casey, or the spellchecker.
+This is just to prevent us from having to do any logic when we know we aren't going to change anything.  Then, I iterate
+through the blips and check their content.  Any character that is capital that isn't the start of a sentence gets 
+downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations get turned into
+a period (and additional exclamation points get dropped). There are two API methods being called: blip#set_text_in_range
+and blip#delete_range.  Both of these methods update the content of the blip locally (so the changes happen optimistically)
+and then send operation requests back to the server so that all users can see the changes.
 
 So that's it, my robot is now ready to go: just 17 lines of code.
 

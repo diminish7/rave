@@ -14,7 +14,7 @@ module AppropriateCasey
         context.blips.values.each do |blip|
           if blip.content
             LOGGER.info("Evaluating blip content: #{blip.content}")
-            new_sentence = false
+            new_sentence = true
             blip.content.length.times do |index|
               range = index..index+1
               char = blip.content[index, 1]
@@ -29,11 +29,7 @@ module AppropriateCasey
                   blip.set_text_in_range(range, ".")
                 end
               end
-              if char =~ /\.!?/ || (char =~ /\s/ && new_sentence)
-                new_sentence = true
-              else
-                new_sentence = false
-              end
+              new_sentence = (char =~ /\.!?/ || (char =~ /\s/ && new_sentence))
             end
           end
         end
