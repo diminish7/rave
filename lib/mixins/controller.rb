@@ -24,6 +24,11 @@ module Rave
               handle_event(event, context)
             end
             [ 200, { 'Content-Type' => 'application/json' }, context.to_json ]
+          elsif cron_job = @cron_jobs.find { |job| job[:path] == path }
+            # body = request.body.read
+            # context, events = parse_json_body(body)
+            self.send(cron_job[:handler], context)
+            [ 200, { 'Content-Type' => 'application/json' }, context.to_json ]
           else
             #TODO: Also, give one more option: respond_to?(:non_robot_url) or something - can override in impl
             #TODO: Log this
