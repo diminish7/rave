@@ -29,7 +29,7 @@ def create_robot(args)
   puts "Creating robot class #{File.expand_path(file)}"
   #Make the base robot class
   File.open(file, "w") do |f|
-    f.puts robot_file_contents(module_name)
+    f.puts robot_file_contents(robot_name, module_name)
   end
   #Make the rackup config file
   puts "Creating rackup config file #{File.expand_path(config)}"
@@ -59,7 +59,7 @@ def create_robot(args)
   end
 end
 
-def robot_file_contents(module_name)
+def robot_file_contents(robot_name, module_name)
   <<-ROBOT
 require 'rubygems'
 require 'rave'
@@ -67,7 +67,7 @@ require 'rave'
 module #{module_name}
   class Robot < Rave::Models::Robot
     
-    ME = "appropriate-casey@appspot.com"
+    ME = "#{robot_name}@appspot.com"
     
     #Define handlers here:
     # e.g. if the robot should act on a DOCUMENT_CHANGED event:
