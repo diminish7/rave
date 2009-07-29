@@ -83,9 +83,9 @@ describe Rave::Models::Robot do
   
   describe "register_cron_job()" do
     it "should add the job to the list of cron jobs" do
-      @obj.register_cron_job("path", 60)
+      @obj.register_cron_job("path", :cron_handler, 60)
       @obj.instance_eval do
-        @cron_jobs.should == [{ :path => "path", :seconds => 60}]
+        @cron_jobs.should == [{ :path => "path", :handler => :cron_handler, :seconds => 60}]
       end
     end
   end
@@ -94,8 +94,8 @@ describe Rave::Models::Robot do
     it "should return the list of capabilities" do
       event1 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
       event2 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
-      cron1 = ["path1", 60]
-      cron2 = ["path2", 3600]
+      cron1 = ["path1", :cron_handler1, 60]
+      cron2 = ["path2", :cron_handler2, 3600]
       @obj.register_handler(event1.type, :handler1)
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
@@ -118,8 +118,8 @@ describe Rave::Models::Robot do
       end
       event1 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
       event2 = Rave::Models::Event.new(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
-      cron1 = ["path1", 60]
-      cron2 = ["path2", 3600]
+      cron1 = ["path1", :cron_handler1, 60]
+      cron2 = ["path2", :cron_handler2, 3600]
       @obj.register_handler(event1.type, :handler1)
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)

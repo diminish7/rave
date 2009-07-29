@@ -41,19 +41,30 @@ module Rave
       end
       
       #Registers a cron job
-      def register_cron_job(path, seconds)
-        @cron_jobs << {:path => path, :seconds => seconds}
+      def register_cron_job(path, handler, seconds)
+        @cron_jobs << {:path => path, :handler => handler, :seconds => seconds}
       end
       
     protected
       #Register any handlers that are defined through naming convention
       def register_default_handlers
+        register_default_event_handlers
+        register_default_cron_handlers
+      end
+      
+      #If any methods are defined that match a handleable event, register that event
+      def register_default_event_handlers
         Event::VALID_EVENTS.each do |event|
           listener = event.downcase.to_sym
           if respond_to?(listener)
             register_handler(event, listener)
           end
         end
+      end
+      
+      #If there are any instance methods that begin with "cron_" register cron handlers
+      def register_default_cron_handlers
+        
       end
       
     end

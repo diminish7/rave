@@ -107,7 +107,7 @@ describe Rave::Models::Blip do
         blip = Blip.new(:content => "hello google wave!")
         blip.context = Context.new
         blip.set_text_in_range(6..16, "world")
-        validate_operations(blip.context, [Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
+        validate_operations(blip.context, [Operation::DOCUMENT_INSERT, Operation::DOCUMENT_DELETE])
       end
     end
     
