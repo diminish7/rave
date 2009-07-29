@@ -14,7 +14,7 @@ spec = Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.6'
   s.name = "rave"
   s.rubyforge_project = 'rave'
-  s.version = "0.1.1"
+  s.version = "0.1.2"
   s.authors = ["Jason Rush", "Jay Donnell"]
   s.email = 'diminish7@gmail.com'
   s.homepage = 'http://github.com/diminish7/rave'
