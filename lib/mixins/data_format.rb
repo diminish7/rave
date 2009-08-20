@@ -10,6 +10,7 @@ module Rave
         xml = Builder::XmlMarkup.new
         xml.instruct!
         xml.tag!("w:robot", "xmlns:w" => "http://wave.google.com/extensions/robots/1.0") do
+          xml.tag!("w:version", @version)
           xml.tag!("w:capabilities") do
             @handlers.keys.each do |capability|
               xml.tag!("w:capability", "name" => capability)
