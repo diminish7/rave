@@ -29,17 +29,40 @@ module Rave
             # context, events = parse_json_body(body)
             self.send(cron_job[:handler], context)
             [ 200, { 'Content-Type' => 'application/json' }, context.to_json ]
+          elsif (file = File.exist?(File.join(".", *(path.split("/")))))
+            #Static resource
+            [ 200, { 'Content-Type' => static_resource_content_type(file) }, File.open(file) { |f| f.read } ]
+          elsif self.respond_to?(:custom_routes)
+            self.custom_routes(request, path, method)
           else
-            #TODO: Also, give one more option: respond_to?(:non_robot_url) or something - can override in impl
-            #TODO: Log this
+            LOGGER.warn("404 - Not Found: #{path}")
             [ 404, { 'Content-Type' => 'text/html' }, "404 - Not Found" ]
           end
         rescue Exception => e
-          #TODO: Log this
+          LOGGER.error("500 - Internal Server Error: #{path}")
           [ 500, { 'Content-Type' => 'text/html' }, "500 - Internal Server Error"]
         end
       end
       
+    protected
+      def static_resource_content_type(path)
+        case (ext = File.extname(path))
+        when '.html', '.htm'
+          'text/html'
+        when '.xml'
+          'text/xml'
+        when '.gif'
+          'image/gif'
+        when '.jpeg', '.jpg'
+          'image/jpeg'
+        when '.tif', '.tiff'
+          'image/tiff'
+        when '.txt', ''
+          'text/plain'
+        else
+          "application/#{ext}"
+        end
+      end
     end 
   end
 end
