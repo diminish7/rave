@@ -29,17 +29,18 @@ module Rave
             # context, events = parse_json_body(body)
             self.send(cron_job[:handler], context)
             [ 200, { 'Content-Type' => 'application/json' }, context.to_json ]
-          elsif (file = File.exist?(File.join(".", *(path.split("/")))))
+          elsif File.exist?(file = File.join(".", "public", *(path.split("/"))))
             #Static resource
             [ 200, { 'Content-Type' => static_resource_content_type(file) }, File.open(file) { |f| f.read } ]
           elsif self.respond_to?(:custom_routes)
+            #Let the custom route method defined in the robot take care of the call
             self.custom_routes(request, path, method)
           else
             LOGGER.warn("404 - Not Found: #{path}")
             [ 404, { 'Content-Type' => 'text/html' }, "404 - Not Found" ]
           end
         rescue Exception => e
-          LOGGER.error("500 - Internal Server Error: #{path}")
+          LOGGER.warn("500 - Internal Server Error: #{path}")
           [ 500, { 'Content-Type' => 'text/html' }, "500 - Internal Server Error"]
         end
       end

@@ -17,7 +17,7 @@ module Rave
         @profile_url = options[:profile_url]
         @handlers = {}
         @cron_jobs = []
-        @version = options[:version] || get_version_from_xml
+        @version = options[:version] || 1
         register_default_handlers
       end
       
@@ -56,13 +56,6 @@ module Rave
           end
         end
       end
-      
-      def get_version_from_xml
-        xml = File.open("appengine-web.xml") { |f| f.read }
-        start_index = xml.index("<version>")+9
-        end_index = xml.index("</version>")-1
-        xml[start_index..end_index]
-      end          
     end
   end
 end

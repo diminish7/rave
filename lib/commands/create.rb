@@ -9,7 +9,7 @@ def create_robot(args)
   robot_name = args.first
   module_name = robot_name.split(/_|-/).collect { |word| word[0, 1].upcase + word[1, word.length-1] }.join("")
   robot_class_name = "#{module_name}::Robot"
-  options = { :name => robot_name }
+  options = { :name => robot_name, :version => 1 }
   args[1, args.length-1].each do |arg|
     key, value = arg.split("=").collect { |part| part.strip }
     options[key.to_sym] = value
