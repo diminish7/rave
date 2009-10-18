@@ -20,5 +20,5 @@ if cmd
 		display_usage
 	end
 else
-	usage
+	display_usage
 end

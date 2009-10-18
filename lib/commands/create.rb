@@ -20,6 +20,7 @@ def create_robot(args)
   file = File.join(dir, "robot.rb")
   appengine_web = File.join(dir, "appengine-web.xml")
   config = File.join(dir, "config.ru")
+  public_folder = File.join(dir, "public")
   here = File.dirname(__FILE__)
   jar_dir = File.join(here, "..", "jars")
   jars = %w( appengine-api-1.0-sdk-1.2.1.jar jruby-core.jar ruby-stdlib.jar )
@@ -42,6 +43,9 @@ def create_robot(args)
   File.open(appengine_web, "w") do |f|
     f.puts appengine_web_contents(robot_name)
   end
+  #Make the public folder for static resources
+  puts "Creating public folder"
+  Dir.mkdir(public_folder)
   #Copy jars over
   puts "Creating lib directory #{File.expand_path(lib)}"
   Dir.mkdir(lib)
