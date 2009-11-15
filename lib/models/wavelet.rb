@@ -46,7 +46,8 @@ module Rave
       
       #Adds a participant to the wavelet
       def add_participant(participant_id)
-        #TODO
+        @context.operations << Operation.new(:type => Operation::WAVELET_ADD_PARTICIPANT, :wave_id => @wave_id, :wavelet_id => @id, :property => participant_id)
+        @participants << participant_id
       end
       
       #Removes this robot from the wavelet
