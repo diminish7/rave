@@ -36,7 +36,7 @@ module Rave
           "name" => @name,
           "imageurl" => @image_url,
           "profile_url" => @profile_url
-        }.to_json
+        }.to_json.gsub('\/','/')
       end
       
       #Parses context and event info from JSON input
