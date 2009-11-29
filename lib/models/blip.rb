@@ -2,7 +2,7 @@
 module Rave
   module Models
     class Blip
-      attr_reader :id, :annotations, :child_blip_ids, :content, :constributors, :creator,
+      attr_reader :id, :annotations, :child_blip_ids, :content, :contributors, :creator,
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id, :wavelet_id
       attr_accessor :context
       
