@@ -131,7 +131,7 @@ describe Rave::Models::Robot do
   
   describe "profile_json()" do
     it "should return the robot's profile information in json format" do
-      @obj.profile_json.should == "{\"name\":\"testbot\",\"imageurl\":\"http://localhost/image\",\"profile_url\":\"http://localhost/profile\"}"
+      @obj.profile_json.should == "{\"name\":\"testbot\",\"imageUrl\":\"http://localhost/image\",\"profileUrl\":\"http://localhost/profile\",\"javaClass\":\"com.google.wave.api.ParticipantProfile\"}"
     end
   end
   

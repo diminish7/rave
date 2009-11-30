@@ -2,6 +2,8 @@
 module Rave
   module Mixins
     module DataFormat
+    
+      PROFILE_JAVA_CLASS = 'com.google.wave.api.ParticipantProfile'
       
       LOGGER = java.util.logging.Logger.getLogger("DataFormat") unless defined?(LOGGER)
       
@@ -33,9 +35,10 @@ module Rave
       #Returns the robot's profile in json format
       def profile_json
         {
-          "name" => @name,
-          "imageurl" => @image_url,
-          "profile_url" => @profile_url
+          'name' => @name,
+          'imageUrl' => @image_url,
+          'profileUrl' => @profile_url,
+          'javaClass' => PROFILE_JAVA_CLASS,
         }.to_json.gsub('\/','/')
       end
       
