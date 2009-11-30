@@ -1,5 +1,6 @@
 .loadpath
 .project
 *.gem
+doc/rdoc
 examples/appropriate-casey/tmp
 examples/appropriate-casey/appropriate-casey.war

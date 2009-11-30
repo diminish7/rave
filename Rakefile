@@ -59,7 +59,7 @@ end
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc/rdoc'
   rdoc.options << '--line-numbers'
-  rdoc.rdoc_files.add([ 'README', 'lib/*.rb' ])
+  rdoc.rdoc_files.add([ 'README', 'lib/**/*.rb' ])
 end
  
 desc "run some tests"
