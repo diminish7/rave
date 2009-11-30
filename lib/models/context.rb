@@ -21,6 +21,13 @@ module Rave
         @operations = options[:operations] || []
       end
       
+      # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
+      def add_blip(blip)
+        @blips[blip.id] = blip
+        blip.context = self
+        blip
+      end
+      
       #Find the root wavelet if it exists in this context
       def root_wavelet
         @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }

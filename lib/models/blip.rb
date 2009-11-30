@@ -8,6 +8,8 @@ module Rave
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id, :wavelet_id
       attr_accessor :context
       
+      @@next_id = 1 # Unique ID for newly created blips.
+      
       #Options include:
       # - :annotations
       # - :child_blip_ids
@@ -34,8 +36,17 @@ module Rave
         @version = options[:version] || -1
         @wave_id = options[:wave_id]
         @wavelet_id = options[:wavelet_id]
-        @id = options[:id]
         @context = options[:context]
+        
+        # If the blip doesn't have a defined ID, since we just created it,
+        # assign a temporary, though unique, ID, based on the ID of the wavelet.
+        @id = if options[:id].nil?
+          id = "TBD_#{@wavelet_id}_#{@@next_id}"
+          @@next_id += 1
+          id
+        else
+          options[:id]
+        end
       end
       
       #Returns true if this is a root blip (no parent blip)
