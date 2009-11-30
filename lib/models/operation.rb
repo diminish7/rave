@@ -4,6 +4,8 @@ module Rave
     class Operation
       attr_reader :type, :wave_id, :wavelet_id, :blip_id, :index, :property
       
+      JAVA_CLASS = 'com.google.wave.api.impl.OperationImpl' # :nodoc:
+      
       #Constants
       # Types of operations
       WAVELET_APPEND_BLIP = 'WAVELET_APPEND_BLIP'
@@ -44,46 +46,39 @@ module Rave
         @type = options[:type]
         @wave_id = options[:wave_id]
         @wavelet_id = options[:wavelet_id]
-        @blip_id = options[:blip_id]
+        @blip_id = options[:blip_id] || ''
         @index = options[:index] || -1
         @property = options[:property]
       end
       
-      #Serialize the operation to hash
-      def to_hash
-        {
+      #Serialize the operation to json
+      def to_json
+        hash = {
           'blipId' => @blip_id,
           'index' => @index,
           'waveletId' => @wavelet_id,
           'waveId' => @wave_id,
           'type' => @type,
-          'javaClass' => 'com.google.wave.api.impl.OperationImpl',
-          'property' => property_to_hash
+          'javaClass' => JAVA_CLASS
         }
+        
+        hash['property'] = @property unless @property.nil?
+        
+        hash.to_json
       end
-      
-      #Serialize teh operation to json
-      def to_json
-        to_hash.to_json
-      end
-      
-    protected
-      #Decide what kind of property it is and return the value that should be in the JSON
-      def property_to_hash
-        if @property.kind_of?(String)
-          @property
-        elsif @property.kind_of?(Range)
-          {
-            'javaClass' => 'com.google.wave.api.Range',
-            'start' => @property.first,
-            'end' => @property.last
-          }
-        else
-          #TODO: What else needs to be in here?
-          raise "I don't know what that property is..."
-        end
-      end
-      
     end
+  end
+end
+
+class Range
+  JAVA_CLASS = 'com.google.wave.api.Range' # :nodoc:
+  
+  # Convert to a hash for sending in an operation.
+  def to_json
+    {
+      'javaClass' => JAVA_CLASS,
+      'start' => first,
+      'end' => last
+    }.to_json
   end
 end

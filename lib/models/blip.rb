@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Blip
+      JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
+      
       attr_reader :id, :annotations, :child_blip_ids, :content, :contributors, :creator,
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id, :wavelet_id
       attr_accessor :context
@@ -56,6 +58,16 @@ module Rave
         #TODO
       end
       
+      # Convert to json for sending in an operation. We should never need to
+      # send more data than this, although blips we receive will have more data.
+      def to_json
+        {
+          'blipId' => @id,
+          'javaClass' => JAVA_CLASS,
+          'waveId' => @wave_id,
+          'waveletId' => @wavelet_id
+        }.to_json
+      end
     end
   end
 end

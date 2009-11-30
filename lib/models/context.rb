@@ -4,6 +4,8 @@ module Rave
     class Context
       attr_reader :waves, :wavelets, :blips, :operations
       
+      JAVA_CLASS = 'com.google.wave.api.impl.OperationMessageBundle' # :nodoc:
+      
       #Options include:
       # - :waves
       # - :wavelets
@@ -23,22 +25,14 @@ module Rave
       def root_wavelet
         @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }
       end
-      
-      #Serializes the context to JSON format
+           
+      #Serialize the context for use in the line protocol.
       def to_json
-        self.to_hash.to_json
-      end
-      
-      #Serialize the context to a hash map
-      def to_hash
         hash = {
-          'operations' => { 'javaClass' => 'java.util.ArrayList', 'list' => [] },
-          'javaClass' => 'com.google.wave.api.impl.OperationMessageBundle'
-         }
-        @operations.each do |op|
-          hash['operations']['list'] << op.to_hash
-        end
-        hash
+          'operations' => { 'javaClass' => 'java.util.ArrayList', 'list' => @operations },
+          'javaClass' => JAVA_CLASS
+        }
+        hash.to_json
       end
     end
   end
