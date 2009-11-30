@@ -41,13 +41,13 @@ module Rave
       
       #Parses context and event info from JSON input
       def parse_json_body(json)
-        LOGGER.info("Parsing JSON:")
-        LOGGER.info(json.to_s)
+        LOGGER.info("Received:\n#{json.to_s}")
         data = JSON.parse(json)
         #Create Context
         context = context_from_json(data)
         #Create events
         events = events_from_json(data)
+        LOGGER.info("Events: #{events.map { |e| e.type }.join(', ')}")
         return context, events
       end
       
