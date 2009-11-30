@@ -114,7 +114,16 @@ module Rave
         if json['events'] && json['events']['list']
           json['events']['list'].collect do |event|
             properties = {}
-            event['properties']['map'].each { |key, value| properties[key] = value['list'] }
+            event['properties']['map'].each do |key, value|
+              properties[key] = case value
+              when String # Just a string, as in blipId.
+                value
+              when Hash # Serialised array, such as in participantsAdded.
+                value['list']
+              else
+                raise "Unrecognised property #{value} #{value.class}"
+              end
+            end
             Rave::Models::Event.new(
                   :type => event['type'],
                   :timestamp => event['timestamp'],
