@@ -37,13 +37,23 @@ module Rave
         @timestamp = options[:timestamp] || Time.now
         @modified_by = options[:modified_by]
         @properties = options[:properties] || {}
+        
+        # Allow properties to be directly accessed with Ruby-ised names.
+        # event.participants_added <=> event.properties['participantsAdded']
+        @properties.each_pair do |property, value|
+          method_name = property.gsub(/([A-Z])/) { |s| "_#{$1.downcase}" }
+          (class << self; self; end).class_eval do
+            define_method method_name.to_sym do
+              value
+            end
+          end
+        end
       end
       
       #Returns true if the event_type is a possible event type, and false if not
       def self.valid_event_type?(event_type)
         VALID_EVENTS.include?(event_type)
       end
-      
     end
   end
 end
