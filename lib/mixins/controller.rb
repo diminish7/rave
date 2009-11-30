@@ -36,11 +36,12 @@ module Rave
             #Let the custom route method defined in the robot take care of the call
             self.custom_routes(request, path, method)
           else
-            LOGGER.warn("404 - Not Found: #{path}")
+            LOGGER.warning("404 - Not Found: #{path}")
             [ 404, { 'Content-Type' => 'text/html' }, "404 - Not Found" ]
           end
         rescue Exception => e
-          LOGGER.warn("500 - Internal Server Error: #{path}")
+          LOGGER.warning("500 - Internal Server Error: #{path}")
+          LOGGER.warning("#{e.class}: #{e.message}\n\n#{e.backtrace.join("\n")}")
           [ 500, { 'Content-Type' => 'text/html' }, "500 - Internal Server Error"]
         end
       end
