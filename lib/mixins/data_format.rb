@@ -124,7 +124,7 @@ module Rave
                 raise "Unrecognised property #{value} #{value.class}"
               end
             end
-            Rave::Models::Event.new(
+            Rave::Models::Event.create(
                   :type => event['type'],
                   :timestamp => event['timestamp'],
                   :modified_by => event['modifiedBy'],

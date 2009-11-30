@@ -8,8 +8,8 @@ describe Rave::Models::Event do
   
   describe "valid_event_type?()" do
     it "should return true for all valid events" do
-      Rave::Models::Event::VALID_EVENTS.each do |event|
-        Rave::Models::Event.valid_event_type?(event).should be_true
+      Rave::Models::Event::EVENT_CLASSES.each do |event|
+        Rave::Models::Event.valid_event_type?(event.type).should be_true
       end
     end
     

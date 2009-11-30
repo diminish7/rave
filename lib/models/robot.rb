@@ -49,10 +49,10 @@ module Rave
     protected
       #Register any handlers that are defined through naming convention
       def register_default_handlers
-        Event::VALID_EVENTS.each do |event|
-          listener = event.downcase.to_sym
+        Event::EVENT_CLASSES.each do |event|
+          listener = event.type.downcase.to_sym
           if respond_to?(listener)
-            register_handler(event, listener)
+            register_handler(event.type, listener)
           end
         end
       end
