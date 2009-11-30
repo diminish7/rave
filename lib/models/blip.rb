@@ -23,7 +23,7 @@ module Rave
       def initialize(options = {})
         @annotations = options[:annotations] || []
         @child_blip_ids = Set.new(options[:child_blip_ids])
-        @content = options[:content]
+        @content = options[:content] || ''
         @contributors = Set.new(options[:contributors])
         @creator = options[:creator]
         @elements = options[:elements] || {}

@@ -66,14 +66,14 @@ describe Rave::Models::Blip do
       it "should set the content of the blip" do
         blip = Blip.new
         blip.context = Context.new
-        blip.content.should be_nil
+        blip.content.should == ''
         blip.set_text "What up, blip?"
         blip.content.should == "What up, blip?"
       end
       it "should add a delete and insert operation to the context" do
         blip = Blip.new
         blip.context = Context.new
-        blip.content.should be_nil
+        blip.content.should == ''
         blip.set_text "What up, blip?"
         validate_operations(blip.context, [Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
       end
