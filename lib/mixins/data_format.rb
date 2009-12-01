@@ -77,66 +77,74 @@ module Rave
       end
       
       def blips_from_json(json)
-        if json['blips']
-          json['blips']['map'].values.collect do |blip_data|
-            blip = Rave::Models::Blip.new(
-                  :id => blip_data['blipId'],
-                  :annotations => annotations_from_json(blip_data),
-                  :child_blip_ids => blip_data['childBlipIds'],
-                  :content => blip_data['content'],
-                  :contributors => blip_data['contributors'],
-                  :creator => blip_data['creator'],
-                  :elements => blip_data['elements'],
-                  :last_modified_time => blip_data['lastModifiedTime'],
-                  :parent_blip_id => blip_data['parentBlipId'],
-                  :version => blip_data['version'],
-                  :wave_id => blip_data['waveId'],
-                  :wavelet_id => blip_data['waveletId']
-              )
-          end
-        else
+        map_to_hash(json['blips']).values.collect do |blip_data|
+          Rave::Models::Blip.new(
+                :id => blip_data['blipId'],
+                :annotations => annotations_from_json(blip_data),
+                :child_blip_ids => list_to_array(blip_data['childBlipIds']),
+                :content => blip_data['content'],
+                :contributors => list_to_array(blip_data['contributors']),
+                :creator => blip_data['creator'],
+                :elements => map_to_hash(blip_data['elements']),
+                :last_modified_time => blip_data['lastModifiedTime'],
+                :parent_blip_id => blip_data['parentBlipId'],
+                :version => blip_data['version'],
+                :wave_id => blip_data['waveId'],
+                :wavelet_id => blip_data['waveletId']
+            )
+        end
+      end
+
+      # Convert a json-java list (which may not be defined) into an array.
+      # Defaults to an empty array.
+      def list_to_array(list)
+        if list.nil?
           []
+        else
+          list['list'] || []
+        end
+      end
+
+      # Convert a json-java map (which may not be defined) into a hash. Defaults
+      # to an empty hash.
+      def map_to_hash(map)
+        if map.nil?
+          {}
+        else
+          map['map'] || {}
         end
       end
       
       def annotations_from_json(json)
-        if json['annotation'] && json['annotations']['list']
-          json['annotations']['list'].collect do |annotation|
-            Rave::Models::Annotation.new(
-                  :name => annotation['name'], 
-                  :value => annotation['value'], 
-                  :range => Range.new(annotation['range']['start'], annotation['range']['end'])
-              )
-          end
-        else
-          []
+        list_to_array(json['annotation']).collect do |annotation|
+          Rave::Models::Annotation.new(
+                :name => annotation['name'],
+                :value => annotation['value'],
+                :range => Range.new(annotation['range']['start'], annotation['range']['end'])
+            )
         end
       end
       
       def events_from_json(json, context)
-        if json['events'] && json['events']['list']
-          json['events']['list'].collect do |event|
-            properties = {}
-            event['properties']['map'].each do |key, value|
-              properties[key] = case value
-              when String # Just a string, as in blipId.
-                value
-              when Hash # Serialised array, such as in participantsAdded.
-                value['list']
-              else
-                raise "Unrecognised property #{value} #{value.class}"
-              end
+        list_to_array(json['events']).collect do |event|
+          properties = {}
+          event['properties']['map'].each do |key, value|
+            properties[key] = case value
+            when String # Just a string, as in blipId.
+              value
+            when Hash # Serialised array, such as in participantsAdded.
+              value['list']
+            else
+              raise "Unrecognised property #{value} #{value.class}"
             end
-            Rave::Models::Event.create(
-                  :type => event['type'],
-                  :timestamp => event['timestamp'],
-                  :modified_by => event['modifiedBy'],
-                  :properties => properties,
-                  :context => context
-               )
           end
-        else
-          []
+          Rave::Models::Event.create(
+                :type => event['type'],
+                :timestamp => event['timestamp'],
+                :modified_by => event['modifiedBy'],
+                :properties => properties,
+                :context => context
+             )
         end
       end
       
@@ -149,9 +157,9 @@ module Rave
             Rave::Models::Wavelet.new(
                   :creator => wavelet['creator'],
                   :creation_time => wavelet['creationTime'],
-                  :data_documents => wavelet['dataDocuments'],
+                  :data_documents => map_to_hash(wavelet['dataDocuments']),
                   :last_modifed_time => wavelet['lastModifiedTime'],
-                  :participants => wavelet['participants'],
+                  :participants => list_to_array(wavelet['participants']),
                   :root_blip_id => wavelet['rootBlipId'],
                   :title => wavelet['title'],
                   :version => wavelet['version'],
