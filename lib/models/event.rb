@@ -30,6 +30,7 @@ module Rave
         @timestamp = options[:timestamp] || Time.now
         @modified_by = options[:modified_by]
         @properties = options[:properties] || {}
+        @context = options[:context]
       end
       
       # Event factory.

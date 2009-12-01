@@ -49,7 +49,7 @@ module Rave
         #Create Context
         context = context_from_json(data)
         #Create events
-        events = events_from_json(data)
+        events = events_from_json(data, context)
         LOGGER.info("Events: #{events.map { |e| e.type }.join(', ')}")
         return context, events
       end
@@ -113,7 +113,7 @@ module Rave
         end
       end
       
-      def events_from_json(json)
+      def events_from_json(json, context)
         if json['events'] && json['events']['list']
           json['events']['list'].collect do |event|
             properties = {}
@@ -131,7 +131,8 @@ module Rave
                   :type => event['type'],
                   :timestamp => event['timestamp'],
                   :modified_by => event['modifiedBy'],
-                  :properties => properties
+                  :properties => properties,
+                  :context => context
                )
           end
         else
