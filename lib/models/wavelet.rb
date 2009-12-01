@@ -76,7 +76,14 @@ module Rave
       def title=(title)
         @title = title
       end
-      
+
+      def root_blip
+        @context.blips[@root_blip_id]
+      end
+
+      def wave
+        @context.waves[@wave_id]
+      end
     end
   end
 end

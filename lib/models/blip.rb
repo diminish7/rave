@@ -89,6 +89,16 @@ module Rave
         @context.wavelets[@wavelet_id]
       end
 
+      def wave
+        @context.waves[@wave_id]
+      end
+
+      # Blip that this Blip is a direct reply to. Will be nil if the root blip
+      # in a wavelet.
+      def parent_blip
+        @context.blips[@parent_blip_id]
+      end
+
       # Convert to json for sending in an operation. We should never need to
       # send more data than this, although blips we receive will have more data.
       def to_json

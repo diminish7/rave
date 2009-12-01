@@ -13,7 +13,10 @@ module Rave
         @id = options[:id]
         @wavelet_ids = Set.new(options[:wavelet_ids])
       end
-      
+
+      def wavelets
+        @wavelet_ids.map { |id| @context.wavelets[id] }
+      end
     end
   end
 end
