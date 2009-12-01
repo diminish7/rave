@@ -26,7 +26,7 @@ module Rave
       # - :context
       def initialize(options = {})
         @annotations = options[:annotations] || []
-        @child_blip_ids = Set.new(options[:child_blip_ids])
+        @child_blip_ids = options[:child_blip_ids] || []
         @content = options[:content] || ''
         @contributors = Set.new(options[:contributors])
         @creator = options[:creator]
@@ -61,19 +61,34 @@ module Rave
       
       #Creates a child blip under this blip
       def create_child_blip
-        #TODO
+        blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => @id, :wavelet_id => @wavelet_id, :context => @context)
+        @context.operations << Operation.new(:type => Operation::BLIP_CREATE_CHILD, :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id, :property => blip)
+        add_child_blip(blip)
+        blip
+      end
+
+      # Adds a created child blip to this blip.
+      def add_child_blip(blip) # :nodoc:
+        @child_blip_ids << blip.id
+        @context.add_blip(blip)
+      end
+
+      # List of direct children of this blip. The first one will be continuing
+      # the thread, others will be indented replies.
+      def child_blips
+        @child_blip_ids.map { |id| @context.blips[id] }
       end
       
       #Delete this blip from its wavelet
       def delete
         #TODO
       end
-
+      
       # Wavelet that the blip is a part of.
       def wavelet
         @context.wavelets[@wavelet_id]
       end
-      
+
       # Convert to json for sending in an operation. We should never need to
       # send more data than this, although blips we receive will have more data.
       def to_json
