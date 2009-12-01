@@ -68,6 +68,11 @@ module Rave
       def delete
         #TODO
       end
+
+      # Wavelet that the blip is a part of.
+      def wavelet
+        @context.wavelets[@wavelet_id]
+      end
       
       # Convert to json for sending in an operation. We should never need to
       # send more data than this, although blips we receive will have more data.
