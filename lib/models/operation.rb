@@ -70,15 +70,3 @@ module Rave
   end
 end
 
-class Range
-  JAVA_CLASS = 'com.google.wave.api.Range' # :nodoc:
-  
-  # Convert to a hash for sending in an operation.
-  def to_json
-    {
-      'javaClass' => JAVA_CLASS,
-      'start' => first,
-      'end' => last
-    }.to_json
-  end
-end
