@@ -28,22 +28,29 @@ spec = Gem::Specification.new do |s|
   deps.each { | name, version | s.add_runtime_dependency( name, version ) }
   s.executables = 'rave'
 end
- 
-task :package => :clean do
+
+desc "Build gem from gemspec"
+task :gem => [:gemspec, :clean] do
   Gem::Builder.new(spec).build
 end
- 
+
+task :package => :gem
+
+desc "Remove gem"
 task :clean do
-  system 'rm -rf *.gem'
+  Dir['*.gem'].each do |file|
+    File.unlink file
+  end
 end
- 
+
+desc "Install gem"
 task :install => :package do
   cmd = "gem install ./*.gem"
   cmd = "jruby -S " + cmd if RUBY_PLATFORM == 'java'
   system cmd
 end
  
-desc "create .gemspec file (useful for github)"
+desc "Create .gemspec file (useful for github)"
 task :gemspec do
   filename = "#{spec.name}.gemspec"
   File.open(filename, "w") do |f|
@@ -51,19 +58,19 @@ task :gemspec do
   end
 end
  
-desc 'Publish rdoc to RubyForge.'
+desc 'Publish rdoc to RubyForge (only works for Diminish7).'
 task :publish do
   `scp -r doc/rdoc diminish7@rubyforge.org:/var/www/gforge-projects/rave/`
 end
- 
+
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = 'doc/rdoc'
   rdoc.options << '--line-numbers'
   rdoc.rdoc_files.add([ 'README', 'lib/**/*.rb' ])
 end
  
-desc "run some tests"
+desc "Run some rspec tests"
 task :test do
-  system "ruby -S spec -c #{ Dir["test/test_*.rb"].join(" ") }"
+  system "ruby -S spec -c #{ Dir["test/**/test_*.rb"].join(" ") }"
 end
  
