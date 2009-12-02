@@ -22,7 +22,7 @@ module Rave
       end
       
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
-      def add_blip(blip)
+      def add_blip(blip) # :nodoc:
         @blips[blip.id] = blip
         blip.context = self
         blip

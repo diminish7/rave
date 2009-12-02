@@ -23,6 +23,19 @@ describe Rave::Models::Context do
     end
     
   end
+
+  describe "add_blip()" do
+    it "should add the blip into the context" do
+      blip = Blip.new(:id => "b+blip")
+      context = Context.new()
+      context.blips.should == {}
+      blip.context.should be_nil
+
+      context.add_blip(blip)
+      context.blips.should == { "b+blip" => blip }
+      blip.context.should == context
+    end
+  end
   
   describe "to_json()" do
     it "should serialize the context to json without ops" do
