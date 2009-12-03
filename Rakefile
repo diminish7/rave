@@ -78,7 +78,7 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['test/**/*.rb']
+  t.spec_files = FileList['spec/**/*.rb']
 end
 
 # Synonym for backwards compatibility.
