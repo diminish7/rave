@@ -1,15 +1,23 @@
 require 'rubygems'
 require 'rake/rdoctask' 
 require 'rake/gempackagetask'
- 
-deps = {
+require 'spec/rake/spectask'
+require 'rake/clean'
+require 'fileutils'
+include FileUtils
+
+# User config.
+APP_ENGINE_APP_CFG = 'C:/appengine-java-sdk-1.2.6/bin/appcfg'
+
+# Non-user config.
+DEPS = {
     'rack' => '>=1.0',
     'builder' => '>=2.1.2',
     'json-jruby' => '>=1.1.6',
     'warbler' => '>=0.9.13'
   }
 
-spec = Gem::Specification.new do |s|
+SPEC = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.required_ruby_version = '>= 1.8.6'
   s.name = "rave"
@@ -20,57 +28,82 @@ spec = Gem::Specification.new do |s|
   s.homepage = 'http://github.com/diminish7/rave'
   s.summary = "A Google Wave robot client API for Ruby"
   s.description = "A toolkit for building Google Wave robots in Ruby"
-  s.files = Dir['lib/**/*'] + Dir['bin/*']
+  s.files = FileList['lib/**/*', 'bin/*']
   s.bindir = 'bin'
   s.executables = []
   s.require_path = "lib"
   s.has_rdoc = true
-  deps.each { | name, version | s.add_runtime_dependency( name, version ) }
+  DEPS.each { | name, version | s.add_runtime_dependency( name, version ) }
   s.executables = 'rave'
 end
+ 
+SPEC_FILE = "./pkg/#{SPEC.name}.gemspec"
+GEM_FILE = "./pkg/#{SPEC.name}-#{SPEC.version}.gem"
+RDOC_DIR = './doc/rdoc'
 
-desc "Build gem from gemspec"
-task :gem => [:gemspec, :clean] do
-  Gem::Builder.new(spec).build
+CLOBBER.include FileList['examples/*/tmp', GEM_FILE, RDOC_DIR]
+CLEAN.include FileList[SPEC_FILE, 'examples/*/*.war']
+
+Rake::GemPackageTask.new(SPEC) do |pkg|
 end
 
-task :package => :gem
-
-desc "Remove gem"
-task :clean do
-  Dir['*.gem'].each do |file|
-    File.unlink file
-  end
-end
+# File dependencies for the gem.
+task :package => Dir['lib/**/*.rb']
 
 desc "Install gem"
-task :install => :package do
-  cmd = "gem install ./*.gem"
-  cmd = "jruby -S " + cmd if RUBY_PLATFORM == 'java'
+task :install => GEM_FILE do
+  cmd = "gem install #{GEM_FILE}"
+  cmd = "jruby -S #{cmd}" if RUBY_PLATFORM == 'java'
   system cmd
 end
  
 desc "Create .gemspec file (useful for github)"
-task :gemspec do
-  filename = "#{spec.name}.gemspec"
-  File.open(filename, "w") do |f|
-    f.puts spec.to_ruby
+task :gemspec => SPEC_FILE
+file SPEC_FILE => FileList[__FILE__, 'lib/**/*.rb'] do
+  puts "Generating #{SPEC_FILE}"
+  File.open(SPEC_FILE, "w") do |f|
+    f.puts SPEC.to_ruby
   end
 end
  
-desc 'Publish rdoc to RubyForge (only works for Diminish7).'
+desc 'Publish rdoc to RubyForge (only for Diminish7).'
 task :publish do
-  `scp -r doc/rdoc diminish7@rubyforge.org:/var/www/gforge-projects/rave/`
+  "scp -r #{RDOC_DIR} diminish7@rubyforge.org:/var/www/gforge-projects/rave/"
 end
 
 Rake::RDocTask.new do |rdoc|
-  rdoc.rdoc_dir = 'doc/rdoc'
+  rdoc.rdoc_dir = RDOC_DIR
   rdoc.options << '--line-numbers'
   rdoc.rdoc_files.add([ 'README', 'lib/**/*.rb' ])
 end
- 
-desc "Run some rspec tests"
-task :test do
-  system "ruby -S spec -c #{ Dir["test/**/test_*.rb"].join(" ") }"
+
+Spec::Rake::SpecTask.new do |t|
+  t.spec_files = FileList['test/**/*.rb']
 end
- 
+
+# Synonym for backwards compatibility.
+task :test => :spec
+
+# Build and upload the provided examples.
+Dir['examples/*'].each do |path|
+  if File.directory? path
+    path =~ /examples\/(.*)/
+    dir = $1
+    
+    namespace :build do
+      desc "Build #{path} archive"
+      task dir => :install do
+        cd path
+        system "jruby -S ../../bin/rave war"
+        cd '../..'
+      end
+    end
+
+    namespace :deploy do
+      desc "Deploy examples/#{dir} as robot (requires appspot account)"
+      task dir => :"build:#{dir}" do
+        system "#{APP_ENGINE_APP_CFG} update #{File.join(path, 'tmp', 'war')}"
+      end
+    end
+  end
+end

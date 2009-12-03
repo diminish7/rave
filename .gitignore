@@ -1,6 +1,7 @@
 .loadpath
 .project
-*.gem
-doc/rdoc
-examples/appropriate-casey/tmp
-examples/appropriate-casey/appropriate-casey.war
+doc/rdoc/
+examples/*/tmp
+examples/*/*.war
+pkg
+nbproject
