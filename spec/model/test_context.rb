@@ -1,7 +1,20 @@
 require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Context do
-  
+
+  describe "users()" do
+    it "should return an empty hash if there are no users" do
+      context = Context.new
+      context.users.should == {}
+    end
+
+    it "should return the users passed to it" do
+      user = User.new(:id => "user")
+      context = Context.new(:users => { user.id => user })
+      context.users.should == { user.id => user }
+    end
+  end
+
   describe "root_wavelet()" do
     
     it "should return nil if there are no wavelets" do

@@ -2,7 +2,7 @@
 module Rave
   module Models
     class Context
-      attr_reader :waves, :wavelets, :blips, :operations
+      attr_reader :waves, :wavelets, :blips, :operations, :users
       
       JAVA_CLASS = 'com.google.wave.api.impl.OperationMessageBundle' # :nodoc:
       
@@ -19,6 +19,8 @@ module Rave
         @blips = options[:blips] || {}
         @blips.values.each { |blip| blip.context = self }          #Set up self as this blip's context
         @operations = options[:operations] || []
+        @users = options[:users] || {}
+        @users.values.each { |user| user.context = self }          #Set up self as this user's context
       end
       
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
