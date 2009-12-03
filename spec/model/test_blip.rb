@@ -81,6 +81,55 @@ describe Rave::Models::Blip do
       blip.wave.should == wave
     end
   end
+
+  describe "print_structure()" do
+    it "should return the blip's class, id and content" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip.print_structure.should == "Blip:b+blip:Dave:Hello!\n"
+    end
+
+   it "should convert newlines to characters to prevent wrap" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['Hal9000'])
+      blip.print_structure.should == "Blip:b+blip:Hal9000:Hello\\nDave!\n"
+    end
+
+    it "should crop long content" do
+      blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['Dave'])
+      blip.print_structure.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu...\n"
+    end
+
+    it "should be indented appropriately" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip.print_structure(2).should == "    Blip:b+blip:Dave:Hello!\n"
+    end
+
+    it "should show multiple contributors in order" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Claire', 'Dave', 'Sue'])
+      blip.print_structure.should == "Blip:b+blip:Claire,Dave,Sue:Hello!\n"
+    end
+
+    it "should show complex series of replies to the blip" do
+      blip1 = Blip.new(:id => 'b+1', :content => 'Goodbye!', :child_blip_ids => ['b+2', 'b+3', 'b+4'],
+        :contributors => ['Fred', 'Dave'])
+      blip2 = Blip.new(:id => 'b+2', :content => 'Cheese!', :contributors => ['Sarah'])
+      blip3 = Blip.new(:id => 'b+3', :content => 'Bleh!', :contributors => ['Karen'], :child_blip_ids => ['b+5', 'b+6'])
+      blip4 = Blip.new(:id => 'b+4', :content => 'Byeeee!', :contributors => ['Ken'])
+      blip5 = Blip.new(:id => 'b+5', :content => 'Noooo!', :contributors => ['Sarah'])
+      blip6 = Blip.new(:id => 'b+6', :content => 'Oh, shut up!', :contributors => ['Dave'])
+      context = Context.new(:blips => { 'b+1' => blip1, 'b+2' => blip2, 'b+3' => blip3,
+          'b+4' => blip4, 'b+5' => blip5, 'b+6' => blip6})
+      
+      blip1.print_structure(1).should ==<<END
+  Blip:b+1:Fred,Dave:Goodbye!
+    Blip:b+3:Karen:Bleh!
+      Blip:b+6:Dave:Oh, shut up!
+    Blip:b+5:Sarah:Noooo!
+
+    Blip:b+4:Ken:Byeeee!
+  Blip:b+2:Sarah:Cheese!
+END
+    end
+  end
   
   describe "operations" do
   

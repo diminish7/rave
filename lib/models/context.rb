@@ -44,10 +44,12 @@ module Rave
         hash.to_json
       end
 
-      def print_structure(stream)
-        @waves.each_value do |wave|
-
+      def print_structure(indent = 0) # :nodoc:
+        str = ''
+        waves.each_value do |wave|
+          str << wave.print_structure(indent)
         end
+        str
       end
     end
   end

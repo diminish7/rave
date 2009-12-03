@@ -17,6 +17,17 @@ module Rave
       def wavelets
         @wavelet_ids.map { |id| @context.wavelets[id] }
       end
+
+      def print_structure(indent = 0) # :nodoc:
+        str = ''
+        str << "#{'  ' * indent}Wave:#{@id}\n"
+
+        wavelets.each do |wavelet|
+          str << wavelet.print_structure(indent + 1)
+        end
+
+        str
+      end
     end
   end
 end

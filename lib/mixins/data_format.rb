@@ -50,6 +50,7 @@ module Rave
         context = context_from_json(data)
         #Create events
         events = events_from_json(data, context)
+        LOGGER.info("Structure (before):\n#{context.print_structure}")
         LOGGER.info("Events: #{events.map { |e| e.type }.join(', ')}")
         return context, events
       end

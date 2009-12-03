@@ -26,7 +26,7 @@ module Rave
         @creation_time = options[:creation_time] || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = options[:last_modified_time] || Time.now
-        @participants = Set.new(options[:participants])
+        @participants = options[:participants] || []
         @root_blip_id = options[:root_blip_id]
         @title = options[:title]
         @version = options[:version] || 0
@@ -83,6 +83,18 @@ module Rave
 
       def wave
         @context.waves[@wave_id]
+      end
+
+      def print_structure(indent = 0) # :nodoc:
+        text = @title.length > 24 ? "#{@title[0..20]}..." : @title
+        str = ''
+        str << "#{'  ' * indent}Wavelet:#{@id}:#{@participants.join(',')}:#{text}\n"
+        
+        if root_blip
+          str << root_blip.print_structure(indent + 1)
+        end
+
+        str
       end
     end
   end

@@ -28,7 +28,7 @@ module Rave
         @annotations = options[:annotations] || []
         @child_blip_ids = options[:child_blip_ids] || []
         @content = options[:content] || ''
-        @contributors = Set.new(options[:contributors])
+        @contributors = options[:contributors] || []
         @creator = options[:creator]
         @elements = options[:elements] || {}
         @last_modified_time = options[:last_modified_time] || Time.now
@@ -97,6 +97,34 @@ module Rave
       # in a wavelet.
       def parent_blip
         @context.blips[@parent_blip_id]
+      end
+
+      def print_structure(indent = 0) # :nodoc:
+        text = @content.gsub(/\n/, "\\n")
+        text = text.length > 24 ? "#{text[0..20]}..." : text
+        text.gsub(/\n/, "\\n")
+        str = ''
+        str << "#{'  ' * indent}Blip:#{@id}:#{@contributors.join(',')}:#{text}\n"
+        
+        children = child_blips
+
+        # All children, except the first, should be indented.
+        children.each_with_index do |blip, index|
+          # Gap between reply chains.
+          if index > 1
+            str << "\n"
+          end
+
+          if index > 0
+            str << blip.print_structure(indent + 1)
+          end
+        end
+
+        if children[0]
+          str << children[0].print_structure(indent)
+        end
+
+        str
       end
 
       # Convert to json for sending in an operation. We should never need to

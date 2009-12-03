@@ -43,6 +43,29 @@ describe Rave::Models::Wavelet do
     end
   end
 
+  describe "print_structure()" do
+    it "should return information about the wavelet" do
+      wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!", :participants => ['Dave'])
+      context = Context.new(:wavelets => { "w+wavelet" => wavelet })
+      wavelet.print_structure.should == "Wavelet:w+wavelet:Dave:Hello!\n"
+    end
+
+    it "should return the wavelet information, as well as that of its blips" do
+      blip = Blip.new(:id => 'b+1', :content => 'Goodbye!', :contributors => ['Fred', 'Dave'])
+      wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!",
+        :participants => %w[Elise Dave Fred Karen Sarah],
+        :title => 'Hello!',
+        :root_blip_id => 'b+1')
+      context = Context.new(:blips => { 'b+1' => blip },
+        :wavelets => { "w+wavelet" => wavelet })
+
+      wavelet.print_structure.should ==<<END
+Wavelet:w+wavelet:Elise,Dave,Fred,Karen,Sarah:Hello!
+  Blip:b+1:Fred,Dave:Goodbye!
+END
+    end
+  end
+
   describe "operations" do
     describe "create_blip()" do
       it "should create a blip at the end of the thread and an operation to the context" do
@@ -70,9 +93,9 @@ describe Rave::Models::Wavelet do
     
     describe "add_participant()" do
       it "should add a participant to the wavelet and an operation to the context" do
-        @wavelet.participants.should == Set.new
+        @wavelet.participants.should == []
         @wavelet.add_participant("Dave")
-        @wavelet.participants.should == Set.new(["Dave"])
+        @wavelet.participants.should == ["Dave"]
         validate_operations(@context, [Operation::WAVELET_ADD_PARTICIPANT])
       end
     end

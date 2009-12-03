@@ -24,6 +24,7 @@ module Rave
               handle_event(event, context)
             end
             response = context.to_json
+            LOGGER.info("Structure (after):\n#{context.print_structure}")
             LOGGER.info("Response:\n#{response}")
             [ 200, { 'Content-Type' => 'application/json' }, response ]
           elsif cron_job = @cron_jobs.find { |job| job[:path] == path }
