@@ -43,6 +43,12 @@ module Rave
         }
         hash.to_json
       end
+
+      def print_structure(stream)
+        @waves.each_value do |wave|
+
+        end
+      end
     end
   end
 end

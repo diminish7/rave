@@ -7,8 +7,8 @@ class Range
   def to_json
     {
       'javaClass' => JAVA_CLASS,
-      'start' => first,
-      'end' => last
+      'start' => min,
+      'end' => max
     }.to_json
   end
 end
