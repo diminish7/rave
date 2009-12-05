@@ -28,7 +28,7 @@ describe Rave::Models::Context do
     end
     
     it "should return a wavelet if its id ends in the root suffix" do
-      foo = Wavelet.new
+      foo = Wavelet.new(:id => "bleh")
       bar = Wavelet.new(:id => "123" + Wavelet::ROOT_ID_SUFFIX)
       context = Context.new( :wavelets => { foo.id => foo, bar.id => bar } )
       root = context.root_wavelet
@@ -42,11 +42,9 @@ describe Rave::Models::Context do
       blip = Blip.new(:id => "b+blip")
       context = Context.new()
       context.blips.should == {}
-      blip.context.should be_nil
 
       context.add_blip(blip)
       context.blips.should == { "b+blip" => blip }
-      blip.context.should == context
     end
   end
   

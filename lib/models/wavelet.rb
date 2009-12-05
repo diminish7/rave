@@ -1,10 +1,9 @@
 # Represents a Wavelet, owned by a Wave
 module Rave
   module Models
-    class Wavelet
+    class Wavelet < Component
       attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
-                  :participants, :root_blip_id, :title, :version, :wave_id, :id
-      attr_accessor :context  #Context needs to be able to set this
+                  :participants, :root_blip_id, :title, :version, :wave_id
       
       ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
       ROOT_ID_REGEXP = /conv\+root$/
@@ -22,6 +21,7 @@ module Rave
       # - :context
       # - :id
       def initialize(options = {})
+        super(options)
         @creator = options[:creator]
         @creation_time = options[:creation_time] || Time.now
         @data_documents = options[:data_documents] || {}
@@ -31,8 +31,6 @@ module Rave
         @title = options[:title]
         @version = options[:version] || 0
         @wave_id = options[:wave_id]
-        @context = options[:context]
-        @id = options[:id]
       end
       
       #Creates a blip for this wavelet

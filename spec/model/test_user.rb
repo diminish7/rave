@@ -23,12 +23,12 @@ describe Rave::Models::User do
 
   describe "url()" do
     it "Should be the :url passed in the constructor" do
-      user = Rave::Models::User.new(:url => URL)
+      user = Rave::Models::User.new(:url => URL, :id => "bleh")
       user.url.should == URL
     end
 
     it "should default to an empty string" do
-      user = Rave::Models::User.new()
+      user = Rave::Models::User.new(:id => "bleh")
       user.url.should == ''
     end
   end

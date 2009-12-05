@@ -1,27 +1,22 @@
 # A wave client, acting as a wave creator, blip contributor and/or a wavelet participant.
 module Rave
   module Models
-    class User
+    class User < Component
       ROBOT_PATTERN = /@appspot.com$/ # :nodoc:
       
-      attr_reader :id
-
       # Url link of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       #       the url will be empty.
       attr_reader :url
-
-      attr_writer :context # :nodoc:
 
       # - :id
       # - :name
       # - :url
       # - :context
       def initialize(options = {})
-        @id = options[:id]
+        super(options)
         @name = options[:name]
         @url = options[:url] || ''
-        @context = options[:context]
       end
 
       # Printable name of the User.
