@@ -31,6 +31,8 @@ module Rave
         @modified_by = options[:modified_by]
         @properties = options[:properties] || {}
         @context = options[:context]
+        
+        raise ArgumentError.new(":context option required") if @context.nil?
       end
       
       # Event factory.
@@ -41,7 +43,7 @@ module Rave
       def self.create(options = {})
         event_class = EVENT_CLASSES.find { |e| e.type == options[:type] }
         
-        raise "Unknown event type #{options[:type]}" if event_class.nil?
+        raise ArgumentError.new("Unknown event type #{options[:type]}") if event_class.nil?
         
         options[:type] = nil
         event_class.new(options)
@@ -156,6 +158,15 @@ module Rave
       
       class BlipDeletedEvent < Event
         def self.type; BLIP_DELETED; end
+
+        def initialize(options = {}) # :nodoc:
+          super(options)
+          # Create a virtual blip to represent the one deleted.
+          if @context.blips[@properties['blipId']].nil?
+            @context.add_blip(Blip.new(:id => @properties['blipId'],
+                :wavelet_id => @context.primary_wavelet.id))
+          end
+        end
       end
       
       # General events.

@@ -71,5 +71,37 @@ describe Rave::Models::Context do
       context.print_structure.should == "Wave:w+wave\n"
     end
   end
-  
+
+  describe "primary_wavelet" do
+    it "should be the wavelet defined when creating the context" do
+      wavelet = Wavelet.new(:id => "w+wavelet")
+      context = Context.new(:wavelets => {'w+wavelet' => wavelet })
+
+      context.primary_wavelet.should == wavelet
+    end
+  end
+
+  describe "initialize()" do
+    it "should create a virtual child blips that are only in the json as a reference" do
+      blip = Blip.new(:id => "b+blip", :child_blip_ids => ["b+undef1", "b+undef2", "b+undef3"])
+      context = Context.new( :blips => { blip.id => blip })
+
+      blip.child_blips.size.should == 3
+      blip.child_blips.each_with_index do |child, i|
+        child.id.should == "b+undef#{i + 1}"
+        child.parent_blip.should == blip
+        context.blips[child.id].should == child
+      end
+    end
+
+    it "should return virtual parent blip that is only in the json as reference" do
+      blip = Blip.new(:id => "b+blip", :parent_blip_id => "b+undef")
+      context = Context.new(:blips => { blip.id => blip })
+
+      parent = blip.parent_blip
+      parent.id.should == "b+undef"
+      parent.child_blips.should == [blip]
+      context.blips[parent.id].should == parent
+    end
+  end
 end

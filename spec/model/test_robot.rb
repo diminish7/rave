@@ -65,14 +65,14 @@ describe Rave::Models::Robot do
   
   describe "handle_event()" do
     it "should ignore unhandled events" do
-      event = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
+      event = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED, :context => Context.new)
       @obj.handle_event(event, Context.new)
       @obj.instance_eval do
         @handled.should == nil
       end
     end
     it "should call the given handler" do
-      event = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      event = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED, :context => Context.new)
       @obj.register_handler(event.type, :handler1)
       @obj.handle_event(event, Context.new)
       @obj.instance_eval do
@@ -92,8 +92,8 @@ describe Rave::Models::Robot do
   
   describe "capabilities_xml()" do
     it "should return the list of capabilities" do
-      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
-      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED, :context => Context.new)
+      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED, :context => Context.new)
       cron1 = [:cron_handler1, 60]
       cron2 = [:cron_handler2, 3600]
       @obj.register_handler(event1.type, :handler1)
@@ -104,8 +104,8 @@ describe Rave::Models::Robot do
     end
     
     it "should not include an empty crons tag" do
-      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
-      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED, :context => Context.new)
+      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED, :context => Context.new)
       @obj.register_handler(event1.type, :handler1)
       @obj.register_handler(event2.type, :handler2)
       @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image\" profileurl=\"http://localhost/profile\"/></w:robot>"
@@ -116,8 +116,8 @@ describe Rave::Models::Robot do
         @image_url = nil
         @profile_url = nil
       end
-      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED)
-      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED)
+      event1 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_TITLE_CHANGED, :context => Context.new)
+      event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED, :context => Context.new)
       cron1 = [:cron_handler1, 60]
       cron2 = [:cron_handler2, 3600]
       @obj.register_handler(event1.type, :handler1)
