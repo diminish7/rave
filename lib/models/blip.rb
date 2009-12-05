@@ -58,7 +58,8 @@ module Rave
       
       #Creates a child blip under this blip
       def create_child_blip
-        blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => @id, :wavelet_id => @wavelet_id, :context => @context)
+        blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => @id, :wavelet_id => @wavelet_id,
+          :context => @context, :contributors => [Robot.instance.id])
         @context.operations << Operation.new(:type => Operation::BLIP_CREATE_CHILD, :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id, :property => blip)
         add_child_blip(blip)
         blip

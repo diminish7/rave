@@ -34,7 +34,7 @@ Setting up a new project looks like this:
 The options include profile_url and image_url, which will set the URL for the robot's profile and avatar, 
 respectively. Here's how the example project "appropriate casey" was set up:
 
-   jruby -S rave create appropriate-casey profile_url=http://appropriate-casey.appspot.com/_wave/robot/profile image_url=http://appropriate-casey.appspot.com/image.png
+   jruby -S rave create appropriate-casey profile_url=http://appropriate-casey.appspot.com/ image_url=http://appropriate-casey.appspot.com/image.png
    
 This will stub out a project called "appropriate-casey".  It automatically creates a robot class AppropriateCasey,
 creates the config files for both Rack and Warbler, and creates the appengine-web.xml file that App Engine will need.
@@ -90,33 +90,9 @@ See the Google Wave documentation for definitions of each of these things...
 So, with Appropriate Casey, I want to create a robot that looks for people "shouting" in Waves
 (i.e. writing in all caps with a lot of exclamation points) and convert the text into a more
 appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yelling."  To do this, 
-I just create a document_changed method in my robot that looks something like this:
+I just create a document_changed method in my robot that looks like this:
 
-   def document_changed(event, context)
-      unless event.modified_by == "appropriate-casey@appspot.com" || event.modified_by == "spelly@gwave.com"
-        context.blips.values.each do |blip|
-          if blip.content
-            new_sentence = true
-            blip.content.length.times do |index|
-              range = index..index+1
-              char = blip.content[index, 1]
-              if char =~ /[A-Z]/ && !new_sentence
-                blip.set_text_in_range(range, char.downcase)
-              elsif char =~ /[a-z]/ && new_sentence
-                blip.set_text_in_range(range, char.upcase)
-              elsif char == "!"
-                if new_sentence
-                  blip.delete_range(range)
-                else
-                  blip.set_text_in_range(range, ".")
-                end
-              end
-              new_sentence = (char =~ /\.!?/ || (char =~ /\s/ && new_sentence))
-            end
-          end
-        end
-      end
-    end
+  :include:examples/appropriate-casey/robot.rb
     
 Here's what's going on: first, I'm bailing if the blip was modified by either Appropriate Casey, or the spellchecker.
 This is just to prevent us from having to do any logic when we know we aren't going to change anything.  Then, I iterate
@@ -126,7 +102,7 @@ a period (and additional exclamation points get dropped). There are two API meth
 and blip#delete_range.  Both of these methods update the content of the blip locally (so the changes happen optimistically)
 and then send operation requests back to the server so that all users can see the changes.
 
-So that's it, my robot is now ready to go: just 17 lines of code.
+So that's it, my robot is now ready to go: just a few lines of code.
 
 === Packaging for deploy
 

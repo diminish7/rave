@@ -2,9 +2,9 @@
 require File.join(File.dirname(__FILE__), "helper")
 describe Rave::Models::Robot do
   
-  before :all do
+  before :each do
     #Create a subclass of Robot with some handlers defined
-    @class = Class.new(Rave::Models::Robot) do
+    robot_class = Class.new(Rave::Models::Robot) do
       def document_changed(event, context)
         @handled ||= []
         @handled << :document_changed
@@ -18,10 +18,11 @@ describe Rave::Models::Robot do
         @handled << :handler2
       end
     end
-  end
-  
-  before :each do
-    @obj = @class.new(:name => "testbot", :profile_url => "http://localhost/profile", :image_url => "http://localhost/image")
+
+    # Ensure that we read the test file, rather than the default one.
+    robot_class::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
+
+    @obj = robot_class.instance
   end
   
   describe "register_handler()" do
@@ -100,7 +101,7 @@ describe Rave::Models::Robot do
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
       @obj.register_cron_job(*cron2)
-      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timeinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timeinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image\" profileurl=\"http://localhost/profile\"/></w:robot>"
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timeinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timeinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
     end
     
     it "should not include an empty crons tag" do
@@ -108,7 +109,7 @@ describe Rave::Models::Robot do
       event2 = Rave::Models::Event.create(:type => Rave::Models::Event::WAVELET_VERSION_CHANGED, :context => Context.new)
       @obj.register_handler(event1.type, :handler1)
       @obj.register_handler(event2.type, :handler2)
-      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image\" profileurl=\"http://localhost/profile\"/></w:robot>"
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
     end
     
     it "should not include empty profile or image urls" do
@@ -131,7 +132,7 @@ describe Rave::Models::Robot do
   
   describe "profile_json()" do
     it "should return the robot's profile information in json format" do
-      @obj.profile_json.should == "{\"name\":\"testbot\",\"imageUrl\":\"http://localhost/image\",\"profileUrl\":\"http://localhost/profile\",\"javaClass\":\"com.google.wave.api.ParticipantProfile\"}"
+      @obj.profile_json.should == "{\"name\":\"testbot\",\"imageUrl\":\"http://localhost/image.png\",\"profileUrl\":\"http://localhost/profile\",\"javaClass\":\"com.google.wave.api.ParticipantProfile\"}"
     end
   end
   

@@ -1,0 +1,9 @@
+robot:
+  id: robot@appstore.com
+  name: testbot
+  image_url: http://localhost/image.png
+  profile_url: http://localhost/profile
+  version: 1
+  file: robot.rb
+
+appcfg: C:/appengine-java-sdk/bin/appcfg

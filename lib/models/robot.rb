@@ -1,24 +1,33 @@
+require 'singleton'
+require 'yaml'
+
 #Contains Robot data, event handlers and cron jobs
 module Rave
   module Models
-    class Robot
+    class Robot < User
       include Rave::Mixins::DataFormat
       include Rave::Mixins::Controller
+      include Singleton
+
+      CONFIG_FILE = 'config.yaml' # :nodoc:
       
-      attr_reader :name, :image_url, :profile_url, :version
+      attr_reader :version # Version of the robot, as in the yaml config.
       
-      #Options include:
-      # - :name
-      # - :image_url
-      # - :profile_url
-      def initialize(options = {})
-        @name = options[:name]
-        @image_url = options[:image_url]
-        @profile_url = options[:profile_url]
+      def initialize()
+        config = config_from_file
+        super(config)
         @handlers = {}
         @cron_jobs = []
-        @version = options[:version] || 1
+        @version = config[:version] || '1'
         register_default_handlers
+      end
+
+      # Read options from user-edited yaml config file.
+      def config_from_file # :nodoc:
+        config = YAML::load(File.open(CONFIG_FILE))
+        hash = {}
+        config['robot'].each_pair { |k, v| hash[k.to_sym] = v }
+        hash
       end
       
       #Register a handler

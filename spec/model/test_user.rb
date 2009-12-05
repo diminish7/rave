@@ -21,15 +21,27 @@ describe Rave::Models::User do
     end
   end
 
-  describe "url()" do
+  describe "profile_url()" do
     it "Should be the :url passed in the constructor" do
-      user = Rave::Models::User.new(:url => URL, :id => "bleh")
-      user.url.should == URL
+      user = Rave::Models::User.new(:profile_url => URL, :id => "bleh")
+      user.profile_url.should == URL
     end
 
     it "should default to an empty string" do
       user = Rave::Models::User.new(:id => "bleh")
-      user.url.should == ''
+      user.profile_url.should == ''
+    end
+  end
+
+  describe "image_url()" do
+    it "Should be the url passed in the constructor" do
+      user = Rave::Models::User.new(:image_url => URL, :id => "bleh")
+      user.image_url.should == URL
+    end
+
+    it "should default to an empty string" do
+      user = Rave::Models::User.new(:id => "bleh")
+      user.image_url.should == ''
     end
   end
 

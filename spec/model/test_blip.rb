@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), "helper")
 describe Rave::Models::Blip do
   
   before :all do
-    @class = Rave::Models::Blip
+    Rave::Models::Robot::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
   end
   
   describe "root?()" do
@@ -256,6 +256,7 @@ END
         @context.blips.should == { "b+parent" => @parent, @child.id => @child }
         @child.wave.should == @parent.wave
         @child.wavelet.should == @parent.wavelet
+        @child.contributors.should == ["robot@appstore.com"]
       end
 
       it "should create blips with unique ids starting with TBD" do

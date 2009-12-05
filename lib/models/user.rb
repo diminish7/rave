@@ -2,21 +2,27 @@
 module Rave
   module Models
     class User < Component
-      ROBOT_PATTERN = /@appspot.com$/ # :nodoc:
+      ROBOT_PATTERN = /@appspot\.com$/ # :nodoc:
       
-      # Url link of the User.
+      # Url link to the profile of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       #       the url will be empty.
-      attr_reader :url
+      attr_reader :profile_url
 
+      # Url link to the image of the User.
+      # NOTE: Due to a limitation in Wave, for all users except the local robot
+      #       the url will be empty.
+      attr_reader :image_url
       # - :id
       # - :name
-      # - :url
+      # - :profile_url
+      # - :image_url
       # - :context
       def initialize(options = {})
         super(options)
         @name = options[:name]
-        @url = options[:url] || ''
+        @profile_url = options[:profile_url] || ''
+        @image_url = options[:image_url] || ''
       end
 
       # Printable name of the User.
