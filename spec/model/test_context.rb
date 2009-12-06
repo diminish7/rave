@@ -47,6 +47,15 @@ describe Rave::Models::Context do
       context.blips.should == { "b+blip" => blip }
     end
   end
+
+  describe "remove_blip()" do
+    it "should remove the blip from the context" do
+      blip = Blip.new(:id => "b+blip")
+      context = Context.new(:blips => { "b+blip" => blip })
+      context.remove_blip(blip)
+      context.blips.should == { }
+    end
+  end
   
   describe "to_json()" do
     it "should serialize the context to json without ops" do

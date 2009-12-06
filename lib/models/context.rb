@@ -87,7 +87,13 @@ module Rave
         blip.context = self
         blip
       end
-      
+
+      # *INTERNAL*
+      # Remove a blip.
+      def remove_blip(blip) # :nodoc:
+        @blips.delete(blip.id)
+      end
+  
       #Find the root wavelet if it exists in this context
       def root_wavelet
         @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }

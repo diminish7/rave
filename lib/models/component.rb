@@ -4,6 +4,8 @@ module Rave
     class Component
       GENERATED_PREFIX = 'TBD' # :nodoc:
 
+      LOGGER = java.util.logging.Logger.getLogger("Component")
+
       attr_reader :id # Unique identifier
       attr_writer :context # :nodoc: Allow context to set link to it.
       

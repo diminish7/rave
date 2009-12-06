@@ -1,0 +1,28 @@
+# Rakefile
+require 'spec/rake/spectask'
+require 'rake/clean'
+require 'yaml'
+
+config_file = 'config.yaml'
+
+CLOBBER.include FileList['*.war']
+CLEAN.include FileList['tmp']
+
+desc "Build war archive"
+task :build do
+  cmd = "rave war"
+  cmd = "jruby -S #{cmd}" if RUBY_PLATFORM == 'java'
+  system cmd
+end
+
+desc "Deploy as robot (requires appspot account)"
+task :deploy => :build do
+  config = YAML::load(File.open(config_file))
+  system "#{config['appcfg']} update tmp/war"
+end
+
+Spec::Rake::SpecTask.new do |t|
+  t.spec_files = FileList['spec/**/*.rb']
+end
+
+task :test => :spec

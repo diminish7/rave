@@ -5,18 +5,99 @@ describe Rave::Models::Blip do
   before :all do
     Rave::Models::Robot::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
   end
+
+  before :each do
+    @root_blip = Blip.new(:id => "root", :child_blip_ids => ["middle"])
+    @middle_blip = Blip.new(:id => "middle", :child_blip_ids => ["leaf"], :parent_blip_id => "root")
+    @leaf_blip = Blip.new(:id => "leaf", :parent_blip_id => "middle")
+    @blip = Blip.new(:id => "blip")
+    @deleted_blip = Blip.new(:id => "deleted", :state => :deleted)
+    @context = Context.new(:blips => { "root" => @root_blip, "middle" => @middle_blip,
+        "child" => @leaf_blip, "blip" => @blip, "deleted" => @deleted_blip })
+
+    @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
+  end
   
-  describe "root?()" do
-    
-    it "should return true if a blip has no parent blip id" do
-      blip = Blip.new(:id => "bleh")
-      blip.parent_blip_id.should be_nil
-      blip.root?.should be_true
-      blip = Blip.new(:parent_blip_id => "parent_blip")
-      blip.parent_blip_id.should_not be_nil
-      blip.root?.should be_false
+  describe "root?" do
+    it "should return true if a blip has no parent" do
+      @root_blip.root?.should be_true
+    end
+
+    it "should return false if a blip has a parent" do
+      @middle_blip.root?.should be_false
+    end
+  end
+
+  describe "leaf?" do
+    it "should return true if a blip has no children" do
+      @leaf_blip.leaf?.should be_true
     end
     
+    it "should return false if a blip has children" do
+      @middle_blip.leaf?.should be_false
+    end
+  end
+
+  describe "null?" do
+    it "should return true if a blip is null" do
+      @null_blip.null?.should be_true
+    end
+
+    it "should return false if a blip is not null" do
+      @middle_blip.null?.should be_false
+      @deleted_blip.null?.should be_false
+    end
+  end
+
+  describe "deleted?" do
+    it "should return true if a blip is deleted or null" do
+      @null_blip.deleted?.should be_true
+      @deleted_blip.deleted?.should be_true
+    end
+
+    it "should return false if a blip is not deleted" do
+      @middle_blip.deleted?.should be_false
+    end
+  end
+
+  describe "delete()" do
+    it "should delete, but not nullify, a blip, assuming it is not a root or leaf" do
+      @middle_blip.delete
+      @middle_blip.deleted?.should be_true
+      @middle_blip.null?.should be_false
+      @context.blips["middle"].should == @middle_blip
+    end
+
+    it "should delete and destroy (nullify) a leaf blip" do
+      @leaf_blip.delete
+      @leaf_blip.deleted?.should be_true
+      @leaf_blip.null?.should be_true
+      @context.blips["leaf"].should be_nil
+    end
+
+    it "should not delete a root blip" do
+      @root_blip.delete
+      @root_blip.deleted?.should be_false
+      @context.blips["root"].should == @root_blip
+    end
+    
+    it "should cause a chain of nullification if a leaf is destroyed below a previously deleted, non-root blip" do
+      @middle_blip.delete # Should delete, but not nullify.
+      @leaf_blip.delete # Should destroy both blips.
+      @leaf_blip.null?.should be_true
+      @middle_blip.null?.should be_true
+      @root_blip.null?.should be_false
+    end
+
+    it "should add a delete operation if the blip can be deleted" do
+      @leaf_blip.delete
+      validate_operations(@context, [Operation::BLIP_DELETE])
+    end
+
+    it "should not add a delete operation if the blip is already deleted" do
+      @deleted_blip.delete
+      validate_operations(@context, [])
+    end
   end
   
   describe "has_annotation?()" do
