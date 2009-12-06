@@ -163,30 +163,48 @@ describe Rave::Models::Blip do
     end
   end
 
-  describe "print_structure()" do
-    it "should return the blip's class, id and content" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
-      blip.print_structure.should == "Blip:b+blip:Dave:Hello!\n"
+  describe "to_s()" do
+    it "should return the blip's class, id, state and content" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :state => :normal,
+        :contributors => ['Dave'])
+      blip.to_s.should == "Blip:b+blip:Dave:Hello!"
     end
 
-   it "should convert newlines to characters to prevent wrap" do
+    it "should return a string with the blip's state if deleted" do
+      blip = Blip.new(:id => "b+blip", :state => :deleted)
+      blip.to_s.should == "Blip:b+blip:<DELETED>"
+    end
+
+    it "should return a string with the blip's state if null" do
+      blip = Blip.new(:id => "b+blip", :state => :null)
+      blip.to_s.should == "Blip:b+blip:<NULL>"
+    end
+
+    it "should convert newlines to characters to prevent wrap" do
       blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['Hal9000'])
-      blip.print_structure.should == "Blip:b+blip:Hal9000:Hello\\nDave!\n"
+      blip.to_s.should == "Blip:b+blip:Hal9000:Hello\\nDave!"
     end
 
     it "should crop long content" do
       blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['Dave'])
-      blip.print_structure.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu...\n"
-    end
-
-    it "should be indented appropriately" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
-      blip.print_structure(2).should == "    Blip:b+blip:Dave:Hello!\n"
+      blip.to_s.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu..."
     end
 
     it "should show multiple contributors in order" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Claire', 'Dave', 'Sue'])
-      blip.print_structure.should == "Blip:b+blip:Claire,Dave,Sue:Hello!\n"
+      blip.to_s.should == "Blip:b+blip:Claire,Dave,Sue:Hello!"
+    end
+  end
+
+  describe "print_structure()" do
+    it "should return the blip's to_s + a newline" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip.print_structure.should == "#{blip}\n"
+    end
+
+    it "should be indented appropriately" do
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip.print_structure(2).should == "    #{blip}\n"
     end
 
     it "should show complex series of replies to the blip" do
@@ -201,13 +219,13 @@ describe Rave::Models::Blip do
           'b+4' => blip4, 'b+5' => blip5, 'b+6' => blip6})
       
       blip1.print_structure(1).should ==<<END
-  Blip:b+1:Fred,Dave:Goodbye!
-    Blip:b+3:Karen:Bleh!
-      Blip:b+6:Dave:Oh, shut up!
-    Blip:b+5:Sarah:Noooo!
+  #{blip1}
+    #{blip3}
+      #{blip6}
+    #{blip5}
 
-    Blip:b+4:Ken:Byeeee!
-  Blip:b+2:Sarah:Cheese!
+    #{blip4}
+  #{blip2}
 END
     end
   end

@@ -83,10 +83,13 @@ module Rave
         @context.waves[@wave_id]
       end
 
-      def print_structure(indent = 0) # :nodoc:
+      def to_s
         text = @title.length > 24 ? "#{@title[0..20]}..." : @title
-        str = ''
-        str << "#{'  ' * indent}Wavelet:#{@id}:#{@participants.join(',')}:#{text}\n"
+        "#{super}:#{@participants.join(',')}:#{text}"
+      end
+
+      def print_structure(indent = 0) # :nodoc:
+        str = "#{'  ' * indent}#{to_s}\n"
         
         if root_blip
           str << root_blip.print_structure(indent + 1)

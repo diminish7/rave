@@ -131,12 +131,27 @@ module Rave
         @context.blips[@parent_blip_id]
       end
 
+      # Convert to string.
+      def to_s
+        str = @content.gsub(/\n/, "\\n")
+        str = str.length > 24 ? "#{str[0..20]}..." : str
+        
+        str = case @state
+        when :normal
+          "#{@contributors.join(',')}:#{str}"
+        when :deleted
+          '<DELETED>'
+        when :null
+          '<NULL>'
+        end
+
+        "#{super}:#{str}"
+      end
+
+      # *INTERNAL*
+      # Write out a formatted block of text showing the blip and its descendants.
       def print_structure(indent = 0) # :nodoc:
-        text = @content.gsub(/\n/, "\\n")
-        text = text.length > 24 ? "#{text[0..20]}..." : text
-        text.gsub(/\n/, "\\n")
-        str = ''
-        str << "#{'  ' * indent}Blip:#{@id}:#{@contributors.join(',')}:#{text}\n"
+        str = "#{'  ' * indent}#{to_s}\n"
         
         children = child_blips
 

@@ -43,25 +43,33 @@ describe Rave::Models::Wavelet do
     end
   end
 
-  describe "print_structure()" do
+  describe "to_s()" do
     it "should return information about the wavelet" do
       wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!", :participants => ['Dave'])
-      context = Context.new(:wavelets => { "w+wavelet" => wavelet })
-      wavelet.print_structure.should == "Wavelet:w+wavelet:Dave:Hello!\n"
+      Context.new(:wavelets => { "w+wavelet" => wavelet })
+      wavelet.to_s.should == "Wavelet:w+wavelet:Dave:Hello!"
     end
 
+   it "should crop long content" do
+      wavelet = Wavelet.new(:id => "w+wavelet", :title => 'abcdefghijklmnopqrstuvwxyz', :participants => ['Dave'])
+      Context.new(:wavelets => { "w+wavelet" => wavelet })
+      wavelet.to_s.should == "Wavelet:w+wavelet:Dave:abcdefghijklmnopqrstu..."
+    end
+  end
+
+  describe "print_structure()" do
     it "should return the wavelet information, as well as that of its blips" do
       blip = Blip.new(:id => 'b+1', :content => 'Goodbye!', :contributors => ['Fred', 'Dave'])
       wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!",
         :participants => %w[Elise Dave Fred Karen Sarah],
         :title => 'Hello!',
         :root_blip_id => 'b+1')
-      context = Context.new(:blips => { 'b+1' => blip },
+      Context.new(:blips => { 'b+1' => blip },
         :wavelets => { "w+wavelet" => wavelet })
 
       wavelet.print_structure.should ==<<END
-Wavelet:w+wavelet:Elise,Dave,Fred,Karen,Sarah:Hello!
-  Blip:b+1:Fred,Dave:Goodbye!
+#{wavelet}
+  #{blip}
 END
     end
   end

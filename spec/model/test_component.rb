@@ -13,4 +13,11 @@ describe Component do
       comp.id.should == "fish"
     end
   end
+
+  describe "to_s()" do
+    it "should return a string containing class and id" do
+      comp = Component.new(:id => "fish")
+      comp.to_s.should == "Component:fish"
+    end
+  end
 end

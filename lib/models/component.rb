@@ -13,6 +13,11 @@ module Rave
         @id = options[:id] or raise ArgumentError.new(":id option is required")
         @context = options[:context]
       end
+
+      # Convert to string, showing class name and ID.
+      def to_s
+        "#{self.class.name[/[^:]*$/]}:#{@id}"
+      end
     end
   end
 end
