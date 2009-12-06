@@ -4,7 +4,10 @@ describe Rave::Models::Blip do
   
   before :all do
     @class = Rave::Models::Blip
+    @json_time_fields = [:last_modified_time]
   end
+  
+  it_should_behave_like "time_from_json()"
   
   describe "root?()" do
     

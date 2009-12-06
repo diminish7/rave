@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Wavelet
+      include Rave::Mixins::TimeUtils
+      
       attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
                   :participants, :root_blip_id, :title, :version, :wave_id, :id
       attr_accessor :context  #Context needs to be able to set this
@@ -23,9 +25,9 @@ module Rave
       # - :id
       def initialize(options = {})
         @creator = options[:creator]
-        @creation_time = options[:creation_time] || Time.now
+        @creation_time = time_from_json(options[:creation_time]) || Time.now
         @data_documents = options[:data_documents] || {}
-        @last_modified_time = options[:last_modified_time] || Time.now
+        @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
         @participants = options[:participants] || []
         @root_blip_id = options[:root_blip_id]
         @title = options[:title]

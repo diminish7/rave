@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Blip
+      include Rave::Mixins::TimeUtils
+      
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
       
       attr_reader :id, :annotations, :child_blip_ids, :content, :contributors, :creator,
@@ -31,7 +33,7 @@ module Rave
         @contributors = options[:contributors] || []
         @creator = options[:creator]
         @elements = options[:elements] || {}
-        @last_modified_time = options[:last_modified_time] || Time.now
+        @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
         @parent_blip_id = options[:parent_blip_id]
         @version = options[:version] || -1
         @wave_id = options[:wave_id]

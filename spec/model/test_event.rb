@@ -4,7 +4,10 @@ describe Rave::Models::Event do
   
   before :all do
     @class = Rave::Models::Event
+    @json_time_fields = [:timestamp]
   end
+  
+  it_should_behave_like "time_from_json()"
   
   describe "valid_event_type?()" do
     it "should return true for all valid events" do

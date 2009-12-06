@@ -9,8 +9,12 @@ describe Rave::Models::Wavelet do
     @context = Context.new(:wavelets => { "w+wavelet" => @wavelet },
       :waves => { "w+wave" => @wave },
       :blips => { "b+blip" => @root_blip })
+    @json_time_fields = [:creation_time, :last_modified_time]
+    @class = Rave::Models::Wavelet
   end
 
+  it_should_behave_like "time_from_json()"
+  
   describe "final_blip()" do
     it "should be the root blip if this is the only one" do
       @wavelet.final_blip.should == @root_blip

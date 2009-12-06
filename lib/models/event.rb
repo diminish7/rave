@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Event
+      include Rave::Mixins::TimeUtils
+      
       attr_reader :timestamp, :modified_by, :properties
       
       #Event types:
@@ -27,7 +29,7 @@ module Rave
       # - :properties
       # Do not use Event.new from outside; instead use Event.create
       def initialize(options = {})
-        @timestamp = options[:timestamp] || Time.now
+        @timestamp = time_from_json(options[:timestamp]) || Time.now
         @modified_by = options[:modified_by]
         @properties = options[:properties] || {}
         @context = options[:context]
@@ -39,11 +41,11 @@ module Rave
       # - :modified_by
       # - :properties
       def self.create(options = {})
-        event_class = EVENT_CLASSES.find { |e| e.type == options[:type] }
+        type = options.delete(:type)
+        event_class = EVENT_CLASSES.find { |e| e.type == type }
         
         raise "Unknown event type #{options[:type]}" if event_class.nil?
         
-        options[:type] = nil
         event_class.new(options)
       end
       
