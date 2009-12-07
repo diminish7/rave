@@ -225,6 +225,7 @@ describe Rave::Models::Blip do
     it "should return the blip's class, id, state and content" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :state => :normal,
         :contributors => ['Dave'])
+      Context.new(:blips => { "Dave" => blip })
       blip.to_s.should == "Blip:b+blip:Dave:Hello!"
     end
 
@@ -240,16 +241,19 @@ describe Rave::Models::Blip do
 
     it "should convert newlines to characters to prevent wrap" do
       blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['Hal9000'])
+      Context.new(:blips => { blip.id => blip })
       blip.to_s.should == "Blip:b+blip:Hal9000:Hello\\nDave!"
     end
 
     it "should crop long content" do
       blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['Dave'])
+      Context.new(:blips => { "b+blip" => blip })
       blip.to_s.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu..."
     end
 
     it "should show multiple contributors in order" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Claire', 'Dave', 'Sue'])
+      Context.new(:blips => { "b+blip" => blip })
       blip.to_s.should == "Blip:b+blip:Claire,Dave,Sue:Hello!"
     end
   end
@@ -257,11 +261,13 @@ describe Rave::Models::Blip do
   describe "print_structure()" do
     it "should return the blip's to_s + a newline" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      Context.new(:blips => { "b+blip" => blip })
       blip.print_structure.should == "#{blip}\n"
     end
 
     it "should be indented appropriately" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      Context.new(:blips => { "b+blip" => blip })
       blip.print_structure(2).should == "    #{blip}\n"
     end
 
@@ -405,7 +411,8 @@ END
         @child.wave.should == @wave
         @child.wavelet.should == @parent.wavelet
         @child.wavelet.should == @wavelet
-        @child.contributors.should == ["robot@appstore.com"]
+        @child.contributors.size.should == 1
+        @child.contributors.first.id.should == "robot@appstore.com"
         @child.generated?.should be_true
       end
 

@@ -63,4 +63,14 @@ describe Rave::Models::User do
       user.id.should == HUMAN_ID
     end
   end
+
+  describe "to_s()" do
+    user = Rave::Models::User.new(:id => HUMAN_ID)
+    user.to_s.should == HUMAN_ID
+  end
+
+  describe "to_json()" do
+    user = Rave::Models::User.new(:id => HUMAN_ID)
+    user.to_json.should == HUMAN_ID.to_json
+  end
 end

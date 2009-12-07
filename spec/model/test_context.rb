@@ -2,16 +2,61 @@ require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Context do
 
-  describe "users()" do
-    it "should return an empty hash if there are no users" do
-      context = Context.new
-      context.users.should == {}
-    end
+#  describe "add_user()" do
+#    it "should add a user to the users" do
+#      context = Context.new()
+#      user = User.new(:id => "user")
+#      context.add_user(user)
+#      context.users.size.should == 2 # Including the obligatory robot.
+#      context.users[user.id].should == user
+#    end
+#  end
 
+  describe "users()" do
     it "should return the users passed to it" do
       user = User.new(:id => "user")
       context = Context.new(:users => { user.id => user })
-      context.users.should == { user.id => user }
+      context.users[user.id].should == user
+    end
+
+    it "should contain all the wavelet participants" do
+      participants = ["Dave", "Sue"]
+      wavelet1 = Wavelet.new(:id => "wavelet1", :participants => participants)
+      wavelet2 = Wavelet.new(:id => "wavelet2", :participants => [participants[0]])
+      wavelet3 = Wavelet.new(:id => "wavelet3", :participants => [])
+      context = Context.new(:wavelets => {"wavelet1" => wavelet1,
+          "wavelet2" => wavelet2, "wavelet3" => wavelet3})
+      participants.each do |participant|
+        context.users[participant].id.should == participant
+      end
+    end
+
+    it "should contain all the wavelet creators" do
+      creators = ["Dave", "Sue"]
+      wavelet1 = Wavelet.new(:id => "wavelet1", :creator => creators[0])
+      wavelet2 = Wavelet.new(:id => "wavelet2", :creator => creators[0])
+      wavelet3 = Wavelet.new(:id => "wavelet3", :creator => creators[1])
+      context = Context.new(:wavelets => {"wavelet1" => wavelet1,
+          "wavelet2" => wavelet2, "wavelet3" => wavelet3})
+      creators.each do |participant|
+        context.users[participant].id.should == participant
+      end
+    end
+
+    it "should automatically contain the local robot" do
+      context = Context.new
+      context.users[::MyRaveRobot::Robot.instance.id].should == ::MyRaveRobot::Robot.instance
+    end
+
+    it "should contain all the blip contributors" do
+      contributors = ["Dave", "Sue"]
+      blip1 = Blip.new(:id => "blip1", :contributors => contributors)
+      blip2 = Blip.new(:id => "blip2", :contributors => [contributors[0]])
+      blip3 = Blip.new(:id => "blip3", :contributors => [])
+      context = Context.new(:blips => {"blip1" => blip1, "blip2" => blip2, "blip3" => blip3})
+      contributors.each do |contributor|
+        context.users[contributor].id.should == contributor
+      end
     end
   end
 
@@ -102,7 +147,7 @@ describe Rave::Models::Context do
       end
     end
 
-    it "should return virtual parent blip that is only in the json as reference" do
+    it "should create a virtual parent blip that is only in the json as reference" do
       blip = Blip.new(:id => "b+blip", :parent_blip_id => "b+undef")
       context = Context.new(:blips => { blip.id => blip })
 

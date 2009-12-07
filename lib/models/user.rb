@@ -32,6 +32,14 @@ module Rave
 
       # Is the User a robot client rather than a human client?
       def robot?; not (@id =~ ROBOT_PATTERN).nil?; end
+
+      def to_s
+        @id
+      end
+
+      def to_json
+        @id.to_json
+      end
     end
   end
 end

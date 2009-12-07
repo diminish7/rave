@@ -1,2 +1,2 @@
 require 'robot'
-run SpoonerTest::Robot.instance
+run MyRaveRobot::Robot.instance

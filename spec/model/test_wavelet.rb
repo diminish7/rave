@@ -6,9 +6,11 @@ describe Rave::Models::Wavelet do
     @root_blip = Blip.new(:id => "b+blip", :wavelet_id => "w+wavelet", :wave_id => "w+wave")
     @wavelet = Wavelet.new(:id => "w+wavelet", :wave_id => "w+wave", :root_blip_id => "b+blip")
     @wave = Wave.new(:id => "w+wave")
+    @user = User.new(:id => "Dave")
     @context = Context.new(:wavelets => { "w+wavelet" => @wavelet },
       :waves => { "w+wave" => @wave },
-      :blips => { "b+blip" => @root_blip })
+      :blips => { "b+blip" => @root_blip },
+      :users => { @user.id => @user })
   end
 
   describe "final_blip()" do
@@ -104,12 +106,19 @@ END
     
     describe "add_participant()" do
       it "should add a participant to the wavelet and an operation to the context" do
-        @wavelet.participants.should == []
-        @wavelet.add_participant("Dave")
-        @wavelet.participants.should == ["Dave"]
+        @wavelet.participants.size.should == 0
+        @wavelet.add_participant("Frank")
+        @wavelet.participants.size.should == 1
+        @wavelet.participants.first.should be_kind_of User
+        @wavelet.participants.first.id.should == "Frank"
         validate_operations(@context, [Operation::WAVELET_ADD_PARTICIPANT])
+      end
+
+      it "should refuse to add a participant that is already in the wavelet" do
+        @wavelet.add_participant("Dave")
+        @wavelet.participants.size.should == 0
+        validate_operations(@context, [])
       end
     end
   end
-
 end

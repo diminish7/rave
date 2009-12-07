@@ -3,7 +3,7 @@ module Rave
   module Models
     class Wavelet < Component
       attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
-                  :participants, :root_blip_id, :title, :version, :wave_id
+                  :root_blip_id, :title, :version, :wave_id, :participant_ids, :creator_id
       
       ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
       ROOT_ID_REGEXP = /conv\+root$/
@@ -22,15 +22,25 @@ module Rave
       # - :id
       def initialize(options = {})
         super(options)
-        @creator = options[:creator]
+        @creator_id = options[:creator] || ''
         @creation_time = options[:creation_time] || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = options[:last_modified_time] || Time.now
-        @participants = options[:participants] || []
+        @participant_ids = options[:participants] || []
         @root_blip_id = options[:root_blip_id]
         @title = options[:title]
         @version = options[:version] || 0
         @wave_id = options[:wave_id]
+      end
+
+      # Users that are currently have access the wavelet.
+      def participants
+        @participant_ids.map { |p| @context.users[p] }
+      end
+
+      # Users that originally created the wavelet.
+      def creator
+        @context.users[@creator_id]
       end
       
       #Creates a blip for this wavelet
@@ -56,9 +66,19 @@ module Rave
       end
       
       #Adds a participant to the wavelet
-      def add_participant(participant_id)
-        @context.operations << Operation.new(:type => Operation::WAVELET_ADD_PARTICIPANT, :wave_id => @wave_id, :wavelet_id => @id, :property => participant_id)
-        @participants << participant_id
+      def add_participant(id)
+        if @context.users.has_key?(id)
+          LOGGER.warning("Attempted to add a participant who was already in the wavelet(#{@id}): #{id}")
+          return
+        end
+
+        # Allow string names to be used as participant.
+        user = User.new(:id => id)
+        @context.add_user(user)
+
+        @context.operations << Operation.new(:type => Operation::WAVELET_ADD_PARTICIPANT,
+          :wave_id => @wave_id, :wavelet_id => @id, :property => user)
+        @participant_ids << id
       end
       
       #Removes this robot from the wavelet
@@ -86,7 +106,7 @@ module Rave
 
       def to_s
         text = @title.length > 24 ? "#{@title[0..20]}..." : @title
-        "#{super}:#{@participants.join(',')}:#{text}"
+        "#{super}:#{participants.join(',')}:#{text}"
       end
 
       def print_structure(indent = 0) # :nodoc:

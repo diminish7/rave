@@ -12,14 +12,20 @@ def validate_operations(context, types)
   end
 end
 
+# Created to mimic the subclassed robot the robot-maker will create in live usage.
+module MyRaveRobot
+  class Robot < Rave::Models::Robot
+  end
+end
+
 # This shouldn't be added generally, but is useful for catching bad uses of
 # non-rave objects, such as checking the id on a nil (which is 4, so isn't an error!)
 class Object
   def id
-    raise "id method called on non-Rave object"
+    raise "id method called on non-Rave object, #{self.class.name}"
   end
   
   def type
-    raise "type method called on non-Rave object"
+    raise "type method called on non-Rave object, #{self.class.name}"
   end
 end

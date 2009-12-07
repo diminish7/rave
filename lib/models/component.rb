@@ -10,7 +10,7 @@ module Rave
       attr_writer :context # :nodoc: Allow context to set link to it.
       
       def initialize(options = {})
-        @id = options[:id] or raise ArgumentError.new(":id option is required")
+        @id = options[:id] or raise ArgumentError.new(":id option is required for #{self.class.name}")
         @context = options[:context]
       end
 

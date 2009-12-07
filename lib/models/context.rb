@@ -12,7 +12,6 @@ module Rave
       # - :blips
       # - :operations
       # - :users
-      # - :robot
       def initialize(options = {})
         @waves = options[:waves] || {}
         @waves.values.each { |wave| wave.context = self }          #Set up self as this wave's context
@@ -20,6 +19,7 @@ module Rave
         @wavelets = options[:wavelets] || {}
         @wavelets.values.each { |wavelet| wavelet.context = self } #Set up self as this wavelet's context
         @primary_wavelet = @wavelets.values[0] # As opposed to any that are created later.
+
         
         @blips = options[:blips] || {}
         @blips.values.each { |blip| blip.context = self }          #Set up self as this blip's context
@@ -30,6 +30,7 @@ module Rave
         @users.values.each { |user| user.context = self }          #Set up self as this user's context
 
         resolve_blip_references
+        resolve_user_references
       end
 
     protected
@@ -80,6 +81,33 @@ module Rave
         end
       end
 
+      # Create users for every reference to one in the wave.
+      def resolve_user_references
+        robot = ::MyRaveRobot::Robot.instance
+        @users[robot.id] = robot
+		    robot.context = self
+        
+        @wavelets.each_value do |wavelet|
+          wavelet.participant_ids.each do |id|
+            unless @users[id]
+              @users[id] = User.new(:id => id, :context => self)
+            end
+          end
+          
+          unless @users[wavelet.creator_id]
+            @users[wavelet.creator_id] = User.new(:id => wavelet.creator_id, :context => self)
+          end
+        end
+        
+        @blips.each_value do |blip|
+          blip.contributor_ids.each do |id|
+            unless @users[id]
+              @users[id] = User.new(:id => id, :context => self)
+            end
+          end
+        end
+      end
+
     public
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
       def add_blip(blip) # :nodoc:
@@ -92,6 +120,14 @@ module Rave
       # Remove a blip.
       def remove_blip(blip) # :nodoc:
         @blips.delete(blip.id)
+      end
+
+      # *INTERNAL*
+      # Add a user to users (Use an Operation to actually add the blip to the Wave).
+      def add_user(user) # :nodoc:
+        @users[user.id] = user
+        user.context = self
+        user
       end
   
       #Find the root wavelet if it exists in this context

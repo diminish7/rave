@@ -4,7 +4,7 @@ module Rave
     class Blip < Component
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
       
-      attr_reader :annotations, :child_blip_ids, :content, :contributors, :creator,
+      attr_reader :annotations, :child_blip_ids, :content, :contributor_ids,
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id,
                   :wavelet_id
 
@@ -33,7 +33,7 @@ module Rave
         @annotations = options[:annotations] || []
         @child_blip_ids = options[:child_blip_ids] || []
         @content = options[:content] || ''
-        @contributors = options[:contributors] || []
+        @contributor_ids = options[:contributors] || []
         @creator = options[:creator]
         @elements = options[:elements] || {}
         @last_modified_time = options[:last_modified_time] || Time.now
@@ -86,6 +86,16 @@ module Rave
       #Returns true if an annotation with the given name exists in this blip
       def has_annotation?(name)
         @annotations.any? { |a| a.name == name }
+      end
+
+      # Users that have made a contribution to the blip.
+      def contributors
+        @contributor_ids.map { |c| @context.users[c] }
+      end
+
+      # Original creator of the blip.
+      def creator
+        @context.users[@creator]
       end
       
       #Creates a child blip under this blip
@@ -154,7 +164,7 @@ module Rave
         
         str = case @state
         when :normal
-          "#{@contributors.join(',')}:#{str}"
+          "#{contributors.join(',')}:#{str}"
         when :deleted
           '<DELETED>'
         when :null
