@@ -11,7 +11,7 @@ module Rave
                                     :wavelet_id => @wavelet_id, 
                                     :wave_id => @wave_id,
                                     :index => 0, 
-                                    :property => 0..(@content ? @content.length : 0)
+                                    :property => 0..(@content.length)
                                   )
         @content = ''
       end
@@ -26,7 +26,7 @@ module Rave
                                     :index => index, 
                                     :property => text
                                   )
-        @content = @content ? @content[0, index] + text + @content[index, @content.length - index] : text
+        @content.insert(index, text)
       end
       
       #Set the content text of the blip
@@ -37,11 +37,17 @@ module Rave
       
       #Deletes the text in a given range and replaces it with the given text
       def set_text_in_range(range, text)
+        raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
+        
         #Note: I'm doing this in the opposite order from the python API, because
         # otherwise, if you are setting text at the end of the content, the cursor
         # gets moved to the start of the range...
-        insert_text(text, range.first)
-        delete_range(range.first+text.length..range.last+text.length)
+        begin # Failures in this method should give us a range error.
+          insert_text(text, range.min)
+        rescue IndexError => e
+          raise RangeError.new(e.message)
+        end
+        delete_range(range.min+text.length..range.max+text.length)
       end
       
       #Appends text to the end of the content
@@ -53,20 +59,22 @@ module Rave
                                     :wave_id => @wave_id,
                                     :property => text
                                   )
-        @content = @content + text
+        @content += text
       end
       
       #Deletes text in the given range
       def delete_range(range)
+        raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
+        
         @context.operations << Operation.new(
                                     :type => Operation::DOCUMENT_DELETE, 
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 
                                     :wave_id => @wave_id,
-                                    :index => range.first, 
+                                    :index => range.min,
                                     :property => range
                                   )
-        @content = @content[0..range.first-1] + @content[range.last+1..@content.length-1]
+         @content[range] = ''
       end
       
       #Annotates the entire content

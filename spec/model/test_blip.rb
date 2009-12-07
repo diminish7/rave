@@ -290,106 +290,102 @@ END
   
   describe "operations" do
   
+    before :each do
+       @empty_blip = Blip.new(:id => "empty", :context => @context)
+       @hello_wave_blip = Blip.new(:content => "Hello wave!", :id => "hello_world", :context => @context)
+    end
+
     describe "clear()" do
       it "should clear the text" do
-        blip = Blip.new(:content => "Hello wave!", :id => "bleh")
-        blip.context = Context.new
-        blip.content.should == "Hello wave!"
-        blip.clear
-        blip.content.should == ""
+        @hello_wave_blip.clear
+        @hello_wave_blip.content.should == ""
       end
       it "should add a delete operation to the context" do
-        blip = Blip.new(:content => "Hello wave!", :id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.clear
-        validate_operations(context, [Operation::DOCUMENT_DELETE])
+        @hello_wave_blip.clear
+        validate_operations(@context, [Operation::DOCUMENT_DELETE])
       end
     end
     
     describe "insert_text()" do
       it "should set the content of the blip" do
-        blip = Blip.new(:content => "hello wave!", :id => "bleh")
-        blip.context = Context.new
-        blip.content.should == "hello wave!"
-        blip.insert_text(" google", 5)
-        blip.content.should == "hello google wave!"
+        @hello_wave_blip.insert_text(" google", 5)
+        @hello_wave_blip.content.should == "Hello google wave!"
       end
-      it "shuold add an insert operation to the context" do
-        blip = Blip.new(:content => "hello wave!", :id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.insert_text(" google", 5)
-        validate_operations(context, [Operation::DOCUMENT_INSERT])
+      it "should add an insert operation to the context" do
+        @hello_wave_blip.insert_text(" google", 5)
+        validate_operations(@context, [Operation::DOCUMENT_INSERT])
+      end
+      it "should raise error if index is outside the content string" do
+        lambda { @hello_wave_blip.insert_text(" google", 12) }.should raise_error IndexError
+        lambda { @hello_wave_blip.insert_text(" google", -13) }.should raise_error IndexError
       end
     end
     
     describe "set_text()" do
-      it "should set the content of the blip" do
-        blip = Blip.new(:id => "bleh")
-        blip.context = Context.new
-        blip.content.should == ''
-        blip.set_text "What up, blip?"
-        blip.content.should == "What up, blip?"
+      it "should set the content of an empty blip" do
+        @empty_blip.set_text "What up, blip?"
+        @empty_blip.content.should == "What up, blip?"
+      end
+      it "should change the content of an blip which already has content" do
+        @hello_wave_blip.set_text "What up, blip?"
+        @hello_wave_blip.content.should == "What up, blip?"
       end
       it "should add a delete and insert operation to the context" do
-        blip = Blip.new(:id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.content.should == ''
-        blip.set_text "What up, blip?"
-        validate_operations(context, [Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
+        @hello_wave_blip.set_text "What up, blip?"
+        validate_operations(@context, [Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
       end
     end
     
     describe "delete_range()" do
-      it "should delete the range of content from the blip" do
-        blip = Blip.new(:content => "hello google wave!", :id => "bleh")
-        blip.context = Context.new
-        blip.content.should == "hello google wave!"
-        blip.delete_range(5..11)
-        blip.content.should == "hello wave!"
+      it "should delete the inclusive range of content from the blip" do
+        @hello_wave_blip.delete_range(2..6)
+        @hello_wave_blip.content.should == "Heave!"
       end
       it "should add a delete operation to the context" do
-        blip = Blip.new(:content => "hello google wave!", :id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.delete_range(5..11)
-        validate_operations(context, [Operation::DOCUMENT_DELETE])
+        @hello_wave_blip.delete_range(2..6)
+        validate_operations(@context, [Operation::DOCUMENT_DELETE])
+      end
+      it "should replace the exclusive range of content with the given text" do
+        @hello_wave_blip.delete_range(2...7)
+        @hello_wave_blip.content.should == "Heave!"
+      end
+      it "should raise error if range is outside the content string" do
+        lambda { @hello_wave_blip.delete_range(200..201) }.should raise_error RangeError
+      end
+      it "should raise error if range is not a Range" do
+        lambda { @hello_wave_blip.delete_range(5) }.should raise_error ArgumentError
       end
     end
     
     describe "set_text_in_range()" do
-      it "should replace the range of content with the given text" do
-        blip = Blip.new(:content => "hello google wave!", :id => "bleh")
-        blip.context = Context.new
-        blip.content.should == "hello google wave!"
-        blip.set_text_in_range(6..16, "world")
-        blip.content.should == "hello world!"
+      it "should replace the inclusive range of content with the given text" do
+        @hello_wave_blip.set_text_in_range(2..4, "xagonal")
+        @hello_wave_blip.content.should == "Hexagonal wave!"
       end
       it "should add a delete and insert operation to the context" do
-        blip = Blip.new(:content => "hello google wave!", :id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.set_text_in_range(6..16, "world")
-        validate_operations(context, [Operation::DOCUMENT_INSERT, Operation::DOCUMENT_DELETE])
+        @hello_wave_blip.set_text_in_range(2..4, "xagonal")
+        validate_operations(@context, [Operation::DOCUMENT_INSERT, Operation::DOCUMENT_DELETE])
+      end
+      it "should replace the exclusive range of content with the given text" do
+        @hello_wave_blip.set_text_in_range(2...5, "xagonal")
+        @hello_wave_blip.content.should == "Hexagonal wave!"
+      end
+      it "should raise error if range is outside the content string" do
+        lambda { @hello_wave_blip.set_text_in_range(200..201, "bleh") }.should raise_error RangeError
+      end
+      it "should raise error if range is not a Range" do
+        lambda { @hello_wave_blip.set_text_in_range(5, "bleh") }.should raise_error ArgumentError
       end
     end
     
     describe "append_text()" do
       it "should append the given text to the blip's content" do
-        blip = Blip.new(:content => "hello", :id => "bleh")
-        blip.context = Context.new
-        blip.content.should == "hello"
-        blip.append_text(" world!")
-        blip.content.should == "hello world!"
+        @hello_wave_blip.append_text(" Hello world!")
+        @hello_wave_blip.content.should == "Hello wave! Hello world!"
       end
       it "should add an append operation to the context" do
-        blip = Blip.new(:content => "hello", :id => "bleh")
-        context = Context.new
-        blip.context = context
-        blip.append_text(" world!")
-        validate_operations(context, [Operation::DOCUMENT_APPEND])
+        @hello_wave_blip.append_text(" Hello world!")
+        validate_operations(@context, [Operation::DOCUMENT_APPEND])
       end
     end
 
