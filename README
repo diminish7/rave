@@ -65,15 +65,15 @@ is define your robot's event listeners.  Here is a list of the events that Googl
 
 To add a listener to your robot that will respond to a given event, just define a method with the lower-case
 version of the event name, that accepts an event and a context.  So, I want appropriate-casey to do something
-whenever a document is changed (the DOCUMENT_CHANGED event), so I add the following method to my robot:
+whenever a blip is submitted (the BLIP_SUBMITTED event), so I add the following method to my robot:
 
-   def document_changed(event, context)
+   def blip_submitted(event, context)
       # Do some stuff
    end
    
 The Event object contains the following properties:
 
- * type (The type of event, "DOCUMENT_CHANGED" in this case)
+ * type (The type of event, "BLIP_SUBMITTED" in this case)
  * timestamp (the timestamp that the event occurred)
  * modified_by (the user ID of the user who modified the document)
  * properties (Varies by event type, but this will be a hash with blipID in this case)
@@ -92,41 +92,42 @@ So, with Appropriate Casey, I want to create a robot that looks for people "shou
 appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yelling."  To do this, 
 I just create a document_changed method in my robot that looks something like this:
 
-   def document_changed(event, context)
-      unless event.modified_by == "appropriate-casey@appspot.com" || event.modified_by == "spelly@gwave.com"
-        context.blips.values.each do |blip|
-          if blip.content
-            new_sentence = true
-            blip.content.length.times do |index|
-              range = index..index+1
-              char = blip.content[index, 1]
-              if char =~ /[A-Z]/ && !new_sentence
-                blip.set_text_in_range(range, char.downcase)
-              elsif char =~ /[a-z]/ && new_sentence
-                blip.set_text_in_range(range, char.upcase)
-              elsif char == "!"
-                if new_sentence
-                  blip.delete_range(range)
-                else
-                  blip.set_text_in_range(range, ".")
-                end
-              end
-              new_sentence = (char =~ /\.!?/ || (char =~ /\s/ && new_sentence))
+    def blip_submitted(event, context)
+      if (blip = event.blip).content
+        new_sentence = true
+        do_update = false
+        content = blip.content
+        content.length.times do |index|
+          range = index..index+1
+          char = content[index, 1]
+          if char =~ /[A-Z]/ && !new_sentence
+            content = replace_char_at(index, content, char.downcase)
+            do_update = true
+          elsif char =~ /[a-z]/ && new_sentence
+            content = replace_char_at(index, content, char.upcase)
+            do_update = true
+          elsif char == "!"
+            if new_sentence
+              content = replace_char_at(index, content, "")
+              do_update = true
+            else
+              content = replace_char_at(index, content, ".")
+              do_update = true
             end
           end
+          new_sentence = (char =~ /\.!?/ || (char =~ /\s/ && new_sentence))
         end
+        blip.set_text(content) if do_update
       end
     end
     
-Here's what's going on: first, I'm bailing if the blip was modified by either Appropriate Casey, or the spellchecker.
-This is just to prevent us from having to do any logic when we know we aren't going to change anything.  Then, I iterate
-through the blips and check their content.  Any character that is capital that isn't the start of a sentence gets 
-downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations get turned into
-a period (and additional exclamation points get dropped). There are two API methods being called: blip#set_text_in_range
-and blip#delete_range.  Both of these methods update the content of the blip locally (so the changes happen optimistically)
-and then send operation requests back to the server so that all users can see the changes.
+Here's what's going on: First, I grab the blip that's been modified (event.blip) and check it's content.  Any character that is capital
+that isn't the start of a sentence gets downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations 
+get turned into a period (and additional exclamation points get dropped). There is one API method being called: blip#set_text.  This methods updates
+the content of the blip locally (so the changes happen optimistically) and then sends an operation request back to the server so that all
+users can see the changes.
 
-So that's it, my robot is now ready to go: just 17 lines of code.
+So that's it. Pretty simple, really.  You can take a look under the examples/ folder for all the code.
 
 === Packaging for deploy
 
@@ -177,8 +178,3 @@ user name will be [robot_name]@appspot.com.  So Casey is at appropriate-casey@ap
 === The End
 
 That's it.  Enjoy!
-   
-= TODO
-
- * Allow other URLs to be set up
- * Finish porting the existing Python API functionality
