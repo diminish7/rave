@@ -18,6 +18,17 @@ describe Rave::Models::Event do
     end
   end
 
+  describe "modified_by" do
+    it "should return the User object associated with the :modified_by option" do
+      context = Context.new
+      event = Event.create(:type => 'DOCUMENT_CHANGED', :modified_by => "Fred", :context => context)
+      event.modified_by_id.should == "Fred"
+      event.modified_by.should be_kind_of User
+      event.modified_by.id.should == "Fred"
+      context.users["Fred"].should == event.modified_by
+    end
+  end
+
   describe "create()" do
      it "should return the appropriate event sub-class for all valid events" do
       wavelet = Wavelet.new(:id => "wavelet")

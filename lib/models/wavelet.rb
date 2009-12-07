@@ -22,7 +22,7 @@ module Rave
       # - :id
       def initialize(options = {})
         super(options)
-        @creator_id = options[:creator] || ''
+        @creator_id = options[:creator] || User::NOBODY_ID
         @creation_time = options[:creation_time] || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = options[:last_modified_time] || Time.now

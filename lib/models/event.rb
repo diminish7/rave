@@ -2,7 +2,7 @@
 module Rave
   module Models
     class Event
-      attr_reader :timestamp, :modified_by, :properties
+      attr_reader :timestamp, :modified_by_id, :properties
       
       #Event types:
       WAVELET_BLIP_CREATED = 'WAVELET_BLIP_CREATED'
@@ -25,14 +25,24 @@ module Rave
       # - :timestamp
       # - :modified_by
       # - :properties
+      # - :context
       # Do not use Event.new from outside; instead use Event.create
       def initialize(options = {})
         @timestamp = options[:timestamp] || Time.now
-        @modified_by = options[:modified_by]
+        @modified_by_id = options[:modified_by] || User::NOBODY_ID
         @properties = options[:properties] || {}
         @context = options[:context]
-        
+
         raise ArgumentError.new(":context option required") if @context.nil?
+
+        unless @context.users.has_key?(@modified_by_id) or (::MyRaveRobot::Robot.instance.id == @modified_by_id)
+          @context.add_user(User.new(:id => @modified_by_id))
+        end
+      end
+
+      # The User that caused this event to be generated.
+      def modified_by
+        @context.users[@modified_by_id]
       end
       
       # Event factory.

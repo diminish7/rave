@@ -4,7 +4,7 @@ require 'rave'
 module MyRaveRobot
   class Robot < Rave::Models::Robot
     
-    SPELLY = 'spelly@gwave.com'
+    SPELLY_ID = 'spelly@gwave.com'
     DELETE_COMMAND = 'DELETE'
     INVITE_COMMAND = 'INVITE'
 
@@ -50,26 +50,26 @@ MESSAGE
 
     # BUG: Only seems to get sent if robot is invited into a new wave on creation.
     def wavelet_blip_created(event, context)
-      if event.modified_by != id
+      if event.modified_by != self
         reply_blip(event, "#{event.modified_by} created a blip! I would have done it better, though...")
       end
     end
 
     # BUG: Never received.
     def wavelet_blip_removed(event, context)
-      if event.modified_by != id
+      if event.modified_by != self
         reply_wavelet(event, "#{event.modified_by} removed a blip from the wavelet! Absolute power, eh?")
       end
     end
 
     def blip_deleted(event, context)
-        if event.modified_by != id
+        if event.modified_by != self
           reply_wavelet(event, "#{event.modified_by} deleted a blip! Which one will be next?")
         end
     end
 
     def blip_submitted(event, context)
-        if event.modified_by != id
+        if event.modified_by != self
           case event.blip.content
           when DELETE_COMMAND
             if event.blip.root?
@@ -77,7 +77,7 @@ MESSAGE
             else
               event.blip.delete
             end
-          when /^#{INVITE_COMMAND}\s+([\w\.]+@[\w+\.]+)\s*$/
+          when /^#{INVITE_COMMAND}\s+([\w\-\.]+@[\w\-\.]+)\s*$/
             id = $1
             if event.blip.wavelet.participant_ids.include? id
               reply_wavelet(event, "Can't add #{id} since they are already in the blip!")
@@ -93,13 +93,13 @@ MESSAGE
 
     # BUG: Never received.
     def wavelet_title_changed(event, context)
-      if event.modified_by != id
+      if event.modified_by != self
         reply_wavelet(event, "#{event.modified_by} changed the title to: #{event.title}")
       end
     end
     
     def document_changed(event, context)
-      unless [id, SPELLY].include? event.modified_by
+      unless (event.modified_by == self) or (event.modified_by.id == SPELLY_ID)
         # Do something about it.
       end
     end

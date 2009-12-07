@@ -6,7 +6,7 @@ module MyRaveRobot
    
     #This is a very simple robot that tries to tone down yelling in waves
     def document_changed(event, context)
-      unless [id, "spelly@gwave.com"].include event.modified_by
+      unless [id, "spelly@gwave.com"].include event.modified_by_id
           new_sentence = true
           event.blip.content.length.times do |index|
             range = index..index+1
