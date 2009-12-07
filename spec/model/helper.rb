@@ -11,3 +11,15 @@ def validate_operations(context, types)
     op.type.should == types[i]
   end
 end
+
+# This shouldn't be added generally, but is useful for catching bad uses of
+# non-rave objects, such as checking the id on a nil (which is 4, so isn't an error!)
+class Object
+  def id
+    raise "id method called on non-Rave object"
+  end
+  
+  def type
+    raise "type method called on non-Rave object"
+  end
+end

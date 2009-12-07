@@ -20,9 +20,11 @@ describe Rave::Models::Event do
 
   describe "create()" do
      it "should return the appropriate event sub-class for all valid events" do
+      wavelet = Wavelet.new(:id => "wavelet")
+      context = Context.new(:wavelets => {"wavelet" => wavelet})
       Rave::Models::Event::EVENT_CLASSES.each do |event|
-        Rave::Models::Event.create(:type => event.type,
-           :context => Context.new).should be_a_kind_of event
+        new_event = Rave::Models::Event.create(:type => event.type, :context => context)
+        new_event.should be_a_kind_of event
       end
     end
 
