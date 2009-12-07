@@ -16,7 +16,8 @@ describe Rave::Models::Blip do
 
     @blip = Blip.new(:id => "blip")
     @deleted_blip = Blip.new(:id => "deleted", :state => :deleted)
-    @generated_blip = Blip.new(:id => "generated", :generated => true)
+    @generated_blip = Blip.new(:id => "generated", :creation => :generated)
+    @virtual_blip = Blip.new(:id => "virtual", :creation => :virtual)
 
     @wavelet = Wavelet.new(:id => "wavelet", :root_blip_id => "root")
     @wave = Wave.new(:id => "wave", :wavelets => { "wavelet" => @wavelet })
@@ -27,6 +28,16 @@ describe Rave::Models::Blip do
         "blip" => @blip, "deleted" => @deleted_blip, "generated" => @generated_blip })
 
     @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
+  end
+
+  describe "initialize()" do
+    it "should raise an error if given an invalid :creation option" do
+      lambda { Blip.new(:id => "blip", :creation => :bleh) }.should raise_error ArgumentError
+    end
+
+    it "should raise an error if given an invalid :state option" do
+      lambda { Blip.new(:id => "blip", :state => :bleh) }.should raise_error ArgumentError
+    end
   end
   
   describe "root?" do
@@ -72,14 +83,38 @@ describe Rave::Models::Blip do
   end
 
   describe "generated?" do
-    it "should return the value of the :generated option" do
+    it "should return true if the :creation option is :generated" do
       @generated_blip.generated?.should be_true
     end
 
-    it "should return false if a :generated option is missing" do
-      @middle_blip.generated?.should be_false
-      @null_blip.generated?.should be_false
-      @deleted_blip.generated?.should be_false
+    it "should return false if a :creation option is other than :generated" do
+      @blip.generated?.should be_false
+    end
+  end
+
+  describe "virtual?" do
+    it "should return true if created with a :creation option of :virtual" do
+      @virtual_blip.virtual?.should be_true
+    end
+
+    it "should return false if a :creation option is other than :virtual" do
+      @blip.virtual?.should be_false
+      @generated_blip.virtual?.should be_false
+    end
+  end
+
+  describe "original?" do
+    it "should return true if created without a :creation option" do
+      @blip.original?.should be_true
+    end
+
+    it "should return true if created with a :creation option of :original" do
+      Blip.new(:id => "blip", :creation => :original).original?.should be_true
+    end
+
+    it "should return false if a :creation option is other than :original" do
+      @generated_blip.original?.should be_false
+      @virtual_blip.original?.should be_false
     end
   end
 

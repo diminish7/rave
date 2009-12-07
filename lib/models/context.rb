@@ -44,7 +44,7 @@ module Rave
               child = @blips[child_id]
               if child.nil?
                 child = Blip.new(:id => child_id, :parent_blip_id => blip.id,
-                  :wavelet_id => blip.wavelet_id)
+                  :wavelet_id => blip.wavelet_id, :creation => :virtual)
                 add_blip(child)
               else
                 # Since a child might have been created due to a reference from
@@ -64,7 +64,7 @@ module Rave
             parent = @blips[blip.parent_blip_id]
             if parent.nil?
               parent = Blip.new(:id => blip.parent_blip_id, :child_blip_ids => [blip.id],
-                :wavelet_id => blip.wavelet_id)
+                :wavelet_id => blip.wavelet_id, :creation => :virtual)
               add_blip(parent)
             else
               # Since there might be multiple "real" children, ensure that even

@@ -98,6 +98,7 @@ describe Rave::Models::Context do
         child.id.should == "b+undef#{i + 1}"
         child.parent_blip.should == blip
         context.blips[child.id].should == child
+        child.virtual?.should be_true
       end
     end
 
@@ -109,6 +110,7 @@ describe Rave::Models::Context do
       parent.id.should == "b+undef"
       parent.child_blips.should == [blip]
       context.blips[parent.id].should == parent
+      parent.virtual?.should be_true
     end
   end
 end
