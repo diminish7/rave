@@ -7,13 +7,24 @@ describe Rave::Models::Blip do
   end
 
   before :each do
-    @root_blip = Blip.new(:id => "root", :child_blip_ids => ["middle"])
-    @middle_blip = Blip.new(:id => "middle", :child_blip_ids => ["leaf"], :parent_blip_id => "root")
-    @leaf_blip = Blip.new(:id => "leaf", :parent_blip_id => "middle")
+    @root_blip = Blip.new(:id => "root", :child_blip_ids => ["middle"],
+      :wavelet_id => "wavelet", :wave_id => "wave")
+    @middle_blip = Blip.new(:id => "middle", :child_blip_ids => ["leaf"], :parent_blip_id => "root",
+      :wavelet_id => "wavelet", :wave_id => "wave")
+    @leaf_blip = Blip.new(:id => "leaf", :parent_blip_id => "middle",
+      :wavelet_id => "wavelet", :wave_id => "wave")
+
     @blip = Blip.new(:id => "blip")
     @deleted_blip = Blip.new(:id => "deleted", :state => :deleted)
-    @context = Context.new(:blips => { "root" => @root_blip, "middle" => @middle_blip,
-        "child" => @leaf_blip, "blip" => @blip, "deleted" => @deleted_blip })
+    @generated_blip = Blip.new(:id => "generated", :generated => true)
+
+    @wavelet = Wavelet.new(:id => "wavelet", :root_blip_id => "root")
+    @wave = Wave.new(:id => "wave", :wavelets => { "wavelet" => @wavelet })
+    
+    @context = Context.new(:waves => { "wave" => @wave },
+      :wavelets => {"wavelet" => @wavelet},
+      :blips => { "root" => @root_blip, "middle" => @middle_blip, "leaf" => @leaf_blip,
+        "blip" => @blip, "deleted" => @deleted_blip, "generated" => @generated_blip })
 
     @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
   end
@@ -57,6 +68,18 @@ describe Rave::Models::Blip do
 
     it "should return false if a blip is not deleted" do
       @middle_blip.deleted?.should be_false
+    end
+  end
+
+  describe "generated?" do
+    it "should return the value of the :generated option" do
+      @generated_blip.generated?.should be_true
+    end
+
+    it "should return false if a :generated option is missing" do
+      @middle_blip.generated?.should be_false
+      @null_blip.generated?.should be_false
+      @deleted_blip.generated?.should be_false
     end
   end
 
@@ -336,26 +359,23 @@ END
     end
 
     describe "create_child_blip()" do
-      before do
-        @parent = Blip.new(:id => "b+parent", :wavelet_id => "w+wavelet",
-          :wave_id => "w+wave")
-        @context = Context.new(
-          :blips => { "b+parent" => @parent },
-          :wavelets => { "w+wavelet" => Wavelet.new(:id => "w+wavelet") },
-          :waves => { "w+wave" => Wave.new(:id => "w+wave") }
-        )
+      before :each do
+        @parent = @leaf_blip
         @child = @parent.create_child_blip
       end
 
-      it "should create a new, empty blip as a child of the parent" do
+      it "should create a new, empty, generated blip as a child of the parent" do
         @child.content.should == ''
         @child.should_not == @parent
         @parent.child_blips.should == [@child]
         @child.parent_blip.should == @parent
-        @context.blips.should == { "b+parent" => @parent, @child.id => @child }
+        @context.blips[@child.id].should == @child
         @child.wave.should == @parent.wave
+        @child.wave.should == @wave
         @child.wavelet.should == @parent.wavelet
+        @child.wavelet.should == @wavelet
         @child.contributors.should == ["robot@appstore.com"]
+        @child.generated?.should be_true
       end
 
       it "should create blips with unique ids starting with TBD" do

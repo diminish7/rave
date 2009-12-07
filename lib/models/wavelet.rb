@@ -36,7 +36,8 @@ module Rave
       #Creates a blip for this wavelet
       def create_blip
         parent = final_blip
-        blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => parent.id, :wavelet_id => @id, :context => @context)
+        blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => parent.id,
+          :wavelet_id => @id, :context => @context, :generated => true)
         parent.add_child_blip(blip)
         
         @context.operations << Operation.new(:type => Operation::WAVELET_APPEND_BLIP, :wave_id => @wave_id, :wavelet_id => @id, :property => blip)

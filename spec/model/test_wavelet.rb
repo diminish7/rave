@@ -85,6 +85,7 @@ END
         @root_blip.child_blips.should == [new_blip]
         @context.blips[new_blip.id].should == new_blip
         validate_operations(@context, [Operation::WAVELET_APPEND_BLIP])
+        new_blip.generated?.should be_true
       end
 
       it "should work correctly multiple times to create a thread" do
