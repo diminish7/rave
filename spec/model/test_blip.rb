@@ -29,7 +29,6 @@ describe Rave::Models::Blip do
 
     @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
     @json_time_fields = [:last_modified_time]
-    @class = Blip
   end
 
   describe "initialize()" do

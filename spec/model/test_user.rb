@@ -5,11 +5,6 @@ ROBOT_ID = 'robot@appspot.com'
 URL = 'http://googlewave.com'
 
 describe Rave::Models::User do
-  
-  before :each do
-    @class = User
-  end
-
   it_should_behave_like "Component id()"
   it_should_behave_like "Component initialize()"
   
@@ -58,13 +53,6 @@ describe Rave::Models::User do
     it "should default to the ID" do
       user = Rave::Models::User.new(:id => HUMAN_ID)
       user.name.should == HUMAN_ID
-    end
-  end
-
-  describe "id()" do
-    it "should return the ID passed in the constructor" do
-      user = Rave::Models::User.new(:id => HUMAN_ID)
-      user.id.should == HUMAN_ID
     end
   end
 

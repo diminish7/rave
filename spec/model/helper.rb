@@ -11,7 +11,7 @@ shared_examples_for "time_from_json()" do
     time = Time.now
     context = Context.new
     @json_time_fields.each_with_index do |time_field, i|
-      obj = @class.new(:id => "id#{i}", :context => context, time_field => time.to_i)
+      obj = described_class.new(:id => "id#{i}", :context => context, time_field => time.to_i)
       #Should be equal down to the second
       ((obj.send(time_field) - time) < 1).should be_true
     end
@@ -19,7 +19,7 @@ shared_examples_for "time_from_json()" do
   
   it "should default to the current time" do
     @json_time_fields.each do |time_field|
-      obj = @class.new(:id => 'id', :context => Context.new)
+      obj = described_class.new(:id => 'id', :context => Context.new)
       ((Time.now - obj.send(time_field)) < 1).should be_true
     end
   end
@@ -30,7 +30,7 @@ shared_examples_for "time_from_json()" do
     (timestamp.to_s.length > 10).should be_true
     context = Context.new
     @json_time_fields.each_with_index do |time_field, i|
-      obj = @class.new(:id => "id#{i}", :context => context, time_field => timestamp)
+      obj = described_class.new(:id => "id#{i}", :context => context, time_field => timestamp)
       #Should be equal down to the millisecond now
       obj.send(time_field).should == time
     end
@@ -38,22 +38,22 @@ shared_examples_for "time_from_json()" do
 end
 
 # Common behaviour for descendants of Component
-shared_examples_for "Component to_s()" do
+shared_examples_for "Component", "to_s()" do
   it "should return a string containing class and id" do
-    comp = @class.new(:id => "fish")
-    comp.to_s.should == "#{@class.name[/[^:]+$/]}:fish"
+    comp = described_class.new(:id => "fish")
+    comp.to_s.should == "#{described_class.name[/[^:]+$/]}:fish"
   end
 end
 
-shared_examples_for "Component initialize()" do
+shared_examples_for "Component", "initialize()" do
   it "should raise an error without an :id option" do
-    lambda { @class.new() }.should raise_error ArgumentError
+    lambda { described_class.new() }.should raise_error ArgumentError
   end
 end
 
-shared_examples_for "Component id()" do
+shared_examples_for "Component", "id()" do
   it "should be equal to the initally provided :id option" do
-    comp = @class.new(:id => "fish")
+    comp = described_class.new(:id => "fish")
     comp.id.should == "fish"
   end
 end

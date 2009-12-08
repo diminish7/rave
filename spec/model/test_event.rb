@@ -2,8 +2,7 @@ require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Event do
   
-  before :all do
-    @class = Rave::Models::Event
+  before :each do
     @json_time_fields = [:timestamp]
   end
   

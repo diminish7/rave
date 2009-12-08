@@ -12,7 +12,6 @@ describe Rave::Models::Wavelet do
       :blips => { "b+blip" => @root_blip },
       :users => { @user.id => @user })
     @json_time_fields = [:creation_time, :last_modified_time]
-    @class = Wavelet
   end
 
   it_should_behave_like "Component initialize()"
