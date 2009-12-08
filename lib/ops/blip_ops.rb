@@ -17,7 +17,7 @@ module Rave
       end
       
       #Insert text at an index
-      def insert_text(text, index)
+      def insert_text(index, text)
         @context.add_operation(
                                     :type => Operation::DOCUMENT_INSERT, 
                                     :blip_id => @id, 
@@ -32,7 +32,7 @@ module Rave
       #Set the content text of the blip
       def set_text(text)
         clear
-        insert_text(text, 0)
+        insert_text(0, text)
       end
       
       #Deletes the text in a given range and replaces it with the given text
@@ -43,7 +43,7 @@ module Rave
         # otherwise, if you are setting text at the end of the content, the cursor
         # gets moved to the start of the range...
         begin # Failures in this method should give us a range error.
-          insert_text(text, range.min)
+          insert_text(range.min, text)
         rescue IndexError => e
           raise RangeError.new(e.message)
         end

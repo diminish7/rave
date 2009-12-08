@@ -327,16 +327,16 @@ END
     
     describe "insert_text()" do
       it "should set the content of the blip" do
-        @hello_wave_blip.insert_text(" google", 5)
+        @hello_wave_blip.insert_text(5, " google")
         @hello_wave_blip.content.should == "Hello google wave!"
       end
       it "should add an insert operation to the context" do
-        @hello_wave_blip.insert_text(" google", 5)
+        @hello_wave_blip.insert_text(5, " google")
         validate_operations(@context, [Operation::DOCUMENT_INSERT])
       end
       it "should raise error if index is outside the content string" do
-        lambda { @hello_wave_blip.insert_text(" google", 12) }.should raise_error IndexError
-        lambda { @hello_wave_blip.insert_text(" google", -13) }.should raise_error IndexError
+        lambda { @hello_wave_blip.insert_text(12, " google") }.should raise_error IndexError
+        lambda { @hello_wave_blip.insert_text(-13, " google") }.should raise_error IndexError
       end
     end
     
