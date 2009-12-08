@@ -1,7 +1,7 @@
 #Represents an operation to be applied on the server
 module Rave
   module Models
-    class Operation
+    class Operation # :nodoc:
       attr_reader :index, :property
 
       def type; @type.dup; end

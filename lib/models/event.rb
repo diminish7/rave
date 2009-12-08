@@ -31,7 +31,7 @@ module Rave
       # - :properties
       # - :context
       # Do not use Event.new from outside; instead use Event.create
-      def initialize(options = {}) # :notnew:
+      def initialize(options = {}) # :nodoc:
         @timestamp = time_from_json(options[:timestamp]) || Time.now
         @modified_by_id = options[:modified_by] || User::NOBODY_ID
         @properties = options[:properties] || {}

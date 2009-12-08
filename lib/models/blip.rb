@@ -220,7 +220,7 @@ module Rave
 
       # Convert to json for sending in an operation. We should never need to
       # send more data than this, although blips we receive will have more data.
-      def to_json
+      def to_json # :nodoc:
         {
           'blipId' => @id,
           'javaClass' => JAVA_CLASS,

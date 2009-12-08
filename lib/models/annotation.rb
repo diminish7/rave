@@ -1,6 +1,6 @@
 module Rave
   module Models
-    class Annotation
+    class Annotation  
       def name; @name.dup; end
       def value; @value.dup; end
       def range; @range.dup; end

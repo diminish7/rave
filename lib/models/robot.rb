@@ -58,7 +58,7 @@ module Rave
       
     protected
       #Register any handlers that are defined through naming convention
-      def register_default_handlers
+      def register_default_handlers # :nodoc:
         Event::EVENT_CLASSES.each do |event|
           listener = event.type.downcase.to_sym
           if respond_to?(listener)

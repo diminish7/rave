@@ -1,6 +1,6 @@
 module Rave
   module Models
-    class Document
+    class Document # :nodoc:
       
       #TODO
       

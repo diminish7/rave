@@ -76,7 +76,7 @@ module Rave
       end
       
       #Adds a participant to the wavelet
-      def add_participant(id)
+      def add_participant(id) # :nodoc:
         if @context.users.has_key?(id)
           LOGGER.warning("Attempted to add a participant who was already in the wavelet(#{@id}): #{id}")
           return

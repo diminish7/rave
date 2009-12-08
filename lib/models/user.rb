@@ -39,7 +39,7 @@ module Rave
         @id
       end
 
-      def to_json
+      def to_json # :nodoc:
         @id.to_json
       end
     end

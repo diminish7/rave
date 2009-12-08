@@ -49,19 +49,21 @@ The robot.rb file that Rave created contains a class that extends Rave::Models::
 for your robot to talk to App Engine is included in Rave::Models::Robot, so all you really need to do now
 is define your robot's event listeners.  Here is a list of the events that Google Wave can send your robot:
 
- * WAVELET_BLIP_CREATED
- * WAVELET_BLIP_REMOVED
- * WAVELET_PARTICIPANTS_CHANGED
- * WAVELET_TIMESTAMP_CHANGED
- * WAVELET_TITLE_CHANGED
- * WAVELET_VERSION_CHANGED
- * BLIP_CONTRIBUTORS_CHANGED
- * BLIP_DELETED
- * BLIP_SUBMITTED
- * BLIP_TIMESTAMP_CHANGED
- * BLIP_VERSION_CHANGED
- * DOCUMENT_CHANGED
- * FORM_BUTTON_CLICKED
+* WAVELET_BLIP_CREATED
+* WAVELET_BLIP_REMOVED
+* WAVELET_PARTICIPANTS_CHANGED
+* WAVELET_TIMESTAMP_CHANGED
+* WAVELET_TITLE_CHANGED
+* WAVELET_VERSION_CHANGED
+* BLIP_CONTRIBUTORS_CHANGED
+* BLIP_DELETED
+* BLIP_SUBMITTED
+* BLIP_TIMESTAMP_CHANGED
+* BLIP_VERSION_CHANGED
+* DOCUMENT_CHANGED
+* FORM_BUTTON_CLICKED
+
+Note: Not all of these events are actually sent by Wave, even if you ask for them.
 
 To add a listener to your robot that will respond to a given event, just define a method with the lower-case
 version of the event name, that accepts an event and a context.  So, I want appropriate-casey to do something
@@ -73,30 +75,31 @@ whenever a blip is submitted (the BLIP_SUBMITTED event), so I add the following 
    
 The Event object contains the following properties:
 
- * type (The type of event, "BLIP_SUBMITTED" in this case)
- * timestamp (the timestamp that the event occurred)
- * modified_by (the user ID of the user who modified the document)
- * properties (Varies by event type, but this will be a hash with blipID in this case)
+* type (The type of Event, "BLIP_SUBMITTED" in this case)
+* timestamp (the timestamp that the event occurred)
+* modified_by (the User who modified the document)
+* blip (The Blip that the Event is associated with, otherwise the root Blip of the Wavelet that the Event is associated with)
+* ...other attributes, varying by Event type (see the rdoc documentation for details).
  
 The Context object contains the following properties:
 
- * waves (A hash - the keys are the wave IDs, and the values are the waves)
- * wavelets (A hash - the keys are the wavelet IDs, and the values are the wavelets)
- * blips (A hash - the keys are the blip IDs, and the values are the blips)
- * operations (An array of operations)
+* waves (A hash - the keys are the wave IDs, and the values are the Waves)
+* wavelets (A hash - the keys are the wavelet IDs, and the values are the Wavelets)
+* blips (A hash - the keys are the blip IDs, and the values are the Blips)
+* users (A hash - the keys are the IDs, such as bot@appspot.com, and the values are the Users)
 
 See the Google Wave documentation for definitions of each of these things...
 
 So, with Appropriate Casey, I want to create a robot that looks for people "shouting" in Waves
 (i.e. writing in all caps with a lot of exclamation points) and convert the text into a more
-appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yelling."  To do this, 
+appropriate case.  So "I'M NOT YELLING!!!!" would get converted to "I'm not yelling."  To do this,
 I just create a document_changed method in my robot that looks like this:
 
   :include:examples/appropriate-casey/robot.rb
     
 Here's what's going on: First, I grab the blip that's been modified (event.blip) and check it's content.  Any character that is capital
 that isn't the start of a sentence gets downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations 
-get turned into a period (and additional exclamation points get dropped). There is one API method being called: blip#set_text.  This methods updates
+get turned into a period (and additional exclamation points get dropped). There is one API method being called: Blip#set_text.  This methods updates
 the content of the blip locally (so the changes happen optimistically) and then sends an operation request back to the server so that all
 users can see the changes.
 
@@ -130,9 +133,9 @@ From your project directory run:
    
 This will start the development server on port 8080.  You can now hit the following three URLs:
 
-  * http://localhost:8080/_wave/capabilities.xml
-  * http://localhost:8080/_wave/robot/profile
-  * http://localhost:8080/_wave/robot/jsonrpc
+* http://localhost:8080/_wave/capabilities.xml
+* http://localhost:8080/_wave/robot/profile
+* http://localhost:8080/_wave/robot/jsonrpc
 
 The first two are GETs, but the last one requires a POST. See the Google Wave protocol for the expected body
 of the POST if you want to test locally.
@@ -142,6 +145,12 @@ of the POST if you want to test locally.
 Use the App Engine SDK to deploy.  From your project directory run:
 
   path/to/appengine_sdk/bin/appcfg update tmp/war
+
+Note: Whenever you deploy a new version of your robot and try to use it,
+it will appear to not do anything because it takes a long time to start up the
+system on appstore.
+You probably won't get anything happening for about 30 seconds after the bot first
+receives a Wave event, but after that it should work fine.
   
 === Using the robot
 

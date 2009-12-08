@@ -88,7 +88,7 @@ module Rave
       end
 
       # Create users for every reference to one in the wave.
-      def resolve_user_references
+      def resolve_user_references # :nodoc:
         robot = ::MyRaveRobot::Robot.instance
         @users[robot.id] = robot
 		    robot.context = self
@@ -115,7 +115,6 @@ module Rave
       end
 
     public
-      # *INTERNAL*
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
       def add_blip(blip) # :nodoc:
         @blips[blip.id] = blip
@@ -123,20 +122,17 @@ module Rave
         blip
       end
 
-      # *INTERNAL*
       # Add an operation to the list to be executed.
       def add_operation(options) # :nodoc:
         @operations << Operation.new(options)
         self
       end
 
-      # *INTERNAL*
       # Remove a blip.
       def remove_blip(blip) # :nodoc:
         @blips.delete(blip.id)
       end
 
-      # *INTERNAL*
       # Add a user to users (Use an Operation to actually add the blip to the Wave).
       def add_user(options) # :nodoc:
         raise DuplicatedIDError.new("Can't add another User with id #{options[:id]}") if @users.has_key? options[:id]
@@ -152,7 +148,7 @@ module Rave
       end
            
       #Serialize the context for use in the line protocol.
-      def to_json
+      def to_json # :nodoc:
         hash = {
           'operations' => { 'javaClass' => 'java.util.ArrayList', 'list' => @operations },
           'javaClass' => JAVA_CLASS
