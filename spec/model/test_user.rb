@@ -7,7 +7,11 @@ URL = 'http://googlewave.com'
 describe Rave::Models::User do
   
   before :each do
+    @class = User
   end
+
+  it_should_behave_like "Component id()"
+  it_should_behave_like "Component initialize()"
   
   describe "robot?()" do
     it "should return false for a human user" do

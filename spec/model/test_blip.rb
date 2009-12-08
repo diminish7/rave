@@ -4,8 +4,6 @@ describe Rave::Models::Blip do
   
   before :all do
     Rave::Models::Robot::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
-    @json_time_fields = [:last_modified_time]
-    @class = Blip
   end
 
   before :each do
@@ -30,6 +28,8 @@ describe Rave::Models::Blip do
         "blip" => @blip, "deleted" => @deleted_blip, "generated" => @generated_blip })
 
     @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
+    @json_time_fields = [:last_modified_time]
+    @class = Blip
   end
 
   describe "initialize()" do
@@ -42,7 +42,7 @@ describe Rave::Models::Blip do
     end
   end
   
-
+  it_should_behave_like "Component id()"
   it_should_behave_like "time_from_json()"
   
   describe "root?()" do

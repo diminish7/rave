@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Wavelet do
-  before do
+  before :each do
     # A wavelet must contain at least one blip, so create this minimum system.
     @root_blip = Blip.new(:id => "b+blip", :wavelet_id => "w+wavelet", :wave_id => "w+wave")
     @wavelet = Wavelet.new(:id => "w+wavelet", :wave_id => "w+wave", :root_blip_id => "b+blip")
@@ -12,9 +12,11 @@ describe Rave::Models::Wavelet do
       :blips => { "b+blip" => @root_blip },
       :users => { @user.id => @user })
     @json_time_fields = [:creation_time, :last_modified_time]
-    @class = Rave::Models::Wavelet
+    @class = Wavelet
   end
 
+  it_should_behave_like "Component initialize()"
+  it_should_behave_like "Component id()"
   it_should_behave_like "time_from_json()"
   
   describe "final_blip()" do
