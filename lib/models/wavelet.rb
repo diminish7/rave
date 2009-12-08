@@ -92,17 +92,17 @@ module Rave
       
       #Removes this robot from the wavelet
       def remove_robot
-        raise UnimplementedError
+        raise NotImplementedError
       end
       
       #Sets the data document for the wavelet
       def set_data_document(name, data)
-        raise UnimplementedError
+        raise NotImplementedError
       end
       
       #Set the title
       def title=(title)
-        raise UnimplementedError
+        raise NotImplementedError
         @title = title
       end
 

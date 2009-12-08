@@ -79,64 +79,53 @@ module Rave
       
       #Annotates the entire content
       def annotate_document(name, value)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Deletes the annotation with the given name
       def delete_annotation_by_name(name)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Deletes the annotations with the given key in the given range
       def delete_annotation_in_range(range, name)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Appends an inline blip to this blip
       def append_inline_blip
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Deletes an inline blip from this blip
       def delete_inline_blip(blip_id)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Inserts an inline blip at the given position
       def insert_inline_blip(position)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Deletes an element at the given position
       def delete_element(position)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Inserts the given element in the given position
       def insert_element(position, element)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Replaces the element at the given position with the given element
       def replace_element(position, element)
-        #TODO
-        raise "This hasn't been implemented yet"
+        raise NotImplementedError
       end
       
       #Appends an element
       def append_element(element)
-        #TODO
-        raise "This hasn't been implemented yet"
-      end
-      
+        raise NotImplementedError
+      end   
     end
   end
 end

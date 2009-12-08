@@ -9,5 +9,5 @@ module Rave
   class DuplicatedIDError < Exception; end
 
   # Raised if an unimplemented method is called.
-  class UnimplementedError < Exception; end
+  class NotImplementedError < Exception; end
 end
