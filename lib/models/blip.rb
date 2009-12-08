@@ -6,7 +6,7 @@ module Rave
       
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
       
-      attr_reader :annotations, :child_blip_ids, :content, :contributor_ids,
+      attr_reader :annotations, :child_blip_ids, :contributor_ids,
                   :elements, :last_modified_time, :parent_blip_id, :version, :wave_id,
                   :wavelet_id
 
@@ -84,6 +84,9 @@ module Rave
 
       # Has the blip been passed from wave, rather than being inferred or created locally?
       def original?; @creation == :original; end
+
+      # Text contained in the blip.
+      def content; @content.dup; end
       
       #Returns true if an annotation with the given name exists in this blip
       def has_annotation?(name)
