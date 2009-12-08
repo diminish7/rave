@@ -4,6 +4,8 @@ describe Rave::Models::Blip do
   
   before :all do
     Rave::Models::Robot::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
+    @json_time_fields = [:last_modified_time]
+    @class = Blip
   end
 
   before :each do
@@ -40,7 +42,10 @@ describe Rave::Models::Blip do
     end
   end
   
-  describe "root?" do
+
+  it_should_behave_like "time_from_json()"
+  
+  describe "root?()" do
     it "should return true if a blip has no parent" do
       @root_blip.root?.should be_true
     end

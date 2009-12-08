@@ -1,9 +1,9 @@
 robot:
   id: appropriate-casey@appspot.com
   name: Appropriate Casey
-  image_url: http://appropriate-casey.appspot.com/image.png
+  image_url: http://appropriate-casey.appspot.com/ssshh.gif
   profile_url: http://appropriate-casey.appspot.com/
-  version: 1
+  version: 2
   file: robot.rb
 
 appcfg: C:/appengine-java-sdk/bin/appcfg

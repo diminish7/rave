@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Wavelet < Component
+      include Rave::Mixins::TimeUtils
+      
       attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
                   :root_blip_id, :title, :version, :wave_id, :participant_ids, :creator_id
       
@@ -23,9 +25,9 @@ module Rave
       def initialize(options = {})
         super(options)
         @creator_id = options[:creator] || User::NOBODY_ID
-        @creation_time = options[:creation_time] || Time.now
+        @creation_time = time_from_json(options[:creation_time]) || Time.now
         @data_documents = options[:data_documents] || {}
-        @last_modified_time = options[:last_modified_time] || Time.now
+        @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
         @participant_ids = options[:participants] || []
         @root_blip_id = options[:root_blip_id]
         @title = options[:title]
