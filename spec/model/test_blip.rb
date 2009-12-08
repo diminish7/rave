@@ -162,12 +162,21 @@ describe Rave::Models::Blip do
       validate_operations(@context, [])
     end
   end
+
+  describe "add_annotation()" do
+    it "should add annotations to the list" do
+      blip = Blip.new(:id => "bleh")
+      annotation = Annotation.new(:name => "test")
+      blip.add_annotation(annotation)
+      blip.annotations.should == [annotation]
+    end
+  end
   
   describe "has_annotation?()" do
     it "should return true if the blip has an annotation with the given name" do
       blip = Blip.new(:id => "bleh")
       blip.has_annotation?("test").should be_false
-      blip.annotations << Annotation.new(:name => "test")
+      blip.add_annotation(Annotation.new(:name => "test"))
       blip.has_annotation?("test").should be_true
     end
   end

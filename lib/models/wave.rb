@@ -2,7 +2,7 @@
 module Rave
   module Models
     class Wave < Component
-      attr_reader :wavelet_ids
+      def wavelet_ids; @wavelet_ids.map { |id| id.dup }; end
       
       #Options include:
       # - :wavelet_ids

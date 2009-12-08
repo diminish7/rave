@@ -6,9 +6,16 @@ module Rave
       
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
       
-      attr_reader :annotations, :child_blip_ids, :contributor_ids,
-                  :elements, :last_modified_time, :parent_blip_id, :version, :wave_id,
-                  :wavelet_id
+      attr_reader :version
+      
+      def annotations; @annotations.dup; end
+      def child_blip_ids; @child_blip_ids.map { |id| id.dup }; end
+      def contributor_ids; @contributor_ids.map { |id| id.dup }; end
+      def elements; @elements.dup; end
+      def last_modified_time; @last_modified_time.dup; end
+      def parent_blip_id; @parent_blip_id.nil? ? nil : @parent_blip_id.dup; end
+      def wave_id; @wave_id.nil? ? nil : @wave_id.dup; end
+      def wavelet_id; @wavelet_id.nil? ? nil : @wavelet_id.dup; end
 
       VALID_STATES = [:normal, :null, :deleted] # As passed to initializer in :state option.
       VALID_CREATIONS = [:original, :generated, :virtual] # As passed to initializer in :creation option.
@@ -36,7 +43,7 @@ module Rave
         @child_blip_ids = options[:child_blip_ids] || []
         @content = options[:content] || ''
         @contributor_ids = options[:contributors] || []
-        @creator = options[:creator]
+        @creator = options[:creator] || User::NOBODY_ID
         @elements = options[:elements] || {}
         @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
         @parent_blip_id = options[:parent_blip_id]
@@ -93,6 +100,12 @@ module Rave
         @annotations.any? { |a| a.name == name }
       end
 
+      # Adds an annotation to the Blip.
+      def add_annotation(annotation)
+        @annotations << annotation
+        self
+      end
+
       # Users that have made a contribution to the blip.
       def contributors
         @contributor_ids.map { |c| @context.users[c] }
@@ -107,7 +120,7 @@ module Rave
       def create_child_blip
         blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => @id, :wavelet_id => @wavelet_id,
           :context => @context, :contributors => [Robot.instance.id], :creation => :generated)
-        @context.operations << Operation.new(:type => Operation::BLIP_CREATE_CHILD, :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id, :property => blip)
+        @context.add_operation(:type => Operation::BLIP_CREATE_CHILD, :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id, :property => blip)
         add_child_blip(blip)
         blip
       end
@@ -141,7 +154,7 @@ module Rave
         elsif root?
           LOGGER.warning("Attempt to delete root blip: #{id}")
         else
-          @context.operations << Operation.new(:type => Operation::BLIP_DELETE,
+          @context.add_operation(:type => Operation::BLIP_DELETE,
             :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id)
           delete_me
         end

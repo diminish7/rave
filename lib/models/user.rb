@@ -8,12 +8,13 @@ module Rave
       # Url link to the profile of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       #       the url will be empty.
-      attr_reader :profile_url
+      def profile_url; @profile_url.dup; end
 
       # Url link to the image of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       #       the url will be empty.
-      attr_reader :image_url
+      def image_url; @image_url.dup; end
+
       # - :id
       # - :name
       # - :profile_url

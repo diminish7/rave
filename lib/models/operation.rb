@@ -2,7 +2,12 @@
 module Rave
   module Models
     class Operation
-      attr_reader :type, :wave_id, :wavelet_id, :blip_id, :index, :property
+      attr_reader :index, :property
+
+      def type; @type.dup; end
+      def wave_id; @wave_id.dup; end
+      def wavelet_id; @wavelet_id.dup; end
+      def blip_id; @blip_id.dup; end
       
       JAVA_CLASS = 'com.google.wave.api.impl.OperationImpl' # :nodoc:
       

@@ -2,15 +2,13 @@ require File.join(File.dirname(__FILE__), "helper")
 
 describe Rave::Models::Context do
 
-#  describe "add_user()" do
-#    it "should add a user to the users" do
-#      context = Context.new()
-#      user = User.new(:id => "user")
-#      context.add_user(user)
-#      context.users.size.should == 2 # Including the obligatory robot.
-#      context.users[user.id].should == user
-#    end
-#  end
+  describe "add_user()" do
+    it "should add a user to the users" do
+      context = Context.new()
+      user = context.add_user(:id => "user")
+      context.users["user"].should == user
+    end
+  end
 
   describe "users()" do
     it "should return the users passed to it" do

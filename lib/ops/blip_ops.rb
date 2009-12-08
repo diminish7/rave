@@ -5,7 +5,7 @@ module Rave
       
       #Clear the content
       def clear
-        @context.operations << Operation.new(
+        @context.add_operation(
                                     :type => Operation::DOCUMENT_DELETE, 
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 
@@ -18,7 +18,7 @@ module Rave
       
       #Insert text at an index
       def insert_text(text, index)
-        @context.operations << Operation.new(
+        @context.add_operation(
                                     :type => Operation::DOCUMENT_INSERT, 
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 
@@ -52,7 +52,7 @@ module Rave
       
       #Appends text to the end of the content
       def append_text(text)
-        @context.operations << Operation.new(
+        @context.add_operation(
                                     :type => Operation::DOCUMENT_APPEND, 
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 
@@ -66,7 +66,7 @@ module Rave
       def delete_range(range)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
         
-        @context.operations << Operation.new(
+        @context.add_operation(
                                     :type => Operation::DOCUMENT_DELETE, 
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 

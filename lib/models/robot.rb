@@ -11,7 +11,8 @@ module Rave
 
       CONFIG_FILE = 'config.yaml' # :nodoc:
       
-      attr_reader :version # Version of the robot, as in the yaml config.
+      # Version of the robot, as in the yaml config.
+      def version; @version.dup; end
       
       def initialize()
         config = config_from_file

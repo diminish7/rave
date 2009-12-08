@@ -4,9 +4,17 @@ module Rave
     class Wavelet < Component
       include Rave::Mixins::TimeUtils
       
-      attr_reader :creator, :creation_time, :data_documents, :last_modified_time, 
-                  :root_blip_id, :title, :version, :wave_id, :participant_ids, :creator_id
-      
+      attr_reader :version
+
+      def creator_id; @creator_id.dup; end
+      def creation_time; @creation_time.dup; end
+      def data_documents; @data_documents.dup; end
+      def last_modified_time; @last_modified_time.dup; end
+      def root_blip_id; @root_blip_id.dup; end
+      def title; @title.dup; end
+      def wave_id; @wave_id.dup; end
+      def participant_ids; @participant_ids.map { |id| id.dup }; end
+
       ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
       ROOT_ID_REGEXP = /conv\+root$/
       
@@ -52,7 +60,7 @@ module Rave
           :wavelet_id => @id, :context => @context, :creation => :generated)
         parent.add_child_blip(blip)
         
-        @context.operations << Operation.new(:type => Operation::WAVELET_APPEND_BLIP, :wave_id => @wave_id, :wavelet_id => @id, :property => blip)
+        @context.add_operation(:type => Operation::WAVELET_APPEND_BLIP, :wave_id => @wave_id, :wavelet_id => @id, :property => blip)
         blip
       end
 
@@ -75,26 +83,26 @@ module Rave
         end
 
         # Allow string names to be used as participant.
-        user = User.new(:id => id)
-        @context.add_user(user)
+        user = @context.add_user(:id => id)
 
-        @context.operations << Operation.new(:type => Operation::WAVELET_ADD_PARTICIPANT,
+        @context.add_operation(:type => Operation::WAVELET_ADD_PARTICIPANT,
           :wave_id => @wave_id, :wavelet_id => @id, :property => user)
         @participant_ids << id
       end
       
       #Removes this robot from the wavelet
       def remove_robot
-        #TODO
+        raise UnimplementedError
       end
       
       #Sets the data document for the wavelet
       def set_data_document(name, data)
-        #TODO
+        raise UnimplementedError
       end
       
       #Set the title
       def title=(title)
+        raise UnimplementedError
         @title = title
       end
 

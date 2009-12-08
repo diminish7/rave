@@ -2,7 +2,13 @@
 module Rave
   module Models
     class Context
-      attr_reader :waves, :wavelets, :blips, :operations, :users, :primary_wavelet
+      attr_reader :primary_wavelet
+
+      def waves; @waves.dup; end
+      def wavelets; @wavelets.dup; end
+      def blips; @blips.dup; end
+      def operations; @operations.dup; end
+      def users; @users.dup; end
       
       JAVA_CLASS = 'com.google.wave.api.impl.OperationMessageBundle' # :nodoc:
       
@@ -90,30 +96,38 @@ module Rave
         @wavelets.each_value do |wavelet|
           wavelet.participant_ids.each do |id|
             unless @users[id]
-              @users[id] = User.new(:id => id, :context => self)
+              add_user(:id => id)
             end
           end
           
           unless @users[wavelet.creator_id]
-            @users[wavelet.creator_id] = User.new(:id => wavelet.creator_id, :context => self)
+            add_user(:id => wavelet.creator_id)
           end
         end
         
         @blips.each_value do |blip|
           blip.contributor_ids.each do |id|
             unless @users[id]
-              @users[id] = User.new(:id => id, :context => self)
+              add_user(:id => id)
             end
           end
         end
       end
 
     public
+      # *INTERNAL*
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
       def add_blip(blip) # :nodoc:
         @blips[blip.id] = blip
         blip.context = self
         blip
+      end
+
+      # *INTERNAL*
+      # Add an operation to the list to be executed.
+      def add_operation(options) # :nodoc:
+        @operations << Operation.new(options)
+        self
       end
 
       # *INTERNAL*
@@ -124,7 +138,9 @@ module Rave
 
       # *INTERNAL*
       # Add a user to users (Use an Operation to actually add the blip to the Wave).
-      def add_user(user) # :nodoc:
+      def add_user(options) # :nodoc:
+        raise DuplicatedIDError.new("Can't add another User with id #{options[:id]}") if @users.has_key? options[:id]
+        user = User.new(options)
         @users[user.id] = user
         user.context = self
         user
