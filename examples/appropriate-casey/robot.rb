@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rave'
 
-module MyRaveRobot
+module AppropriateCasey
   class Robot < Rave::Models::Robot
     #This is a very simple robot that tries to tone down yelling in waves
     def blip_submitted(event, context)

@@ -73,7 +73,8 @@ module Rave
         Rave::Models::Context.new(
               :waves => waves,
               :wavelets => wavelets,
-              :blips => blips
+              :blips => blips,
+              :robot => self
           )
       end
       
@@ -144,7 +145,8 @@ module Rave
                 :timestamp => event['timestamp'],
                 :modified_by => event['modifiedBy'],
                 :properties => properties,
-                :context => context
+                :context => context,
+                :robot => self
              )
         end
       end

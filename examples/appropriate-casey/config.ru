@@ -1,2 +1,2 @@
 require 'robot'
-run MyRaveRobot::Robot.instance
+run AppropriateCasey::Robot.instance

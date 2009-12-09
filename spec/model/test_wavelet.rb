@@ -53,13 +53,13 @@ describe Rave::Models::Wavelet do
   describe "to_s()" do
     it "should return information about the wavelet" do
       wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!", :participants => ['Dave'])
-      Context.new(:wavelets => { "w+wavelet" => wavelet })
+      Context.new(:wavelets => { "w+wavelet" => wavelet }, :robot => robot_instance)
       wavelet.to_s.should == "Wavelet:w+wavelet:Dave:Hello!"
     end
 
    it "should crop long content" do
       wavelet = Wavelet.new(:id => "w+wavelet", :title => 'abcdefghijklmnopqrstuvwxyz', :participants => ['Dave'])
-      Context.new(:wavelets => { "w+wavelet" => wavelet })
+      Context.new(:wavelets => { "w+wavelet" => wavelet }, :robot => robot_instance)
       wavelet.to_s.should == "Wavelet:w+wavelet:Dave:abcdefghijklmnopqrstu..."
     end
   end

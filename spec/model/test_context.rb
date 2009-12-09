@@ -22,8 +22,10 @@ describe Rave::Models::Context do
       wavelet1 = Wavelet.new(:id => "wavelet1", :participants => participants)
       wavelet2 = Wavelet.new(:id => "wavelet2", :participants => [participants[0]])
       wavelet3 = Wavelet.new(:id => "wavelet3", :participants => [])
-      context = Context.new(:wavelets => {"wavelet1" => wavelet1,
-          "wavelet2" => wavelet2, "wavelet3" => wavelet3})
+      context = Context.new(
+        :wavelets => {"wavelet1" => wavelet1, "wavelet2" => wavelet2, "wavelet3" => wavelet3},
+        :robot => robot_instance
+      )
       participants.each do |participant|
         context.users[participant].id.should == participant
       end
@@ -34,16 +36,18 @@ describe Rave::Models::Context do
       wavelet1 = Wavelet.new(:id => "wavelet1", :creator => creators[0])
       wavelet2 = Wavelet.new(:id => "wavelet2", :creator => creators[0])
       wavelet3 = Wavelet.new(:id => "wavelet3", :creator => creators[1])
-      context = Context.new(:wavelets => {"wavelet1" => wavelet1,
-          "wavelet2" => wavelet2, "wavelet3" => wavelet3})
+      context = Context.new(
+        :wavelets => {"wavelet1" => wavelet1, "wavelet2" => wavelet2, "wavelet3" => wavelet3},
+        :robot => robot_instance
+      )
       creators.each do |participant|
         context.users[participant].id.should == participant
       end
     end
 
     it "should automatically contain the local robot" do
-      context = Context.new
-      context.users[::MyRaveRobot::Robot.instance.id].should == ::MyRaveRobot::Robot.instance
+      context = Context.new(:robot => robot_instance)
+      context.users[robot_instance.id].should == robot_instance
     end
 
     it "should contain all the blip contributors" do
@@ -51,7 +55,10 @@ describe Rave::Models::Context do
       blip1 = Blip.new(:id => "blip1", :contributors => contributors)
       blip2 = Blip.new(:id => "blip2", :contributors => [contributors[0]])
       blip3 = Blip.new(:id => "blip3", :contributors => [])
-      context = Context.new(:blips => {"blip1" => blip1, "blip2" => blip2, "blip3" => blip3})
+      context = Context.new(
+        :blips => {"blip1" => blip1, "blip2" => blip2, "blip3" => blip3},
+        :robot => robot_instance
+      )
       contributors.each do |contributor|
         context.users[contributor].id.should == contributor
       end

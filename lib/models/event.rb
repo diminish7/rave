@@ -39,7 +39,7 @@ module Rave
 
         raise ArgumentError.new(":context option required") if @context.nil?
 
-        unless @context.users.has_key?(@modified_by_id) or (::MyRaveRobot::Robot.instance.id == @modified_by_id)
+        unless @context.users.has_key?(@modified_by_id) or (options[:robot] && options[:robot].id == @modified_by_id)
           @context.add_user(:id => @modified_by_id)
         end
       end

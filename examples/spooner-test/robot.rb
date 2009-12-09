@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rave'
 
-module MyRaveRobot
+module SpoonerTest
   class Robot < Rave::Models::Robot
     
     SPELLY_ID = 'spelly@gwave.com'

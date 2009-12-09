@@ -66,6 +66,10 @@ def validate_operations(context, types)
   end
 end
 
+def robot_instance
+  ::MyRaveRobot::Robot.instance
+end
+
 # Created to mimic the subclassed robot the robot-maker will create in live usage.
 module MyRaveRobot
   class Robot < Rave::Models::Robot

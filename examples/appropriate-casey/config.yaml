@@ -4,6 +4,3 @@ robot:
   image_url: http://appropriate-casey.appspot.com/ssshh.gif
   profile_url: http://appropriate-casey.appspot.com/
   version: 2
-  file: robot.rb
-
-appcfg: C:/appengine-java-sdk/bin/appcfg

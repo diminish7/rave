@@ -4,6 +4,3 @@ robot:
   image_url: http://spooner-test.appspot.com/icon.png
   profile_url: http://spooner-test.appspot.com/
   version: 12
-  file: robot.rb
-
-appcfg: C:/appengine-java-sdk/bin/appcfg

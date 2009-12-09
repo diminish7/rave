@@ -36,7 +36,7 @@ module Rave
         @users.values.each { |user| user.context = self }          #Set up self as this user's context
 
         resolve_blip_references
-        resolve_user_references
+        resolve_user_references(options[:robot]) if options[:robot]
       end
 
     protected
@@ -88,8 +88,7 @@ module Rave
       end
 
       # Create users for every reference to one in the wave.
-      def resolve_user_references # :nodoc:
-        robot = ::MyRaveRobot::Robot.instance
+      def resolve_user_references(robot) # :nodoc:
         @users[robot.id] = robot
 		    robot.context = self
         

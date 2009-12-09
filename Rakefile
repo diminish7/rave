@@ -6,9 +6,6 @@ require 'rake/clean'
 require 'fileutils'
 include FileUtils
 
-# User config.
-APP_ENGINE_APP_CFG = 'C:/appengine-java-sdk/bin/appcfg'
-
 # Non-user config.
 DEPS = {
     'rack' => '>=1.0',

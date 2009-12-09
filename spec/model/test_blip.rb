@@ -22,10 +22,13 @@ describe Rave::Models::Blip do
     @wavelet = Wavelet.new(:id => "wavelet", :root_blip_id => "root")
     @wave = Wave.new(:id => "wave", :wavelets => { "wavelet" => @wavelet })
     
-    @context = Context.new(:waves => { "wave" => @wave },
+    @context = Context.new(
+      :waves => { "wave" => @wave },
       :wavelets => {"wavelet" => @wavelet},
       :blips => { "root" => @root_blip, "middle" => @middle_blip, "leaf" => @leaf_blip,
-        "blip" => @blip, "deleted" => @deleted_blip, "generated" => @generated_blip })
+        "blip" => @blip, "deleted" => @deleted_blip, "generated" => @generated_blip },
+      :robot => ::MyRaveRobot::Robot.instance
+      )
 
     @null_blip = Blip.new(:id => "null", :state => :null) # Not in the context.
     @json_time_fields = [:last_modified_time]
@@ -238,7 +241,7 @@ describe Rave::Models::Blip do
     it "should return the blip's class, id, state and content" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :state => :normal,
         :contributors => ['Dave'])
-      Context.new(:blips => { "Dave" => blip })
+      Context.new(:blips => { "Dave" => blip }, :robot => robot_instance)
       blip.to_s.should == "Blip:b+blip:Dave:Hello!"
     end
 
@@ -254,19 +257,19 @@ describe Rave::Models::Blip do
 
     it "should convert newlines to characters to prevent wrap" do
       blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['Hal9000'])
-      Context.new(:blips => { blip.id => blip })
+      Context.new(:blips => { blip.id => blip }, :robot => robot_instance)
       blip.to_s.should == "Blip:b+blip:Hal9000:Hello\\nDave!"
     end
 
     it "should crop long content" do
       blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['Dave'])
-      Context.new(:blips => { "b+blip" => blip })
+      Context.new(:blips => { "b+blip" => blip }, :robot => robot_instance)
       blip.to_s.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu..."
     end
 
     it "should show multiple contributors in order" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Claire', 'Dave', 'Sue'])
-      Context.new(:blips => { "b+blip" => blip })
+      Context.new(:blips => { "b+blip" => blip }, :robot => robot_instance)
       blip.to_s.should == "Blip:b+blip:Claire,Dave,Sue:Hello!"
     end
   end

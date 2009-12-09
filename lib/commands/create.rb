@@ -7,7 +7,7 @@ require 'ftools'
 # e.g. rave my_robot image_url=http://appropriate-casey.appspot.com/image.png profile_url=http://appropriate-casey.appspot.com/profile.json
 def create_robot(args)
   robot_name = args.first
-  module_name = 'MyRaveRobot'
+  module_name = robot_name.split(/_|-/).collect { |word| word.capitalize }.join
   robot_class_name = "#{module_name}::Robot"
   
   options = { :name => robot_name, :version => 1, :id => "#{robot_name}@appspot.com" }
@@ -31,7 +31,6 @@ def create_robot(args)
   public_folder = File.join(dir, "public")
   html = File.join(public_folder, "index.html")
   here = File.dirname(__FILE__)
-  rake = File.join(dir, "Rakefile")
   jar_dir = File.join(here, "..", "jars")
   jars = %w( appengine-api-1.0-sdk-1.2.8.jar jruby-core.jar ruby-stdlib.jar )
 
@@ -55,12 +54,6 @@ def create_robot(args)
   puts "Creating configuration file #{File.expand_path(config)}"
   File.open(config, "w") do |f|
     f.puts config_file_contents(options)
-  end
-
-  # Make up the html index file.
-  puts "Creating Rakefile #{File.expand_path(rake)}"
-  File.open(rake, "w") do |f|
-    f.puts rake_file_contents(config)
   end
 
   #Make the appengine web xml file
@@ -153,9 +146,6 @@ robot:
   image_url: #{options[:image_url]}
   profile_url: #{options[:profile_url]}
   version: #{options[:version]}
-  file: #{options[:file] or 'robot.rb'}
-
-appcfg: C:/appengine-java-sdk/bin/appcfg
 CONFIG
 end
 
@@ -188,13 +178,9 @@ end
 
 def warble_config_contents
   <<-WARBLE
-require 'yaml'
-config_file = 'config.yaml'
-config = YAML::load(File.open(config_file))
-robot_file = config['robot']['file']
 Warbler::Config.new do |config|
   config.gems = %w( rave json-jruby rack builder )
-  config.includes = %w( appengine-web.xml ) + [config_file, robot_file]
+  config.includes = %w( robot.rb config.yaml appengine-web.xml )
 end
 WARBLE
 end
@@ -210,45 +196,11 @@ def html_file_contents(name, id)
 
   <img src="icon.png" alt="#{name} icon" />
 
-  <p>This is a Google Wave robot using <a href="http://github.com/diminish7/rave">Rave</a>
-   running in jruby with the Google Wave Java API.
+  <p>This is a Google Wave robot using <a href="http://github.com/diminish7/rave">Rave</a> running in JRuby.
    Use this robot in your Google Waves by adding <em>#{id}</em> as a participant</p>
 
   <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
 </body>
 </html>
 HTML
-end
-
-def rake_file_contents(config_file)
-  <<-RAKE
-# Rakefile
-require 'spec/rake/spectask'
-require 'rake/clean'
-require 'yaml'
-
-config_file = '#{File.basename(config_file)}'
-
-CLOBBER.include FileList['*.war']
-CLEAN.include FileList['tmp']
-
-desc "Build war archive"
-task :build do
-  cmd = "rave war"
-  cmd = "jruby -S \#{cmd}" if RUBY_PLATFORM == 'java'
-  system cmd
-end
-
-desc "Deploy as robot (requires appspot account)"
-task :deploy => :build do
-  config = YAML::load(File.open(config_file))
-  system "\#{config['appcfg']} update #{File.join('tmp', 'war')}"
-end
-
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*.rb']
-end
-
-task :test => :spec
-RAKE
 end
