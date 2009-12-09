@@ -229,13 +229,12 @@ module Rave
         }.to_json
       end
 
-    protected
       # *INTERNAL*
       # Delete the blip or, if appropriate, destroy it instead.
-      def delete_me # :nodoc:
+      def delete_me(allow_destroy = true) # :nodoc:
         raise "Can't delete root blip" if root?
 
-        if leaf?
+        if leaf? and allow_destroy
           destroy_me
         else
           # Blip is marked as deleted, but stays in place to maintain structure.
@@ -246,6 +245,7 @@ module Rave
         @id
       end
 
+    protected
       # *INTERNAL*
       # Remove the blip entirely, leaving it null.
       def destroy_me # :nodoc:

@@ -152,7 +152,7 @@ describe Rave::Models::Robot do
       event = events.first
       event.type.should == Event::WAVELET_PARTICIPANTS_CHANGED
       event.participants_removed.should == []
-      event.participants_added.should == ['monty@appspot.com']
+      validate_user_list(event.participants_added, ['monty@appspot.com'])
     end
   end
   

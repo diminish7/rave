@@ -36,7 +36,7 @@ module Rave
         @users.values.each { |user| user.context = self }          #Set up self as this user's context
 
         resolve_blip_references
-        resolve_user_references(options[:robot]) if options[:robot]
+        resolve_user_references(options[:robot])
       end
 
     protected
@@ -51,7 +51,7 @@ module Rave
               child = @blips[child_id]
               if child.nil?
                 child = Blip.new(:id => child_id, :parent_blip_id => blip.id,
-                  :wavelet_id => blip.wavelet_id, :creation => :virtual)
+                  :wavelet_id => blip.wavelet_id, :wave_id => blip.wave_id, :creation => :virtual)
                 add_blip(child)
               else
                 # Since a child might have been created due to a reference from
@@ -71,7 +71,7 @@ module Rave
             parent = @blips[blip.parent_blip_id]
             if parent.nil?
               parent = Blip.new(:id => blip.parent_blip_id, :child_blip_ids => [blip.id],
-                :wavelet_id => blip.wavelet_id, :creation => :virtual)
+                :wavelet_id => blip.wavelet_id, :wave_id => blip.wave_id, :creation => :virtual)
               add_blip(parent)
             else
               # Since there might be multiple "real" children, ensure that even
@@ -89,8 +89,10 @@ module Rave
 
       # Create users for every reference to one in the wave.
       def resolve_user_references(robot) # :nodoc:
-        @users[robot.id] = robot
-		    robot.context = self
+        if robot
+          @users[robot.id] = robot
+          robot.context = self
+        end
         
         @wavelets.each_value do |wavelet|
           wavelet.participant_ids.each do |id|

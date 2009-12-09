@@ -64,38 +64,86 @@ describe Rave::Models::Event do
       Rave::Models::Event::BlipSubmittedEvent.type.should == 'BLIP_SUBMITTED'
     end
   end
+end
 
-  describe Rave::Models::Event::BlipDeletedEvent do
-     describe "blip" do
-       it "should return a virtual blip if it is not referenced anywhere" do
-         wavelet = Wavelet.new(:id => "w+wavelet")
-         context = Context.new(:wavelets => {'w+wavelet' => wavelet })
-         event = Rave::Models::Event::BlipDeletedEvent.new(:context => context,
-           :properties => { 'blipId' => 'b+undef' })
+describe Event::BlipDeletedEvent do
+  describe "blip" do
+    it "should return a virtual blip if it is not referenced anywhere" do
+      wavelet = Wavelet.new(:id => "w+wavelet")
+      context = Context.new(:wavelets => {'w+wavelet' => wavelet })
+      event = described_class.new(:context => context,
+        :properties => { 'blipId' => 'destroyed' })
 
-         deleted_blip = event.blip
-         deleted_blip.id.should == 'b+undef'
-         deleted_blip.parent_blip.should be_nil
-         deleted_blip.child_blips.should == []
-         deleted_blip.wavelet.should == wavelet
-         context.blips['b+undef'].should == deleted_blip
-       end
+      deleted_blip = event.blip.should be_nil
+      context.blips['destroyed'].should be_nil
+      event.blip_id.should == 'destroyed'
+    end
 
-       it "should return a generated blip if it is already referenced from another blip" do
-         blip = Blip.new(:id => 'b+blip', :parent_blip_id => 'b+undef', :wavelet_id => 'w+wavelet')
-         wavelet = Wavelet.new(:id => "w+wavelet")
-         context = Context.new(:blips => {'b+blip' => blip}, :wavelets => {'w+wavelet' => wavelet })
-         event = Rave::Models::Event::BlipDeletedEvent.new(:context => context,
-           :properties => { 'blipId' => 'b+undef' })
-         
-         deleted_blip = event.blip
-         deleted_blip.should == blip.parent_blip
-         deleted_blip.id.should == 'b+undef'
-         deleted_blip.parent_blip.should be_nil
-         deleted_blip.child_blips.should == [blip]
-         deleted_blip.wavelet.should == wavelet
-         context.blips['b+undef'].should == deleted_blip
-       end
-     end
+    it "should return a new blip if it is already referenced from another blip" do
+      blip = Blip.new(:id => 'b+blip', :child_blip_ids => ['deleted'], :wavelet_id => 'w+wavelet')
+      wavelet = Wavelet.new(:id => "w+wavelet")
+      context = Context.new(:blips => {'b+blip' => blip}, :wavelets => {'w+wavelet' => wavelet })
+      event = described_class.new(:context => context,
+        :properties => { 'blipId' => 'deleted' })
+
+      deleted_blip = event.blip
+      deleted_blip.should == blip.child_blips.first
+      deleted_blip.id.should == 'deleted'
+      deleted_blip.parent_blip.should == blip
+      deleted_blip.child_blips.should == []
+      deleted_blip.wavelet.should == wavelet
+      deleted_blip.deleted?.should be_true
+      deleted_blip.null?.should be_false
+      deleted_blip.virtual?.should be_true
+      context.blips['deleted'].should == deleted_blip
+    end
+  end
+end
+
+describe Event::WaveletParticipantsChangedEvent do
+  before :each do
+    wavelet = Wavelet.new(:id => "w+wavelet")
+    context = Context.new(:wavelets => {'w+wavelet' => wavelet })
+    @added_ids = ['fish', 'frog']
+    @removed_ids = ['cheese']
+    @event = described_class.new(:context => context,
+      :properties => { 'participantsAdded' => @added_ids,
+        'participantsRemoved' =>  @removed_ids })
+  end
+
+  describe "participants_added()" do
+    it "should return a list of users added to the wavelet" do
+      validate_user_list(@event.participants_added, @added_ids)
+    end
+  end
+
+  describe "participants_removed()" do
+    it "should return a list of users removed from the wavelet" do
+      validate_user_list(@event.participants_removed, @removed_ids)
+    end
+  end
+end
+
+describe Event::BlipContributorsChangedEvent do
+  before :each do
+    wavelet = Wavelet.new(:id => "w+wavelet")
+    context = Context.new(:wavelets => {'w+wavelet' => wavelet })
+    @added_ids = ['fish', 'frog'].freeze
+    @removed_ids = ['cheese'].freeze
+    @event = described_class.new(:context => context,
+      :properties => { 'contributorsAdded' => @added_ids,
+        'contributorsRemoved' =>  @removed_ids })
+  end
+
+  describe "contributors_added()" do
+    it "should return a list of users added to the blip" do
+      validate_user_list(@event.contributors_added, @added_ids)
+    end
+  end
+
+  describe "contributors_removed()" do
+    it "should return a list of users removed from the blip" do
+      validate_user_list(@event.contributors_removed, @removed_ids)
+    end
   end
 end

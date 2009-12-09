@@ -66,6 +66,15 @@ def validate_operations(context, types)
   end
 end
 
+# Validate a list of Users compared to a list of ids.
+def validate_user_list(users, user_ids)
+  users.size.should == user_ids.length
+  users.each_with_index do |user, i|
+    user.should be_kind_of User
+    user.id.should == user_ids[i]
+  end
+end
+
 def robot_instance
   ::MyRaveRobot::Robot.instance
 end

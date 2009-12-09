@@ -139,28 +139,36 @@ describe Rave::Models::Context do
   end
 
   describe "initialize()" do
-    it "should create a virtual child blips that are only in the json as a reference" do
-      blip = Blip.new(:id => "b+blip", :child_blip_ids => ["b+undef1", "b+undef2", "b+undef3"])
-      context = Context.new( :blips => { blip.id => blip })
+    before :each do
+      @wave = Wave.new(:id => "wave")
+      @wavelet = Wavelet.new(:id => "wavelet")
+      @blip = Blip.new(:id => "b+blip", :wave_id => "wave", :wavelet_id => "wavelet",
+        :parent_blip_id => "b+undef", :child_blip_ids => ["b+undef1", "b+undef2", "b+undef3"])
+      @context = Context.new( :blips => { @blip.id => @blip },
+        :wavelets => { @wavelet.id => @wavelet }, :waves => { @wave.id => @wave })
+    end
 
-      blip.child_blips.size.should == 3
-      blip.child_blips.each_with_index do |child, i|
-        child.id.should == "b+undef#{i + 1}"
-        child.parent_blip.should == blip
-        context.blips[child.id].should == child
-        child.virtual?.should be_true
+    def check_virtual_blip(blip, expected_id)
+      blip.id.should == expected_id
+      blip.virtual?.should be_true
+      blip.deleted?.should be_false
+      blip.wave.should == @wave
+      blip.wavelet.should == @wavelet
+      @context.blips[blip.id].should == blip
+    end
+    
+    it "should create a virtual child blips that are only given as references" do
+      @blip.child_blips.size.should == 3
+      @blip.child_blips.each_with_index do |child, i|
+        check_virtual_blip(child, "b+undef#{i + 1}")
+        child.parent_blip.should == @blip
       end
     end
 
-    it "should create a virtual parent blip that is only in the json as reference" do
-      blip = Blip.new(:id => "b+blip", :parent_blip_id => "b+undef")
-      context = Context.new(:blips => { blip.id => blip })
-
-      parent = blip.parent_blip
-      parent.id.should == "b+undef"
-      parent.child_blips.should == [blip]
-      context.blips[parent.id].should == parent
-      parent.virtual?.should be_true
+    it "should create a virtual parent blip that is only given as reference" do
+      parent = @blip.parent_blip
+      check_virtual_blip(parent, "b+undef")
+      parent.child_blips.should == [@blip]
     end
   end
 end

@@ -3,10 +3,12 @@ module Rave
   module Models
     class Event
       include Rave::Mixins::TimeUtils
+
+      BLIP_ID = 'blipId' # :nodoc:
       
       def timestamp; @timestamp.dup; end
       def modified_by_id; @modified_by_id.dup; end
-      def blip_id; @blip_id.dup; end
+      def blip_id; @properties[BLIP_ID].dup; end
       
       #Event types:
       WAVELET_BLIP_CREATED = 'WAVELET_BLIP_CREATED'
@@ -39,9 +41,7 @@ module Rave
 
         raise ArgumentError.new(":context option required") if @context.nil?
 
-        unless @context.users.has_key?(@modified_by_id) or (options[:robot] && options[:robot].id == @modified_by_id)
-          @context.add_user(:id => @modified_by_id)
-        end
+        add_user_ids([@modified_by_id])
       end
 
       # The User that caused this event to be generated.
@@ -70,21 +70,28 @@ module Rave
         not EVENT_CLASSES.find { |e| e.type == type }.nil?
       end
       
-    public 
       # Blip affected, or wavelet's root blip for wavelet events.
       def blip
-        @context.blips[@properties['blipId']]
+        @context.blips[@properties[BLIP_ID]]
       end
       
       # Type of particular event, as defined in the Wave protocol.
       def type
         self.class.type
       end
+
+    protected
+      # Add a series of user ids to the context, if they don't already exist.
+      def add_user_ids(user_ids) # :nodoc:
+        user_ids.each do |id|
+          @context.add_user(:id => id) unless @context.users[id]
+        end
+      end
       
       # Wavelet events
-      
+
+    public
       class WaveletBlipCreatedEvent < Event
-      public
         def self.type; WAVELET_BLIP_CREATED.dup; end
         
         # Newly created blip.
@@ -104,15 +111,25 @@ module Rave
       
       class WaveletParticipantsChangedEvent < Event
         def self.type; WAVELET_PARTICIPANTS_CHANGED.dup; end
+
+        ADDED = 'participantsAdded' # :nodoc:
+        REMOVED = 'participantsRemoved' # :nodoc:
+
+        def initialize(options)
+          super(options)
+          
+          add_user_ids(@properties[ADDED]) if @properties[ADDED]
+          add_user_ids(@properties[REMOVED]) if @properties[REMOVED]
+        end
         
         # Array of participants added to the wavelet.
         def participants_added
-          @properties['participantsAdded'].dup
+          @properties[ADDED].map { |id| @context.users[id] }
         end
         
         # Array of participants added to the wavelet.
         def participants_removed
-          @properties['participantsRemoved'].dup
+          @properties[REMOVED].map { |id| @context.users[id] }
         end
       end
       
@@ -152,32 +169,42 @@ module Rave
       
       class BlipContributorsChangedEvent < Event
         def self.type; BLIP_CONTRIBUTORS_CHANGED.dup; end
-        
+
+        ADDED = 'contributorsAdded' # :nodoc:
+        REMOVED = 'contributorsRemoved' # :nodoc:
+
+        def initialize(options)
+          super(options)
+
+          add_user_ids(@properties[ADDED]) if @properties[ADDED]
+          add_user_ids(@properties[REMOVED]) if @properties[REMOVED]
+        end
+
         # Array of contributors added to the wavelet.
         def contributors_added
-          @properties['contributorsAdded'].dup
+          @properties[ADDED].map { |id| @context.users[id] }
         end
         
         # Array of contributors added to the wavelet.
         def contributors_removed
-          @properties['contributorsRemoved'].dup
+          @properties[REMOVED].map { |id| @context.users[id] }
         end
       end
       
       class BlipSubmittedEvent < Event
         def self.type; BLIP_SUBMITTED.dup; end
       end
-      
+
+      # #blip will have been created virtual+deleted if it was still referenced
+      # in the json. If not, it was destroyed and all you have is the #blip_id.
       class BlipDeletedEvent < Event
         def self.type; BLIP_DELETED.dup; end
 
-        def initialize(options = {}) # :nodoc:
+        def initialize(options = {})
           super(options)
-          # Create a virtual blip to represent the one deleted.
-          if @context.blips[@properties['blipId']].nil?
-            @context.add_blip(Blip.new(:id => @properties['blipId'],
-                :wavelet_id => @context.primary_wavelet.id))
-          end
+
+          # Ensure a referenced blip is properly deleted. Destroyed blip won't exist.
+          blip.delete_me(false) if @properties[BLIP_ID] and blip
         end
       end
       
