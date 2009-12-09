@@ -18,7 +18,7 @@ end
 desc "Deploy as robot (requires appspot account)"
 task :deploy => :build do
   config = YAML::load(File.open(config_file))
-  system "#{config['appcfg']} update tmp/war"
+  system 'c:/appengine-java-sdk/bin/appcfg update tmp/war'
 end
 
 Spec::Rake::SpecTask.new do |t|
