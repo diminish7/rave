@@ -1,11 +1,51 @@
 require File.join(File.dirname(__FILE__), "helper")
 
+shared_examples_for "event" do
+  # Prepending instance variables with _ so they don't conflict with those in
+  # each description the example is used by.
+  before :each do
+    @_time = Time.at(999)
+    time_string = "%0.10d" % @_time.to_i
+    @_wavelet = Wavelet.new(:id => "wavelet")
+    @_context = Context.new(:wavelets => { @_wavelet.id => @_wavelet })
+    @_event = described_class.new(:modified_by => "Fred",
+      :context => @_context, :timestamp => time_string,
+      :properties => { 'blipId' => 'blip' })
+  end
+
+  describe "modified_by()" do
+    it "should return the User object associated with the :modified_by option" do
+      @_event.modified_by.should be_kind_of User
+      @_event.modified_by.id.should == "Fred"
+      @_context.users["Fred"].should == @_event.modified_by
+    end
+  end
+
+  describe "blip_id()" do
+    it "should return the id of the blip in properties" do
+      @_event.blip_id.should == 'blip'
+    end
+  end
+
+  describe "timestamp()" do
+    it "should return the value of the :timestamp option" do
+      @_event.timestamp.should == @_time
+    end
+  end
+
+  describe "wavelet()" do
+    it "should return the wavelet that the event was called for" do
+      @_event.wavelet.should == @_wavelet
+    end
+  end
+end
+
 describe Rave::Models::Event do
-  
   before :each do
     @json_time_fields = [:timestamp]
   end
-  
+
+  it_should_behave_like "event"
   it_should_behave_like "time_from_json()"
   
   describe "valid_event_type?()" do
@@ -17,17 +57,6 @@ describe Rave::Models::Event do
     
     it "should return false for an invalid event" do
       Rave::Models::Event.valid_event_type?("INVALID_EVENT").should be_false
-    end
-  end
-
-  describe "modified_by" do
-    it "should return the User object associated with the :modified_by option" do
-      context = Context.new
-      event = Event.create(:type => 'DOCUMENT_CHANGED', :modified_by => "Fred", :context => context)
-      event.modified_by_id.should == "Fred"
-      event.modified_by.should be_kind_of User
-      event.modified_by.id.should == "Fred"
-      context.users["Fred"].should == event.modified_by
     end
   end
 
@@ -67,6 +96,8 @@ describe Rave::Models::Event do
 end
 
 describe Event::BlipDeletedEvent do
+  it_should_behave_like "event"
+  
   describe "blip" do
     it "should return a virtual blip if it is not referenced anywhere" do
       wavelet = Wavelet.new(:id => "w+wavelet")
@@ -101,6 +132,8 @@ describe Event::BlipDeletedEvent do
 end
 
 describe Event::WaveletParticipantsChangedEvent do
+  it_should_behave_like "event"
+  
   before :each do
     wavelet = Wavelet.new(:id => "w+wavelet")
     context = Context.new(:wavelets => {'w+wavelet' => wavelet })
@@ -125,6 +158,8 @@ describe Event::WaveletParticipantsChangedEvent do
 end
 
 describe Event::BlipContributorsChangedEvent do
+  it_should_behave_like "event"
+
   before :each do
     wavelet = Wavelet.new(:id => "w+wavelet")
     context = Context.new(:wavelets => {'w+wavelet' => wavelet })

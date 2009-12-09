@@ -7,8 +7,8 @@ module Rave
       BLIP_ID = 'blipId' # :nodoc:
       
       def timestamp; @timestamp.dup; end
-      def modified_by_id; @modified_by_id.dup; end
       def blip_id; @properties[BLIP_ID].dup; end
+      def wavelet; @context.primary_wavelet; end
       
       #Event types:
       WAVELET_BLIP_CREATED = 'WAVELET_BLIP_CREATED'
