@@ -4,6 +4,10 @@ Rave is a framework for building robot applications to participate in Google Wav
 See http://wave.google.com/ for Google Wave details. Or if you are interested in the ins-and-outs
 of the Google Wave protocol, check out http://www.waveprotocol.org/
 
+== Contributors
+
+Thanks to Spooner (Bil Bas) and  Wijnand (Wijnand Wiersma) for their contributions!
+
 == Warning!
 
 Both Rave and Google Wave are super-alpha. There are a lot of things in the protocol that aren't
