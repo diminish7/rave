@@ -1,6 +1,6 @@
-#Represents and event
 module Rave
   module Models
+    # Represents an event received from the server.
     class Event
       include Rave::Mixins::TimeUtils
 

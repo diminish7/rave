@@ -1,6 +1,7 @@
-# Represents a Wave
+
 module Rave
   module Models
+    # Represents a Wave
     class Wave < Component
       def wavelet_ids; @wavelet_ids.map { |id| id.dup }; end
       

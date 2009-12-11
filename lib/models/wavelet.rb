@@ -1,6 +1,6 @@
-# Represents a Wavelet, owned by a Wave
 module Rave
   module Models
+    # Represents a Wavelet, owned by a Wave
     class Wavelet < Component
       include Rave::Mixins::TimeUtils
       

@@ -1,9 +1,9 @@
 require 'singleton'
 require 'yaml'
 
-#Contains Robot data, event handlers and cron jobs
 module Rave
   module Models
+    # Contains Robot data, event handlers and cron jobs.
     class Robot < User
       include Rave::Mixins::DataFormat
       include Rave::Mixins::Controller

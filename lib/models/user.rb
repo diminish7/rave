@@ -1,6 +1,6 @@
-# A wave client, acting as a wave creator, blip contributor and/or a wavelet participant.
 module Rave
   module Models
+    # A wave client, acting as a wave creator, blip contributor and/or a wavelet participant.
     class User < Component
       ROBOT_PATTERN = /@appspot\.com$/ # :nodoc:
       NOBODY_ID = "@@@NOBODY@@@" # :nodoc: Used as a default in certain circumstances.

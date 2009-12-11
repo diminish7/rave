@@ -11,8 +11,9 @@ module Rave
   # Raised if an unimplemented method is called.
   class NotImplementedError < Exception; end
 
+  # A method option was not one of the values allowed.
   class BadOptionError < ArgumentError
-    def initialize(option_name, valid_options, received)
+    def initialize(option_name, valid_options, received) # :nodoc:
       super("#{option_name.inspect} option must be one of #{valid_options.inspect}, not #{received.inspect}")
     end
   end

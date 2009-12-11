@@ -1,6 +1,6 @@
-#Contains server request information including current waves and operations
 module Rave
   module Models
+    # Contains server request information including current waves and operations.
     class Context
       attr_reader :primary_wavelet
 

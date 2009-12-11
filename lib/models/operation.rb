@@ -1,6 +1,6 @@
-#Represents an operation to be applied on the server
 module Rave
   module Models
+    # Represents an operation to be applied on the server.
     class Operation # :nodoc:
       attr_reader :index, :property
 

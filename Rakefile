@@ -83,7 +83,7 @@ end
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = RDOC_DIR
   rdoc.options << '--line-numbers'
-  rdoc.rdoc_files.add([ 'README', 'lib/models/*.rb', 'lib/ops/*.rb'])
+  rdoc.rdoc_files.add(%w(README lib/exceptions.rb lib/models/*.rb lib/ops/*.rb))
   rdoc.title = 'Rave - A Google Wave robot client framework for Ruby'
 end
 

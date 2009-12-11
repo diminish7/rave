@@ -1,5 +1,6 @@
 module Rave
   module Models
+    # An annotation applying styling or other meta-data to a section of text.
     class Annotation  
       def name; @name.dup; end
       def value; @value.dup; end

@@ -1,24 +1,25 @@
-#Reopen the blip class and add operation-related methods
 module Rave
   module Models
     class Blip
+      # Reopen the blip class and add operation-related methods
 
-      VALID_FORMATS = [:plain, :html, :textile]
+      VALID_FORMATS = [:plain, :html, :textile] # :nodoc: For set_text/append_text
       
-      #Clear the content
+      # Clear the content.
       def clear
         @context.add_operation(
                                     :type => Operation::DOCUMENT_DELETE, 
                                     :blip_id => @id, 
-                                    :wavelet_id => @wavelet_id, 
+                                    :wavelet_id => @wavelet_id,
                                     :wave_id => @wave_id,
-                                    :index => 0, 
+                                    :index => 0,
                                     :property => 0..(@content.length)
                                   )
         @content = ''
+        # TODO: Remove all annotations.
       end
       
-      #Insert text at an index
+      # Insert text at an index.
       def insert_text(index, text)
         @context.add_operation(
                                     :type => Operation::DOCUMENT_INSERT, 
@@ -29,15 +30,22 @@ module Rave
                                     :property => text
                                   )
         @content.insert(index, text)
+        # TODO: Shift annotations.
       end
       
-      #Set the content text of the blip
+      # Set the content text of the blip.
+      #
+      # === Options
+      # :+format+ - Format of the text, which can be any one of:
+      # * :+html+ - Text marked up with HTML.
+      # * :+plain+ - Plain text (default).
+      # * :+textile+ - Text marked up with textile.
       def set_text(text, options = {})
         clear
         append_text(text, options)
       end
       
-      #Deletes the text in a given range and replaces it with the given text
+      # Deletes the text in a given range and replaces it with the given text.
       def set_text_in_range(range, text)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
         
@@ -50,9 +58,16 @@ module Rave
           raise RangeError.new(e.message)
         end
         delete_range(range.min+text.length..range.max+text.length)
+        # TODO: Shift annotations.
       end
       
-      #Appends text to the end of the content
+      # Appends text to the end of the blip's current content.
+      # 
+      # === Options
+      # :+format+ - Format of the text, which can be any one of:
+      # * :+html+ - Text marked up with HTML.
+      # * :+plain+ - Plain text (default).
+      # * :+textile+ - Text marked up with textile.
       def append_text(text, options = {})
         format = options[:format] || :plain
         raise BadOptionError.new(:format, VALID_FORMATS, format) unless VALID_FORMATS.include? format
@@ -78,11 +93,11 @@ module Rave
                                     :wave_id => @wave_id,
                                     :property => text # Markup sent to Wave.
                                   )
-        # TODO: Add annotations for the tags we removed.
+        # TODO: Add annotations for the tags we removed?
         @content += plain_text # Plain text added to text field.
       end
       
-      #Deletes text in the given range
+      # Deletes text in the given range.
       def delete_range(range)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
         
@@ -95,59 +110,81 @@ module Rave
                                     :property => range
                                   )
          @content[range] = ''
+         # TODO: Shift annotations.
       end
       
-      #Annotates the entire content
+      # Annotates the entire content.
+      #
+      # NOT IMPLEMENTED
       def annotate_document(name, value)
         raise NotImplementedError
       end
       
-      #Deletes the annotation with the given name
+      # Deletes the annotation with the given name.
+      #
+      # NOT IMPLEMENTED
       def delete_annotation_by_name(name)
         raise NotImplementedError
       end
       
-      #Deletes the annotations with the given key in the given range
+      # Deletes the annotations with the given key in the given range.
+      #
+      # NOT IMPLEMENTED
       def delete_annotation_in_range(range, name)
         raise NotImplementedError
       end
       
-      #Appends an inline blip to this blip
+      # Appends an inline blip to this blip.
+      #
+      # NOT IMPLEMENTED
       def append_inline_blip
         raise NotImplementedError
       end
       
-      #Deletes an inline blip from this blip
+      # Deletes an inline blip from this blip.
+      #
+      # NOT IMPLEMENTED
       def delete_inline_blip(blip_id)
         raise NotImplementedError
       end
       
-      #Inserts an inline blip at the given position
+      # Inserts an inline blip at the given position.
+      #
+      # NOT IMPLEMENTED
       def insert_inline_blip(position)
         raise NotImplementedError
       end
       
-      #Deletes an element at the given position
+      # Deletes an element at the given position.
+      #
+      # NOT IMPLEMENTED
       def delete_element(position)
         raise NotImplementedError
       end
       
-      #Inserts the given element in the given position
+      # Inserts the given element in the given position.
+      #
+      # NOT IMPLEMENTED
       def insert_element(position, element)
         raise NotImplementedError
       end
       
-      #Replaces the element at the given position with the given element
+      # Replaces the element at the given position with the given element.
+      #
+      # NOT IMPLEMENTED
       def replace_element(position, element)
         raise NotImplementedError
       end
       
-      #Appends an element
+      # Appends an element
+      # 
+      # NOT IMPLEMENTED
       def append_element(element)
         raise NotImplementedError
       end
 
     protected
+      # Strips all HTML tags from a string.
       def strip_html_tags(text) # :nodoc:
         text.gsub(/<\/?[^<]*>/, '')
       end
