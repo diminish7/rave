@@ -34,12 +34,21 @@ SPEC = Gem::Specification.new do |s|
   s.executables = 'rave'
 end
 
-SPEC_FILE = "./pkg/#{SPEC.name}.gemspec"
-GEM_FILE = "./pkg/#{SPEC.name}-#{SPEC.version}.gem"
+NAME = "#{SPEC.name}-#{SPEC.version}"
+
+PACKAGE_DIR = './pkg'
+SPEC_FILE = "#{PACKAGE_DIR}/#{SPEC.name}.gemspec"
+GEM_FILE = "#{PACKAGE_DIR}/#{NAME}.gem"
+
 RDOC_DIR = './doc/rdoc'
 
-CLOBBER.include FileList['examples/*/tmp', GEM_FILE, RDOC_DIR]
-CLEAN.include FileList[SPEC_FILE, 'examples/*/*.war']
+RELEASE_DIR = './release'
+
+RELEASE_FILE = "#{RELEASE_DIR}/#{NAME}.7z"
+RELEASE_TMP_DIR = "#{RELEASE_DIR}/tmp/#{NAME}"
+
+CLOBBER.include FileList[GEM_FILE, RDOC_DIR, RELEASE_FILE]
+CLEAN.include FileList[SPEC_FILE, RELEASE_TMP_DIR]
 
 Rake::GemPackageTask.new(SPEC) do |pkg|
 end
@@ -47,7 +56,9 @@ end
 # File dependencies for the gem.
 task :package => Dir['lib/**/*.rb']
 
-desc "Install gem"
+# TODO: How do we tell is the package is newer than the gem installed?
+file GEM_FILE => :package
+desc "Install gem package"
 task :install => GEM_FILE do
   cmd = "gem install #{GEM_FILE}"
   cmd = "jruby -S #{cmd}" if RUBY_PLATFORM == 'java'
@@ -76,32 +87,62 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/test_*.rb']
+  t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
 # Synonym for backwards compatibility.
 task :test => :spec
 
-# Build and upload the provided examples.
-Dir['examples/*'].each do |path|
-  if File.directory? path
-    path =~ /examples\/(.*)/
-    dir = $1
+example_tasks = {
+  :build =>   { :desc => "Build WAR file", :depend => [:install] },
+  :deploy =>  { :desc => "Deploy",         :depend => [:install] },
+  :spec =>    { :desc => "Run specs",      :depend => [] },
+  :clobber => { :desc => "Clobber files",  :depend => [] },
+  :clean =>   { :desc => "Clean files",    :depend => [] },
+}
+examples = []
+# Run rake tasks on the example robots individually.
+FileList['examples/*/Rakefile'].each do |rakefile|
+  path = File.dirname(rakefile)
+  example = File.basename(path)
+  examples << example
 
-    namespace dir do
-      desc "Build #{path} archive"
-      task :build => :install do
-        cd path
-        system "jruby -S rake build"
-        cd '../..'
-      end
-      
-      desc "Deploy examples/#{dir} as robot (requires appspot account)"
-      task :deploy => :"#{dir}:build" do
-        cd path
-        system "jruby -S rake deploy"
-        cd '../..'
+  namespace example do
+    example_tasks.each_pair do |t, data|
+      desc "#{data[:desc]} for #{example} robot"
+      task t => data[:depend] do
+        cd path do
+          "jruby -S rake #{t}"
+        end
       end
     end
   end
+end
+
+# Perform tasks for all robots at once.
+namespace :examples do
+  example_tasks.each_pair do |t, data|
+    desc "#{data[:desc]} for all example robots"
+    task t => examples.map {|e| :"#{e}:#{t}" }
+  end
+end
+
+# Include example robot tasks in our general ones.
+[:spec, :clobber, :clean].each do |t|
+  task t => :"examples:#{t}"
+end
+
+file RELEASE_FILE => [:package, :gemspec, :rdoc]
+desc "Generate #{RELEASE_FILE}"
+task :release => RELEASE_FILE do
+  mkdir_p RELEASE_DIR
+  mkdir_p RELEASE_TMP_DIR
+  %w(doc lib bin pkg spec examples README MIT-LICENSE Rakefile).each do |dir|
+    cp_r dir, RELEASE_TMP_DIR
+  end
+  rm RELEASE_FILE if File.exist? RELEASE_FILE
+
+  puts "\nPacking file (#{RELEASE_FILE})..."
+  %x(7z a #{RELEASE_FILE} #{RELEASE_TMP_DIR})
+  puts "Release file (#{RELEASE_FILE}) created."
 end

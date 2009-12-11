@@ -5,3 +5,4 @@ examples/*/tmp
 examples/*/*.war
 pkg
 nbproject
+release
