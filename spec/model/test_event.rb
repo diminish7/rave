@@ -50,7 +50,7 @@ describe Rave::Models::Event do
   
   describe "valid_event_type?()" do
     it "should return true for all valid events" do
-      Rave::Models::Event::EVENT_CLASSES.each do |event|
+      Rave::Models::Event::sub_classes.each do |event|
         Rave::Models::Event.valid_event_type?(event.type).should be_true
       end
     end
@@ -64,7 +64,7 @@ describe Rave::Models::Event do
      it "should return the appropriate event sub-class for all valid events" do
       wavelet = Wavelet.new(:id => "wavelet")
       context = Context.new(:wavelets => {"wavelet" => wavelet})
-      Rave::Models::Event::EVENT_CLASSES.each do |event|
+      Rave::Models::Event::sub_classes.each do |event|
         new_event = Rave::Models::Event.create(:type => event.type, :context => context)
         new_event.should be_a_kind_of event
       end

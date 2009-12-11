@@ -7,20 +7,26 @@ module Rave
       
       # Url link to the profile of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
-      #       the url will be empty.
-      def profile_url; @profile_url.dup; end
+      # the url will be empty.
+      attr_reader :profile_url
+      def profile_url # :nodoc:
+        @profile_url.dup
+      end
 
       # Url link to the image of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
-      #       the url will be empty.
-      def image_url; @image_url.dup; end
+      # the url will be empty.
+      attr_reader :image_url
+      def image_url # :nodoc:
+        @image_url.dup
+      end
 
       # - :id
       # - :name
       # - :profile_url
       # - :image_url
       # - :context
-      def initialize(options = {})
+      def initialize(options = {}) # :nodoc:
         super(options)
         @name = options[:name]
         @profile_url = options[:profile_url] || ''
@@ -29,12 +35,19 @@ module Rave
 
       # Printable name of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
-      #       the name is the same as the @id.
-      def name; @name || @id; end
+      # the name is the same as the @id.
+      attr_reader :name
+      def name # :nodoc:
+        @name || @id
+      end
 
-      # Is the User a robot client rather than a human client?
-      def robot?; not (@id =~ ROBOT_PATTERN).nil?; end
+      # Is the User a robot client rather than a human client? [Boolean]
+      attr_reader :robot?
+      def robot? # :nodoc:
+        not (@id =~ ROBOT_PATTERN).nil?
+      end
 
+      # Convert to string [String]
       def to_s
         @id
       end

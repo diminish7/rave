@@ -45,7 +45,7 @@ RDOC_DIR = './doc/rdoc'
 
 RELEASE_DIR = './release'
 
-RELEASE_FILE = "#{RELEASE_DIR}/#{NAME}.7z"
+RELEASE_FILE = "#{RELEASE_DIR}/#{NAME}_source.7z"
 RELEASE_TMP_DIR = "#{RELEASE_DIR}/tmp/#{NAME}"
 
 CLOBBER.include FileList[GEM_FILE, RDOC_DIR, RELEASE_FILE]
@@ -83,8 +83,8 @@ end
 Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_dir = RDOC_DIR
   rdoc.options << '--line-numbers'
-  rdoc.rdoc_files.add(%w(README lib/exceptions.rb lib/models/*.rb lib/ops/*.rb))
-  rdoc.title = 'Rave - A Google Wave robot client framework for Ruby'
+  rdoc.rdoc_files.add(%w(*.rdoc lib/exceptions.rb lib/models/*.rb lib/ops/*.rb))
+  rdoc.title = 'Rave API'
 end
 
 Spec::Rake::SpecTask.new do |t|
@@ -137,13 +137,14 @@ file RELEASE_FILE => [:package, :gemspec, :rdoc]
 desc "Generate #{RELEASE_FILE}"
 task :release => RELEASE_FILE do
   mkdir_p RELEASE_DIR
+  rm_r RELEASE_TMP_DIR if File.exist?(RELEASE_TMP_DIR)
   mkdir_p RELEASE_TMP_DIR
-  %w(doc lib bin pkg spec examples README MIT-LICENSE Rakefile).each do |dir|
+  FileList[%w(doc lib bin pkg spec examples *.rdoc MIT-LICENSE Rakefile)].each do |dir|
     cp_r dir, RELEASE_TMP_DIR
   end
   rm RELEASE_FILE if File.exist? RELEASE_FILE
 
   puts "\nPacking file (#{RELEASE_FILE})..."
   %x(7z a #{RELEASE_FILE} #{RELEASE_TMP_DIR})
-  puts "Release file (#{RELEASE_FILE}) created."
+  puts "Release file (#{RELEASE_FILE}) created (#{File.size(RELEASE_FILE) / 1000000}MB)."
 end

@@ -1,19 +1,23 @@
-
 module Rave
   module Models
     # Represents a Wave
     class Wave < Component
-      def wavelet_ids; @wavelet_ids.map { |id| id.dup }; end
+      # IDs for all wavelets that are part of the wave [Array of String]
+      def wavelet_ids # :nodoc:
+        @wavelet_ids.map { |id| id.dup }
+      end
       
       #Options include:
       # - :wavelet_ids
       # - :id
-      def initialize(options = {})
+      def initialize(options = {}) # :nodoc:
         super(options)
         @wavelet_ids = Set.new(options[:wavelet_ids])
       end
 
-      def wavelets
+      # All wavelets that are part of the wave [Array of Wavelet]
+      attr_reader :wavelets
+      def wavelets # :nodoc:
         @wavelet_ids.map { |id| @context.wavelets[id] }
       end
 

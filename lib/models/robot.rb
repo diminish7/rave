@@ -12,9 +12,11 @@ module Rave
       CONFIG_FILE = 'config.yaml' # :nodoc:
       
       # Version of the robot, as in the yaml config.
-      def version; @version.dup; end
+      def version # :nodoc:
+        @version.dup
+      end
       
-      def initialize()
+      def initialize() # :nodoc:
         config = config_from_file
         super(config)
         @handlers = {}
@@ -31,9 +33,8 @@ module Rave
         hash
       end
       
-      #Register a handler
-      # event_type is a string, and must be one of Rave::Models::Event::VALID_EVENTS
-      # multiple handlers may be applied to an event
+      # Register a handler. Multiple handlers may be applied to a single event.
+      # +event_type+:: Must be one of Rave::Models::Event::Types [String]
       def register_handler(event_type, handler)
         raise Rave::InvalidEventException.new("Unknown event: #{event_type}") unless Rave::Models::Event.valid_event_type?(event_type)
         raise Rave::InvalidHandlerException.new("Unknown handler: #{handler}") unless self.respond_to?(handler)
@@ -42,7 +43,7 @@ module Rave
       end
       
       #Dispatches events to the appropriate handler
-      def handle_event(event, context)
+      def handle_event(event, context) # :nodoc:
         #Ignore unhandled events
         if (handlers = @handlers[event.type])
           handlers.each do |handler|
@@ -59,7 +60,7 @@ module Rave
     protected
       #Register any handlers that are defined through naming convention
       def register_default_handlers # :nodoc:
-        Event::EVENT_CLASSES.each do |event|
+        Event::sub_classes.each do |event|
           listener = event.type.downcase.to_sym
           if respond_to?(listener)
             register_handler(event.type, listener)

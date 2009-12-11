@@ -17,13 +17,11 @@ module Rave
       end
 
       # IDs of the children of this blip [Array of String]
-      attr_reader :child_blip_ids
       def child_blip_ids # :nodoc:
         @child_blip_ids.map { |id| id.dup }
       end
 
       # IDs (email addresses) of those who have altered this blip [Array of String]
-      attr_reader :contributor_ids
       def contributor_ids # :nodoc:
         @contributor_ids.map { |id| id.dup }
       end
@@ -41,19 +39,16 @@ module Rave
       end
 
       # ID of this blip's parent [String or nil for a root blip]
-      attr_reader :parent_blip_id
       def parent_blip_id # :nodoc:
         @parent_blip_id.nil? ? nil : @parent_blip_id.dup
       end
 
       # ID of the wave this blip belongs to [String]
-      attr_reader :wave_id
       def wave_id # :nodoc:
         @wave_id.nil? ? nil : @wave_id.dup
       end
 
       # ID of the wavelet this blip belongs to [String]
-      attr_reader :wavelet_id
       def wavelet_id # :nodoc:
         @wavelet_id.nil? ? nil : @wavelet_id.dup
       end

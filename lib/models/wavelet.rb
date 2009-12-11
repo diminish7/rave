@@ -3,17 +3,53 @@ module Rave
     # Represents a Wavelet, owned by a Wave
     class Wavelet < Component
       include Rave::Mixins::TimeUtils
-      
+
+      # Current version number of the wavelet [Integer]
       attr_reader :version
 
-      def creator_id; @creator_id.dup; end
-      def creation_time; @creation_time.dup; end
-      def data_documents; @data_documents.dup; end
-      def last_modified_time; @last_modified_time.dup; end
-      def root_blip_id; @root_blip_id.dup; end
-      def title; @title.dup; end
-      def wave_id; @wave_id.dup; end
-      def participant_ids; @participant_ids.map { |id| id.dup }; end
+      # ID of the creator [String]
+      def creator_id # :nodoc:
+        @creator_id.dup
+      end
+
+      # Time the wavelet was created [Time]
+      attr_reader :creation_time
+      def creation_time # :nodoc:
+        @creation_time.dup
+      end
+
+      # Documents contained within the wavelet [Array of Document]
+      attr_reader :data_documents
+      def data_documents # :nodoc:
+        @data_documents.dup
+      end
+
+      # The last time the wavelet was modified [Time]
+      attr_reader :last_modified_time
+      def last_modified_time # :nodoc:
+        @last_modified_time.dup
+      end
+
+      # ID for the root blip [String]
+      def root_blip_id # :nodoc:
+        @root_blip_id.dup
+      end
+
+      # Wavelet title [String]
+      attr_accessor :title
+      def title # :nodoc:
+        @title.dup
+      end
+
+      # ID of the wave that the wavelet is a part of [String]
+      def wave_id # :nodoc:
+        @wave_id.dup
+      end
+
+      # IDs of all those who are currently members of the wavelet [Array of String]
+      def participant_ids # :nodoc:
+        @participant_ids.map { |id| id.dup }
+      end
 
       ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
       ROOT_ID_REGEXP = /conv\+root$/
@@ -30,7 +66,7 @@ module Rave
       # - :wave_id
       # - :context
       # - :id
-      def initialize(options = {})
+      def initialize(options = {}) # :nodoc:
         super(options)
         @creator_id = options[:creator] || User::NOBODY_ID
         @creation_time = time_from_json(options[:creation_time]) || Time.now
@@ -43,13 +79,15 @@ module Rave
         @wave_id = options[:wave_id]
       end
 
-      # Users that are currently have access the wavelet.
-      def participants
+      # Users that are currently have access the wavelet [Array of User]
+      attr_reader :participants
+      def participants # :nodoc:
         @participant_ids.map { |p| @context.users[p] }
       end
 
-      # Users that originally created the wavelet.
-      def creator
+      # Users that originally created the wavelet [User]
+      attr_reader :creator
+      def creator # :nodoc:
         @context.users[@creator_id]
       end
       
@@ -64,8 +102,8 @@ module Rave
         blip
       end
 
-      # Find the last blip in the main thread.
-      def final_blip
+      # Find the last blip in the main thread [Blip]
+      def final_blip # :nodoc:
         blip = @context.blips[@root_blip_id]
         if blip
           while not blip.child_blips.empty?
@@ -91,29 +129,40 @@ module Rave
       end
       
       #Removes this robot from the wavelet
+      #
+      # NOT IMPLEMENTED
       def remove_robot
         raise NotImplementedError
       end
       
       #Sets the data document for the wavelet
+      #
+      # NOT IMPLEMENTED
       def set_data_document(name, data)
         raise NotImplementedError
       end
       
       #Set the title
-      def title=(title)
+      #
+      # NOT IMPLEMENTED
+      def title=(title) # :nodoc: Documented by title() as accessor.
         raise NotImplementedError
         @title = title
       end
 
-      def root_blip
+      # First blip in the wavelet [Blip]
+      attr_reader :root_blip
+      def root_blip # :nodoc:
         @context.blips[@root_blip_id]
       end
 
-      def wave
+      # Wave that the wavelet is contained within.
+      attr_reader :wave
+      def wave# :nodoc:
         @context.waves[@wave_id]
       end
 
+      # Convert to string.
       def to_s
         text = @title.length > 24 ? "#{@title[0..20]}..." : @title
         "#{super}:#{participants.join(',')}:#{text}"

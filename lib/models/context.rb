@@ -2,13 +2,37 @@ module Rave
   module Models
     # Contains server request information including current waves and operations.
     class Context
-      attr_reader :primary_wavelet
 
-      def waves; @waves.dup; end
-      def wavelets; @wavelets.dup; end
-      def blips; @blips.dup; end
-      def operations; @operations.dup; end
-      def users; @users.dup; end
+      attr_reader :primary_wavelet # :nodoc: API users should use Event#wavelet
+
+      # All waves by ID [Hash of String => Wave]
+      attr_reader :waves
+      def waves # :nodoc:
+        @waves.dup
+      end
+
+      # All wavelets by ID [Hash of String => Wavelet]
+      attr_reader :wavelets
+      def wavelets # :nodoc:
+        @wavelets.dup
+      end
+
+      # All wavelets by ID [Hash of String => Wavelet]
+      attr_reader :blips
+      def blips # :nodoc:
+        @blips.dup
+      end
+
+      # All operations [Array of Operation]
+      def operations # :nodoc:
+        @operations.dup
+      end
+
+      # All users by ID [Hash of String => User]
+      attr_reader :users
+      def users # :nodoc:
+        @users.dup
+      end
       
       JAVA_CLASS = 'com.google.wave.api.impl.OperationMessageBundle' # :nodoc:
       
@@ -18,7 +42,7 @@ module Rave
       # - :blips
       # - :operations
       # - :users
-      def initialize(options = {})
+      def initialize(options = {}) # :nodoc:
         @waves = options[:waves] || {}
         @waves.values.each { |wave| wave.context = self }          #Set up self as this wave's context
 
@@ -143,8 +167,9 @@ module Rave
         user
       end
   
-      #Find the root wavelet if it exists in this context
-      def root_wavelet
+      # The root wavelet if it exists in this context (it will be nil if the event refers to a private subwavelet) [Wavelet]
+      attr_reader :root_wavelet
+      def root_wavelet # :nodoc:
         @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }
       end
            
