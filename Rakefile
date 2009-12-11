@@ -11,7 +11,8 @@ DEPS = {
     'rack' => '>=1.0',
     'builder' => '>=2.1.2',
     'json-jruby' => '>=1.1.6',
-    'warbler' => '>=0.9.13'
+    'warbler' => '>=0.9.13',
+    'RedCloth' => '>=4.2.2'
   }
 
 SPEC = Gem::Specification.new do |s|

@@ -2,6 +2,7 @@ require 'rubygems'
 require 'set'
 require 'builder'
 require 'json'
+require 'redcloth'
 
 here = File.dirname(__FILE__)
 mixins = File.join(here, "mixins")

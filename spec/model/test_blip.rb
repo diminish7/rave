@@ -1,5 +1,19 @@
 require File.join(File.dirname(__FILE__), "helper")
 
+# Test data for testing formatted text operations (set_text/append_text).
+TEXT_FORMATS = [
+  # format, input, operation, sent, plain
+  [nil,      "Hello world!",                           Operation::DOCUMENT_APPEND,        "Hello world!",                                 "Hello world!"],
+  [:plain,   "Hello world!",                           Operation::DOCUMENT_APPEND,        "Hello world!",                                 "Hello world!"],
+
+  [:html,    "<em><strong>Hello world!</strong></em>", Operation::DOCUMENT_APPEND_MARKUP, "<em><strong>Hello world!</strong></em>",       "Hello world!"],
+  [:html,    "Hello world!",                           Operation::DOCUMENT_APPEND_MARKUP, "Hello world!",                                 "Hello world!"],
+
+  [:textile, "frog cheese",                            Operation::DOCUMENT_APPEND_MARKUP, "<p>frog cheese</p>",                           "frog cheese"],
+  [:textile, "_frog_ *cheese*",                        Operation::DOCUMENT_APPEND_MARKUP, "<p><em>frog</em> <strong>cheese</strong></p>", "frog cheese" ],
+  [:textile, " _frog_ *cheese*",                       Operation::DOCUMENT_APPEND_MARKUP, "<em>frog</em> <strong>cheese</strong>",        "frog cheese" ],
+]
+
 describe Rave::Models::Blip do
   
   before :all do
@@ -313,8 +327,8 @@ END
   describe "operations" do
   
     before :each do
-       @empty_blip = Blip.new(:id => "empty", :context => @context)
-       @hello_wave_blip = Blip.new(:content => "Hello wave!", :id => "hello_world", :context => @context)
+      @empty_blip = Blip.new(:id => "empty", :context => @context)
+      @hello_wave_blip = Blip.new(:content => "Hello wave!", :id => "hello_world", :context => @context)
     end
 
     describe "clear()" do
@@ -344,17 +358,27 @@ END
     end
     
     describe "set_text()" do
-      it "should set the content of an empty blip" do
-        @empty_blip.set_text "What up, blip?"
-        @empty_blip.content.should == "What up, blip?"
+      it "should raise an error if :format is unrecognised" do
+        lambda { @hello_wave_blip.set_text("What up, blip?", :format => :fish)}.should raise_error Rave::BadOptionError
       end
-      it "should change the content of an blip which already has content" do
-        @hello_wave_blip.set_text "What up, blip?"
-        @hello_wave_blip.content.should == "What up, blip?"
-      end
-      it "should add a delete and insert operation to the context" do
-        @hello_wave_blip.set_text "What up, blip?"
-        validate_operations(@context, [Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
+
+      TEXT_FORMATS.each do |format, input, operation, sent, plain|
+        describe "(#{input.inspect}, :format => #{format.inspect})" do
+          before :each do
+            @initial_content = @hello_wave_blip.content
+            @hello_wave_blip.set_text(input, :format => format)
+          end
+
+          it "should set blip text, sans markup, to the input" do
+            @hello_wave_blip.content.should == plain
+          end
+          it "should add a delete and an append operation to the context" do
+            validate_operations(@context, [Operation::DOCUMENT_DELETE, operation])
+          end
+          it "should set the operation property to the un-filtered markup" do
+            @context.operations[1].property.should == sent
+          end
+        end
       end
     end
     
@@ -400,14 +424,28 @@ END
       end
     end
     
-    describe "append_text()" do
-      it "should append the given text to the blip's content" do
-        @hello_wave_blip.append_text(" Hello world!")
-        @hello_wave_blip.content.should == "Hello wave! Hello world!"
+    describe "append_text" do
+      it "should raise an error if :format is unrecognised" do
+        lambda { @hello_wave_blip.append_text(" Hello world!", :format => :fish)}.should raise_error Rave::BadOptionError
       end
-      it "should add an append operation to the context" do
-        @hello_wave_blip.append_text(" Hello world!")
-        validate_operations(@context, [Operation::DOCUMENT_APPEND])
+
+      TEXT_FORMATS.each do |format, input, operation, sent, plain|
+        describe "(#{input.inspect}, :format => #{format.inspect})" do
+          before :each do
+            @initial_content = @hello_wave_blip.content
+            @hello_wave_blip.append_text(input, :format => format)
+          end
+          
+          it "should append the given text, sans markup, to the blip's content" do
+            @hello_wave_blip.content.should == "#{@initial_content}#{plain}"
+          end
+          it "should add an #{operation} operation to the context" do
+            validate_operations(@context, [operation])
+          end
+          it "should set the operation property to the un-filtered markup" do
+            @context.operations[0].property.should == sent
+          end
+        end
       end
     end
 
@@ -441,6 +479,14 @@ END
 
       it "should add an insert operation to the context" do
         validate_operations(@context, [Operation::BLIP_CREATE_CHILD])
+      end
+    end
+
+    describe "strip_html_tags()" do
+      it "should strip html from a string" do
+        @hello_wave_blip.instance_eval do
+          strip_html_tags("<em><strong>Fish</strong> pies</em>!").should == "Fish pies!"
+        end
       end
     end
   end

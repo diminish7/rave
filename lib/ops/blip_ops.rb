@@ -2,6 +2,8 @@
 module Rave
   module Models
     class Blip
+
+      VALID_FORMATS = [:plain, :html, :textile]
       
       #Clear the content
       def clear
@@ -30,9 +32,9 @@ module Rave
       end
       
       #Set the content text of the blip
-      def set_text(text)
+      def set_text(text, options = {})
         clear
-        insert_text(0, text)
+        append_text(text, options)
       end
       
       #Deletes the text in a given range and replaces it with the given text
@@ -51,15 +53,33 @@ module Rave
       end
       
       #Appends text to the end of the content
-      def append_text(text)
+      def append_text(text, options = {})
+        format = options[:format] || :plain
+        raise BadOptionError.new(:format, VALID_FORMATS, format) unless VALID_FORMATS.include? format
+        
+        plain_text = text
+        
+        if format == :textile
+          text = RedCloth.new(text).to_html
+          format = :html # Can now just treat it as HTML.
+        end
+
+        if format == :html
+          type = Operation::DOCUMENT_APPEND_MARKUP
+          plain_text = strip_html_tags(text)
+        else
+          type = Operation::DOCUMENT_APPEND
+        end
+        
         @context.add_operation(
-                                    :type => Operation::DOCUMENT_APPEND, 
+                                    :type => type,
                                     :blip_id => @id, 
                                     :wavelet_id => @wavelet_id, 
                                     :wave_id => @wave_id,
-                                    :property => text
+                                    :property => text # Markup sent to Wave.
                                   )
-        @content += text
+        # TODO: Add annotations for the tags we removed.
+        @content += plain_text # Plain text added to text field.
       end
       
       #Deletes text in the given range
@@ -125,7 +145,12 @@ module Rave
       #Appends an element
       def append_element(element)
         raise NotImplementedError
-      end   
+      end
+
+    protected
+      def strip_html_tags(text) # :nodoc:
+        text.gsub(/<\/?[^<]*>/, '')
+      end
     end
   end
 end
