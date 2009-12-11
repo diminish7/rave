@@ -88,7 +88,7 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
+  t.spec_files = FileList['spec/**/test_*.rb', 'examples/*/spec/*_spec.rb']
 end
 
 # Synonym for backwards compatibility.
@@ -129,7 +129,7 @@ namespace :examples do
 end
 
 # Include example robot tasks in our general ones.
-[:spec, :clobber, :clean].each do |t|
+[:clobber, :clean].each do |t|
   task t => :"examples:#{t}"
 end
 
