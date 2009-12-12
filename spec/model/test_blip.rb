@@ -8,10 +8,13 @@ TEXT_FORMATS = [
 
   [:html,    "<em><strong>Hello world!</strong></em>", Operation::DOCUMENT_APPEND_MARKUP, "<em><strong>Hello world!</strong></em>",       "Hello world!"],
   [:html,    "Hello world!",                           Operation::DOCUMENT_APPEND_MARKUP, "Hello world!",                                 "Hello world!"],
+  [:html,    "<em>Hello<br />world!</em>",             Operation::DOCUMENT_APPEND_MARKUP, "<em>Hello<br />world!</em>",                   "Hello\nworld!"],
 
   [:textile, "frog cheese",                            Operation::DOCUMENT_APPEND_MARKUP, "<p>frog cheese</p>",                           "frog cheese"],
   [:textile, "_frog_ *cheese*",                        Operation::DOCUMENT_APPEND_MARKUP, "<p><em>frog</em> <strong>cheese</strong></p>", "frog cheese" ],
   [:textile, " _frog_ *cheese*",                       Operation::DOCUMENT_APPEND_MARKUP, "<em>frog</em> <strong>cheese</strong>",        "frog cheese" ],
+  [:textile, "\nfrog\ncheese\n",                         Operation::DOCUMENT_APPEND_MARKUP, "<p>frog<br />\ncheese</p>",                    "frog\ncheese" ],
+
 ]
 
 describe Rave::Models::Blip do
@@ -332,13 +335,27 @@ END
     end
 
     describe "clear()" do
-      it "should clear the text" do
-        @hello_wave_blip.clear
-        @hello_wave_blip.content.should == ""
+      describe "on an empty blip" do
+        before :each do
+          @empty_blip.clear
+        end
+        it "should leave the text cleared" do
+          @empty_blip.content.should == ""
+        end
+        it "should add no operations to the context" do
+          validate_operations(@context, [])
+        end
       end
-      it "should add a delete operation to the context" do
-        @hello_wave_blip.clear
-        validate_operations(@context, [Operation::DOCUMENT_DELETE])
+      describe "on a blip with content" do
+        before :each do
+          @hello_wave_blip.clear
+        end
+        it "should clear the text" do
+          @hello_wave_blip.content.should == ""
+        end
+        it "should add a delete operation to the context" do
+          validate_operations(@context, [Operation::DOCUMENT_DELETE])
+        end
       end
     end
     
@@ -363,20 +380,32 @@ END
       end
 
       TEXT_FORMATS.each do |format, input, operation, sent, plain|
-        describe "(#{input.inspect}, :format => #{format.inspect})" do
+        describe "(#{input.inspect}, :format => #{format.inspect}) on blip with contents" do
           before :each do
-            @initial_content = @hello_wave_blip.content
             @hello_wave_blip.set_text(input, :format => format)
           end
-
           it "should set blip text, sans markup, to the input" do
             @hello_wave_blip.content.should == plain
           end
-          it "should add a delete and an append operation to the context" do
+          it "should add a delete and an appropriate append operation to the context" do
             validate_operations(@context, [Operation::DOCUMENT_DELETE, operation])
           end
           it "should set the operation property to the un-filtered markup" do
-            @context.operations[1].property.should == sent
+            @context.operations.last.property.should == sent
+          end
+        end
+        describe "(#{input.inspect}, :format => #{format.inspect}) on empty blip" do
+          before :each do
+            @empty_blip.set_text(input, :format => format)
+          end
+          it "should set blip text, sans markup, to the input" do
+            @empty_blip.content.should == plain
+          end
+          it "should add an appropriate append operation to the context" do
+            validate_operations(@context, [operation])
+          end
+          it "should set the operation property to the un-filtered markup" do
+            @context.operations.last.property.should == sent
           end
         end
       end
@@ -477,7 +506,7 @@ END
         @child.id.should_not == child2.id
       end
 
-      it "should add an insert operation to the context" do
+      it "should add an create child operation to the context" do
         validate_operations(@context, [Operation::BLIP_CREATE_CHILD])
       end
     end
@@ -486,6 +515,21 @@ END
       it "should strip html from a string" do
         @hello_wave_blip.instance_eval do
           strip_html_tags("<em><strong>Fish</strong> pies</em>!").should == "Fish pies!"
+        end
+      end
+      it "should replace line-break with a newline" do
+        @hello_wave_blip.instance_eval do
+          strip_html_tags("<br />Fish<br/> pies!<br />").should == "\nFish\npies!\n"
+        end
+      end
+      it "should put newline after <p>, <h?>, <div> blocks, except at end" do
+        @hello_wave_blip.instance_eval do
+          strip_html_tags("<p>Fish</p><div>and</div><h1>frog</h1><h2>pies!</h2>").should == "Fish\nand\nfrog\npies!"
+        end
+      end
+      it "should compress continuous whitespace, removing it at each end" do
+        @hello_wave_blip.instance_eval do
+          strip_html_tags("   Fish          and\n\n\nfrog \n pies!   ").should == "Fish and frog pies!"
         end
       end
     end

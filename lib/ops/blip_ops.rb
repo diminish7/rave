@@ -7,6 +7,7 @@ module Rave
       
       # Clear the content.
       def clear
+        return if content.empty? # No point telling the server to clear an empty blip.
         @context.add_operation(
                                     :type => Operation::DOCUMENT_DELETE, 
                                     :blip_id => @id, 
@@ -52,10 +53,12 @@ module Rave
         #Note: I'm doing this in the opposite order from the python API, because
         # otherwise, if you are setting text at the end of the content, the cursor
         # gets moved to the start of the range...
-        begin # Failures in this method should give us a range error.
-          insert_text(range.min, text)
-        rescue IndexError => e
-          raise RangeError.new(e.message)
+        unless text.empty?
+          begin # Failures in this method should give us a range error.
+            insert_text(range.min, text)
+          rescue IndexError => e
+            raise RangeError.new(e.message)
+          end
         end
         delete_range(range.min+text.length..range.max+text.length)
         # TODO: Shift annotations.
@@ -184,9 +187,20 @@ module Rave
       end
 
     protected
-      # Strips all HTML tags from a string.
+      # Strips all HTML tags from a string, returning what it would look like unformatted.
       def strip_html_tags(text) # :nodoc:
-        text.gsub(/<\/?[^<]*>/, '')
+        # Replace existing newlines/tabs with spaces, since they don't affect layout.
+        str = text.gsub(/[\n\t]/, ' ')
+        # Replace all <br /> with a newline.
+        str.gsub!(/<br\s*\/>\s*/, "\n")
+        # Put newline where are </h?>, </p> </div>, unless at the end.
+        str.gsub!(/<\/(?:h\d|p|div)>\s*(?!$)/, "\n")
+        # Remove all tags.
+        str.gsub!(/<\/?[^<]*>/, '')
+        # Remove spaces at each end.
+        str.gsub!(/^ +| +$/, '')
+        # Compress all adjacent spaces into a single space.
+        str.gsub(/ {2,}/, ' ')
       end
     end
   end
