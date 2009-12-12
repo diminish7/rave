@@ -43,59 +43,35 @@ end
 describe Rave::Models::Event do
   before :each do
     @json_time_fields = [:timestamp]
+    @num_classes = 13
   end
 
   it_should_behave_like "event"
   it_should_behave_like "time_from_json()"
+  it_should_behave_like "ObjectFactory"
   
-  describe "valid_event_type?()" do
-    it "should return true for all valid events" do
-      Rave::Models::Event::sub_classes.each do |event|
-        Rave::Models::Event.valid_event_type?(event.type).should be_true
-      end
-    end
-    
-    it "should return false for an invalid event" do
-      Rave::Models::Event.valid_event_type?("INVALID_EVENT").should be_false
-    end
-  end
-
-  describe "create()" do
+  describe "self.create()" do
      it "should return the appropriate event sub-class for all valid events" do
       wavelet = Wavelet.new(:id => "wavelet")
       context = Context.new(:wavelets => {"wavelet" => wavelet})
-      Rave::Models::Event::sub_classes.each do |event|
-        new_event = Rave::Models::Event.create(:type => event.type, :context => context)
+      described_class.classes.each do |event|
+        new_event = described_class.create(event::TYPE, :context => context)
         new_event.should be_a_kind_of event
       end
     end
 
     it "should raise an exception for an invalid event" do
-      lambda { Rave::Models::Event.create(:type => "INVALID_EVENT",
+      lambda { described_class.create("INVALID_EVENT",
            :context => Context.new) }.should raise_error Exception
     end
 
     it "should raise an exception without a context given" do
-      lambda { Rave::Models::Event.create(:type => "BLIP_DELETED") }.should raise_error ArgumentError
-    end
-
-    it "should raise an exception without a type specified" do
-      lambda { Rave::Models::Event.create }.should raise_error ArgumentError
-    end
-  end
-
-  describe "type()" do
-    it "should raise an exception when called on Event" do
-      lambda { Rave::Models::Event.type }.should raise_error Exception
-    end
-
-    it "should return the correct type for a BlipSubmittedEvent" do
-      Rave::Models::Event::BlipSubmittedEvent.type.should == 'BLIP_SUBMITTED'
+      lambda { described_class.create("BLIP_DELETED") }.should raise_error ArgumentError
     end
   end
 end
 
-describe Event::BlipDeletedEvent do
+describe Event::BlipDeleted do
   it_should_behave_like "event"
   
   describe "blip" do
@@ -131,7 +107,7 @@ describe Event::BlipDeletedEvent do
   end
 end
 
-describe Event::WaveletParticipantsChangedEvent do
+describe Event::WaveletParticipantsChanged do
   it_should_behave_like "event"
   
   before :each do
@@ -157,7 +133,7 @@ describe Event::WaveletParticipantsChangedEvent do
   end
 end
 
-describe Event::BlipContributorsChangedEvent do
+describe Event::BlipContributorsChanged do
   it_should_behave_like "event"
 
   before :each do

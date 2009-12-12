@@ -11,7 +11,7 @@ ops = File.join(here, "ops")
 
 require File.join(here, 'exceptions')
 
-%w( data_format controller time_utils ).each do |dep|
+%w( data_format controller time_utils object_factory ).each do |dep|
   require File.join(mixins, dep)
 end
 

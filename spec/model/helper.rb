@@ -58,6 +58,45 @@ shared_examples_for "Component", "id()" do
   end
 end
 
+shared_examples_for "ObjectFactory" do
+   describe "self.valid_type?()" do
+    it "should return true for all valid types" do
+      described_class.types do |type|
+        described_class.valid_type?(type).should be_true
+      end
+    end
+
+    it "should return false for an invalid type" do
+      described_class.valid_type?("INVALID_TYPE").should be_false
+    end
+  end
+
+  describe "self.classes()" do
+    it "should contain all posible creatable classes" do
+      described_class.classes.size.should == @num_classes
+    end
+    it "should contain only creatable classes" do
+      described_class.classes do |event|
+        event.should be_kind_of Event
+      end
+    end
+    it "should contain only unique classes" do
+      described_class.classes.uniq.size.should == @num_classes
+    end
+  end
+
+  describe "self.types()" do
+    it "should contain all event types" do
+      described_class.types.size.should == @num_classes
+    end
+    it "should contain only Strings" do
+      described_class.types do |type|
+        type.should be_kind_of String
+      end
+    end
+  end
+end
+
 # Ensure that the operations in the queue are of the correct types.
 def validate_operations(context, types)
   context.operations.length.should == types.length
@@ -91,7 +130,7 @@ class Object
   def id
     raise "id method called on non-Rave object, #{self.class.name}"
   end
-  
+
   def type
     raise "type method called on non-Rave object, #{self.class.name}"
   end

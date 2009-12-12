@@ -3,6 +3,7 @@ module Rave
     # Represents an event received from the server.
     class Event
       include Rave::Mixins::TimeUtils
+      include Rave::Mixins::ObjectFactory
 
       BLIP_ID = 'blipId' # :nodoc:
       
@@ -35,31 +36,6 @@ module Rave
         @context.blips[@properties[BLIP_ID]]
       end
 
-      # Type of particular event, as defined in the Wave protocol [String]
-      attr_reader :type
-      def type # :nodoc:
-        self.class.type
-      end
-      
-      # Event type names, as sent over the wave json protocol.
-      module Types
-        WAVELET_BLIP_CREATED = 'WAVELET_BLIP_CREATED'
-        WAVELET_BLIP_REMOVED = 'WAVELET_BLIP_REMOVED'
-        WAVELET_PARTICIPANTS_CHANGED = 'WAVELET_PARTICIPANTS_CHANGED'
-        WAVELET_SELF_ADDED = 'WAVELET_SELF_ADDED'
-        WAVELET_SELF_REMOVED = 'WAVELET_SELF_REMOVED'
-        WAVELET_TIMESTAMP_CHANGED = 'WAVELET_TIMESTAMP_CHANGED'
-        WAVELET_TITLE_CHANGED = 'WAVELET_TITLE_CHANGED'
-        WAVELET_VERSION_CHANGED = 'WAVELET_VERSION_CHANGED'
-        BLIP_CONTRIBUTORS_CHANGED = 'BLIP_CONTRIBUTORS_CHANGED'
-        BLIP_DELETED = 'BLIP_DELETED'
-        BLIP_SUBMITTED = 'BLIP_SUBMITTED'
-        BLIP_TIMESTAMP_CHANGED = 'BLIP_TIMESTAMP_CHANGED'
-        BLIP_VERSION_CHANGED = 'BLIP_VERSION_CHANGED'
-        DOCUMENT_CHANGED = 'DOCUMENT_CHANGED'
-        FORM_BUTTON_CLICKED = 'FORM_BUTTON_CLICKED'
-      end
-
       #Options include:
       # - :timestamp
       # - :modified_by
@@ -76,38 +52,6 @@ module Rave
 
         add_user_ids([@modified_by_id])
       end
-      
-      # Event factory.
-      # - :type
-      # - :timestamp
-      # - :modified_by
-      # - :properties
-      def self.create(options = {}) # :nodoc:
-        event_class = sub_classes.find { |e| e.type == options[:type] }
-        raise ArgumentError.new("Unknown event type #{options[:type]}") if event_class.nil?
-        
-        event_class.new(options)
-      end
-      
-      # Type of particular event, as defined in the Wave protocol [String]
-      def self.type
-        raise "#{self.class} is abstract and should not be instanced."
-      end
-
-      # Is this event type able to be handled?
-      def self.valid_event_type?(type) # :nodoc:
-        not sub_classes.find { |e| e.type == type }.nil?
-      end
-
-      # List of all the event classes (other than Event itself) [Array of Event].
-      def self.sub_classes # :nodoc:
-        @@sub_classes ||= constants.map { |c| eval c }.select { |v| v.kind_of? Class }
-      end
-
-      # Type of particular event, as defined in the Wave protocol.
-      def type
-        self.class.type
-      end
 
     protected
       # Add a series of user ids to the context, if they don't already exist.
@@ -120,9 +64,11 @@ module Rave
       # Wavelet events
 
     public
-      class WaveletBlipCreatedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_BLIP_CREATED.dup; end
+      class WaveletBlipCreated < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_BLIP_CREATED'
+
+        factory_register
         
         # Newly created blip [Blip]
         attr_reader :new_blip
@@ -131,9 +77,11 @@ module Rave
         end
       end
       
-      class WaveletBlipRemovedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_BLIP_REMOVED.dup; end
+      class WaveletBlipRemoved < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_BLIP_REMOVED'
+
+        factory_register
         
         # ID for blip which has now been removed [String]
         attr_reader :removed_blip_id
@@ -142,9 +90,11 @@ module Rave
         end
       end
       
-      class WaveletParticipantsChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_PARTICIPANTS_CHANGED.dup; end
+      class WaveletParticipantsChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_PARTICIPANTS_CHANGED'
+
+        factory_register
 
         ADDED = 'participantsAdded' # :nodoc:
         REMOVED = 'participantsRemoved' # :nodoc:
@@ -169,19 +119,25 @@ module Rave
         end
       end
       
-      class WaveletSelfAddedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_SELF_ADDED.dup; end
+      class WaveletSelfAdded < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_SELF_ADDED'
+
+        factory_register
       end
       
-      class WaveletSelfRemovedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_SELF_REMOVED.dup; end
+      class WaveletSelfRemoved < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_SELF_REMOVED'
+
+        factory_register
       end
       
-      class WaveletTimestampChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_TIMESTAMP_CHANGED.dup; end
+      class WaveletTimestampChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_TIMESTAMP_CHANGED'
+
+        factory_register
 
         # Time that the wavelet was changed [Time]
         attr_reader :new_timestamp
@@ -190,9 +146,11 @@ module Rave
         end
       end
       
-      class WaveletTitleChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_TITLE_CHANGED.dup; end
+      class WaveletTitleChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_TITLE_CHANGED'
+
+        factory_register
 
         attr_reader :new_title
         def new_title # :nodoc:
@@ -200,9 +158,11 @@ module Rave
         end
       end
             
-      class WaveletVersionChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::WAVELET_VERSION_CHANGED.dup; end
+      class WaveletVersionChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_VERSION_CHANGED'
+
+        factory_register
 
         attr_reader :new_version
         def new_version # :nodoc:
@@ -212,9 +172,11 @@ module Rave
       
       # Blip events
       
-      class BlipContributorsChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::BLIP_CONTRIBUTORS_CHANGED.dup; end
+      class BlipContributorsChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'BLIP_CONTRIBUTORS_CHANGED'
+
+        factory_register
 
         ADDED = 'contributorsAdded' # :nodoc:
         REMOVED = 'contributorsRemoved' # :nodoc:
@@ -239,16 +201,20 @@ module Rave
         end
       end
       
-      class BlipSubmittedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::BLIP_SUBMITTED.dup; end
+      class BlipSubmitted < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'BLIP_SUBMITTED'
+
+        factory_register
       end
 
       # #blip will have been created virtual+deleted if it was still referenced
       # in the json. If not, it was destroyed and all you have is the #blip_id.
-      class BlipDeletedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::BLIP_DELETED.dup; end
+      class BlipDeleted < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'BLIP_DELETED'
+
+        factory_register
 
         # ID of the blip that was deleted [String]
         #-- This dummy method just added for the purposes of rdoc.
@@ -267,14 +233,18 @@ module Rave
       
       # General events.
       
-      class DocumentChangedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::DOCUMENT_CHANGED.dup; end
+      class DocumentChanged < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'DOCUMENT_CHANGED'
+
+        factory_register
       end
       
-      class FormButtonClickedEvent < Event
-        # Type of particular event, as defined in the Wave protocol [String]
-        def self.type; Types::FORM_BUTTON_CLICKED.dup; end
+      class FormButtonClicked < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'FORM_BUTTON_CLICKED'
+
+        factory_register
         
         # Name of button that was clicked.
         attr_reader :button
