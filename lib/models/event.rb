@@ -252,6 +252,35 @@ module Rave
           @properties['button'].dup
         end
       end
+
+      class OperationError < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'OPERATION_ERROR'
+
+        factory_register
+
+        # Message describing what caused the error [String]
+        attr_reader :message
+        def message # :nodoc:
+          @properties['errorMessage'].dup
+        end
+
+        # Operation type that caused the error [String]
+        attr_reader :operation_type
+        def operation_type # :nodoc:
+          # Format is "document.appendMarkup1260632282946" (number is timestamp)
+          @properties['operationId'] =~ /^(.+?)\d+$/
+          "#{$1.split(/(?=[A-Z])|\./).join('_').upcase}"
+        end
+
+        # Time of the err [String]
+        attr_reader :operation_timestamp
+        def operation_timestamp # :nodoc:
+          # Format is "document.appendMarkup1260632282946" (number is timestamp)
+          @properties['operationId'] =~ /(\d+)$/
+          time_from_json($1)
+        end
+      end
     end
   end
 end

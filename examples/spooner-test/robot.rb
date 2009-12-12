@@ -101,5 +101,9 @@ MESSAGE
       return if [SPELLY_ID, id].include? event.modified_by.id
       # Do something about it
     end
+
+    def operation_error(error, context)
+      reply_wavelet(error, "Error: #{error.message} (#{error.operation_type}) at #{error.operation_timestamp}")
+    end
   end
 end

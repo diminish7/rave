@@ -43,7 +43,7 @@ end
 describe Rave::Models::Event do
   before :each do
     @json_time_fields = [:timestamp]
-    @num_classes = 13
+    @num_classes = 14
   end
 
   it_should_behave_like "event"
@@ -155,6 +155,38 @@ describe Event::BlipContributorsChanged do
   describe "contributors_removed()" do
     it "should return a list of users removed from the blip" do
       validate_user_list(@event.contributors_removed, @removed_ids)
+    end
+  end
+end
+
+describe Event::OperationError do
+  it_should_behave_like "event"
+
+  before :each do
+    wavelet = Wavelet.new(:id => "w+wavelet")
+    context = Context.new(:wavelets => {'w+wavelet' => wavelet })
+    @time = Time.at(1231231231)
+    @message = "Everything went pear-shaped"
+    @event = described_class.new(:context => context,
+      :properties => { 'errorMessage' => @message,
+        'operationId' => "document.appendMarkup%10.0d" % [@time.to_i] })
+  end
+
+  describe "message()" do
+    it "should return the error message" do
+      @event.message.should == @message
+    end
+  end
+
+  describe "operation_type()" do
+    it "should return the type of operation that caused the error" do
+      @event.operation_type.should == "DOCUMENT_APPEND_MARKUP"
+    end
+  end
+
+  describe "operation_timestamp()" do
+    it "should return the time that the operation caused the error" do
+      @event.operation_timestamp.should == @time
     end
   end
 end
