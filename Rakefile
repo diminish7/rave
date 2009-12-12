@@ -113,7 +113,7 @@ FileList['examples/*/Rakefile'].each do |rakefile|
       desc "#{data[:desc]} for #{example} robot"
       task t => data[:depend] do
         cd path do
-          "jruby -S rake #{t}"
+          system "jruby -S rake #{t}"
         end
       end
     end
