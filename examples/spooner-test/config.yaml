@@ -4,3 +4,5 @@ robot:
   image_url: http://spooner-test.appspot.com/icon.png
   profile_url: http://spooner-test.appspot.com/
   version: 12
+appcfg:
+  version: 12
