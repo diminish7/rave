@@ -25,7 +25,6 @@ def create_robot(args)
   lib = File.join(dir, "lib")
   config_dir = File.join(dir, "config")
   file = File.join(dir, "robot.rb")
-  appengine_web = File.join(dir, "appengine-web.xml")
   run = File.join(dir, "config.ru")
   config = File.join(dir, "config.yaml")
   public_folder = File.join(dir, "public")
@@ -56,12 +55,6 @@ def create_robot(args)
     f.puts config_file_contents(options)
   end
 
-  #Make the appengine web xml file
-  puts "Creating appengine config file #{File.expand_path(appengine_web)}"
-  File.open(appengine_web, "w") do |f|
-    f.puts appengine_web_contents(robot_name)
-  end
-
   #Make the public folder for static resources
   puts "Creating public folder"
   Dir.mkdir(public_folder)
@@ -78,15 +71,6 @@ def create_robot(args)
   jars.each do |jar|
     puts "Adding jar #{jar}"
     File.copy(File.join(jar_dir, jar), File.join(lib, jar))
-  end
-
-  #Make the wabler config file
-  puts "Creating config directory #{File.expand_path(config_dir)}"
-  Dir.mkdir(config_dir)
-  warble_file = File.join(config_dir, "warble.rb")
-  puts "Creating warble config file #{File.expand_path(warble_file)}"
-  File.open(warble_file, "w") do |f|
-    f.puts warble_config_contents()
   end
 end
 
@@ -146,43 +130,9 @@ robot:
   image_url: #{options[:image_url]}
   profile_url: #{options[:profile_url]}
   version: #{options[:version]}
+appcfg:
+  version: 1
 CONFIG
-end
-
-def appengine_web_contents(robot_name)
-  <<-APPENGINE
-<?xml version="1.0" encoding="utf-8"?>
-<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <application>#{robot_name}</application>
-    <version>1</version>
-    <static-files />
-    <resource-files />
-    <sessions-enabled>false</sessions-enabled>
-    <system-properties>
-      <property name="jruby.management.enabled" value="false" />
-      <property name="os.arch" value="" />
-      <property name="jruby.compile.mode" value="JIT"/> <!-- JIT|FORCE|OFF -->
-      <property name="jruby.compile.fastest" value="true"/>
-      <property name="jruby.compile.frameless" value="true"/>
-      <property name="jruby.compile.positionless" value="true"/>
-      <property name="jruby.compile.threadless" value="false"/>
-      <property name="jruby.compile.fastops" value="false"/>
-      <property name="jruby.compile.fastcase" value="false"/>
-      <property name="jruby.compile.chainsize" value="500"/>
-      <property name="jruby.compile.lazyHandles" value="false"/>
-      <property name="jruby.compile.peephole" value="true"/>
-   </system-properties>
-</appengine-web-app>
-APPENGINE
-end
-
-def warble_config_contents
-  <<-WARBLE
-Warbler::Config.new do |config|
-  config.gems = %w( rave json-jruby rack builder RedCloth )
-  config.includes = %w( robot.rb config.yaml appengine-web.xml )
-end
-WARBLE
 end
 
 def html_file_contents(name, id)
