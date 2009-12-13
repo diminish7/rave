@@ -105,7 +105,7 @@ describe Rave::Models::Robot do
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
       @obj.register_cron_job(*cron2)
-      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timeinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timeinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
     end
     
     it "should not include an empty crons tag" do
@@ -129,7 +129,7 @@ describe Rave::Models::Robot do
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
       @obj.register_cron_job(*cron2)
-      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timeinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timeinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
+      @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
     end
     
   end
