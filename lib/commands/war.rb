@@ -16,3 +16,13 @@ def create_war(args)
     Rake.application.top_level
   end
 end
+
+#Runs warbler's cleanup to get rid of the .war file and the tmp/war folder
+def cleanup_war(args)
+  Rake.application.standard_exception_handling do
+    Rake.application.init
+    Rave::Task.new
+    task(:default => "rave:clean")
+    Rake.application.top_level
+  end
+end

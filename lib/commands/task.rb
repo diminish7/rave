@@ -2,11 +2,12 @@ require 'rake'
 require 'rake/tasklib'
 require 'fileutils'
 require 'warbler'
+require 'appengine-gem'
+
+require File.join(AppengineGem::APPENGINE_LIB_PATH, "appengine-tools-api.jar")
 
 module Rave
-  class Task < Warbler::Task
-    include FileUtils
-    
+  class Task < Warbler::Task    
     def initialize
       warbler_config = Warbler::Config.new do |config|
         config.gems = %w( rave json-jruby rack builder RedCloth )
@@ -14,6 +15,7 @@ module Rave
       end
       super(:rave, warbler_config)
       define_post_war_processes
+      define_deploy_task
     end
     
   private
@@ -38,6 +40,18 @@ module Rave
           robot_name = config['robot']['id'].gsub(/@.+/, '')
           version = config['appcfg'] && config['appcfg']['version'] ? config['appcfg']['version'] : 1
           create_appengine_web(File.join(web_inf, "appengine-web.xml"), robot_name, version)
+        end
+      end
+    end
+    
+    def define_deploy_task
+      namespace :rave do
+        desc "Deploy to Appengine"
+        task :appcfg_update do #=> :create_war do
+          staging_folder = File.expand_path(File.join(".", "tmp", "war"))
+          appcfg_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'jars', 'appcfg'))
+          appcfg_jar = File.expand_path(File.join(appcfg_path, 'appengine-tools-api.jar'))
+          Java::ComGoogleAppengineToolsAdmin::AppCfg.main(["update", staging_folder].to_java(:string))
         end
       end
     end

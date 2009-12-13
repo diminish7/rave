@@ -10,4 +10,10 @@ def display_usage
   puts "'war' creates a war file suitable for deploying to Google AppEngine"
   puts "e.g."
   puts "rave war"
+  puts "'appengine_deploy' deploys the tmp/war folder to Google AppEngine"
+  puts "e.g."
+  puts "rave appengine_deploy"
+  puts "'cleanup' removes the .war file and the tmp/war staging directory"
+  puts "e.g."
+  puts "rave cleanup"
 end
