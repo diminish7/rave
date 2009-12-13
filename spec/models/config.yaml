@@ -1,5 +1,5 @@
 robot:
-  id: robot@appstore.com
+  id: robot@appspot.com
   name: testbot
   image_url: http://localhost/image.png
   profile_url: http://localhost/profile

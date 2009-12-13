@@ -4,6 +4,7 @@ module Rave
     class Context
 
       attr_reader :primary_wavelet # :nodoc: API users should use Event#wavelet
+      attr_reader :robot # The robot managing this context.
 
       # All waves by ID [Hash of String => Wave]
       attr_reader :waves
@@ -116,6 +117,7 @@ module Rave
         if robot
           @users[robot.id] = robot
           robot.context = self
+          @robot = robot
         end
         
         @wavelets.each_value do |wavelet|
@@ -160,7 +162,8 @@ module Rave
 
       # Add a user to users (Use an Operation to actually add the blip to the Wave).
       def add_user(options) # :nodoc:
-        raise DuplicatedIDError.new("Can't add another User with id #{options[:id]}") if @users.has_key? options[:id]
+        options[:id].downcase! if options[:id]
+        raise DuplicatedIDError.new("Can't add another User with id #{options[:id]}") if @users.has_key? options[:id].downcase
         user = User.new(options)
         @users[user.id] = user
         user.context = self

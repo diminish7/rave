@@ -16,8 +16,8 @@ shared_examples_for "event" do
   describe "modified_by()" do
     it "should return the User object associated with the :modified_by option" do
       @_event.modified_by.should be_kind_of User
-      @_event.modified_by.id.should == "Fred"
-      @_context.users["Fred"].should == @_event.modified_by
+      @_event.modified_by.id.should == "fred"
+      @_context.users["fred"].should == @_event.modified_by
     end
   end
 

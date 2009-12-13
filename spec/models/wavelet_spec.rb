@@ -6,7 +6,7 @@ describe Rave::Models::Wavelet do
     @root_blip = Blip.new(:id => "b+blip", :wavelet_id => "w+wavelet", :wave_id => "w+wave")
     @wavelet = Wavelet.new(:id => "w+wavelet", :wave_id => "w+wave", :root_blip_id => "b+blip")
     @wave = Wave.new(:id => "w+wave")
-    @user = User.new(:id => "Dave")
+    @user = User.new(:id => "dave")
     @context = Context.new(:wavelets => { "w+wavelet" => @wavelet },
       :waves => { "w+wave" => @wave },
       :blips => { "b+blip" => @root_blip },
@@ -52,23 +52,23 @@ describe Rave::Models::Wavelet do
 
   describe "to_s()" do
     it "should return information about the wavelet" do
-      wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!", :participants => ['Dave'])
+      wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!", :participants => ['dave'])
       Context.new(:wavelets => { "w+wavelet" => wavelet }, :robot => robot_instance)
-      wavelet.to_s.should == "Wavelet:w+wavelet:Dave:Hello!"
+      wavelet.to_s.should == "Wavelet:w+wavelet:dave:Hello!"
     end
 
    it "should crop long content" do
-      wavelet = Wavelet.new(:id => "w+wavelet", :title => 'abcdefghijklmnopqrstuvwxyz', :participants => ['Dave'])
+      wavelet = Wavelet.new(:id => "w+wavelet", :title => 'abcdefghijklmnopqrstuvwxyz', :participants => ['dave'])
       Context.new(:wavelets => { "w+wavelet" => wavelet }, :robot => robot_instance)
-      wavelet.to_s.should == "Wavelet:w+wavelet:Dave:abcdefghijklmnopqrstu..."
+      wavelet.to_s.should == "Wavelet:w+wavelet:dave:abcdefghijklmnopqrstu..."
     end
   end
 
   describe "print_structure()" do
     it "should return the wavelet information, as well as that of its blips" do
-      blip = Blip.new(:id => 'b+1', :content => 'Goodbye!', :contributors => ['Fred', 'Dave'])
+      blip = Blip.new(:id => 'b+1', :content => 'Goodbye!', :contributors => ['fred', 'dave'])
       wavelet = Wavelet.new(:id => "w+wavelet", :title => "Hello!",
-        :participants => %w[Elise Dave Fred Karen Sarah],
+        :participants => %w[elise dave fred karen sarah],
         :title => 'Hello!',
         :root_blip_id => 'b+1')
       Context.new(:blips => { 'b+1' => blip },
@@ -108,21 +108,97 @@ END
         validate_operations(@context, [Operation::WAVELET_APPEND_BLIP, Operation::WAVELET_APPEND_BLIP])
       end
     end
-    
-    describe "add_participant()" do
-      it "should add a participant to the wavelet and an operation to the context" do
-        @wavelet.participants.size.should == 0
-        @wavelet.add_participant("Frank")
-        @wavelet.participants.size.should == 1
-        @wavelet.participants.first.should be_kind_of User
-        @wavelet.participants.first.id.should == "Frank"
-        validate_operations(@context, [Operation::WAVELET_ADD_PARTICIPANT])
+
+    describe "title=" do
+      before :each do
+        @title = "Frogosaurus Rex".freeze
+        @wavelet.title = "Frogosaurus Rex"
+      end
+      it "should change the title attribute" do
+        @wavelet.title.should == @title
+      end
+      it "should add an operation" do
+        validate_operations(@context, [Operation::WAVELET_SET_TITLE])
+        @context.operations.last.property.should == @title
+      end
+    end
+
+    describe "manipulating participants" do
+      before :each do
+        @human_id = "human@cheese.com"
+        @remote_robot_id = "remote-robot@appspot.com"
+        @local_robot = robot_instance
+        @wavelet = Wavelet.new(:id => "wavelet", :participants => [@human_id, @remote_robot_id, @local_robot.id])
+        @context = Context.new(:wavelets => {@wavelet.id => @wavelet}, :robot => @local_robot)
+        @initial_participant_ids = @wavelet.participant_ids
       end
 
-      it "should refuse to add a participant that is already in the wavelet" do
-        @wavelet.add_participant("Dave")
-        @wavelet.participants.size.should == 0
-        validate_operations(@context, [])
+      describe "remove_robot()" do
+        it "should remove the robot from the wavelet" do
+          @wavelet.remove_robot.should == @local_robot
+          @wavelet.participant_ids.should == @initial_participant_ids - [@local_robot.id]
+        end
+        it "should add an appropriate operation to the context" do
+          @wavelet.remove_robot
+          validate_operations(@context, [Operation::WAVELET_REMOVE_SELF])
+          @context.operations.last.property.should be_nil
+        end
+      end
+      
+      describe "add_participant()" do
+        it "should add a participant to the wavelet as an id" do
+          user = @wavelet.add_participant("fish@frog.com")
+          user.should be_kind_of User
+          @wavelet.participant_ids.should == @initial_participant_ids + ["fish@frog.com"]
+          @context.users["fish@frog.com"].should be_kind_of User
+        end
+        it "should add a participant to the wavelet as a User" do
+          user = @context.add_user(:id => "fish@frog.com")
+          @wavelet.add_participant(user)
+          @wavelet.participant_ids.should == @initial_participant_ids + ["fish@frog.com"]
+        end
+        it "should add an appropriate operation to the context" do
+          @wavelet.add_participant("fish@frog.com")
+          validate_operations(@context, [Operation::WAVELET_ADD_PARTICIPANT])
+          @context.operations.last.property.id.should == "fish@frog.com"
+        end
+        it "should refuse to add a participant that is already in the wavelet" do
+          @wavelet.add_participant(@human_id).should be_nil
+          @wavelet.participant_ids.should == @initial_participant_ids
+          validate_operations(@context, [])
+        end
+      end
+
+      describe "remove_participant()" do
+        it "should remove a participant from the wavelet as id" do
+          user = @wavelet.remove_participant(@remote_robot_id)
+          user.should be_kind_of User
+          @wavelet.participant_ids.should == @initial_participant_ids - [@remote_robot_id]
+        end
+        it "should remove a participant from the wavelet as User" do
+          @wavelet.remove_participant(@context.users[@remote_robot_id])
+          @wavelet.participant_ids.should == @initial_participant_ids - [@remote_robot_id]
+        end
+        it "should refuse to remove a human user" do
+          @wavelet.remove_participant(@human_id)
+          @wavelet.participant_ids.should == @initial_participant_ids
+          validate_operations(@context, [])
+        end
+        it "should add an appropriate operation for remote robots" do
+          @wavelet.remove_participant(@remote_robot_id)
+          validate_operations(@context, [Operation::WAVELET_REMOVE_PARTICIPANT])
+          @context.operations.last.property.id.should == @remote_robot_id
+        end
+        it "should add an appropriate operation for the local robot" do
+          @wavelet.remove_participant(@local_robot)
+          validate_operations(@context, [Operation::WAVELET_REMOVE_SELF])
+          @context.operations.last.property.should be_nil
+        end
+        it "should refuse to remove a participant that isn't already in the wavelet" do
+          @wavelet.remove_participant("fish@appspot.com").should be_nil
+          @wavelet.participant_ids.should == @initial_participant_ids
+          validate_operations(@context, [])
+        end
       end
     end
   end

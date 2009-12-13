@@ -3,7 +3,7 @@ module Rave
     # A wave client, acting as a wave creator, blip contributor and/or a wavelet participant.
     class User < Component
       ROBOT_PATTERN = /@appspot\.com$/ # :nodoc:
-      NOBODY_ID = "@@@NOBODY@@@" # :nodoc: Used as a default in certain circumstances.
+      NOBODY_ID = "@@@nobody@@@" # :nodoc: Used as a default in certain circumstances.
       
       # Url link to the profile of the User.
       # NOTE: Due to a limitation in Wave, for all users except the local robot
@@ -27,6 +27,7 @@ module Rave
       # - :image_url
       # - :context
       def initialize(options = {}) # :nodoc:
+        options[:id].downcase! if options[:id]
         super(options)
         @name = options[:name]
         @profile_url = options[:profile_url] || ''
