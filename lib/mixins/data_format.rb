@@ -21,7 +21,7 @@ module Rave
           unless @cron_jobs.empty?
             xml.tag!("w:crons") do
               @cron_jobs.each do |job|
-                xml.tag!("w:cron", "path" => job[:path], "timeinseconds" => job[:seconds])
+                xml.tag!("w:cron", "path" => job[:path], "timerinseconds" => job[:seconds])
               end
             end
           end

@@ -28,8 +28,8 @@ module Rave
             LOGGER.info("Response:\n#{response}")
             [ 200, { 'Content-Type' => 'application/json' }, response ]
           elsif cron_job = @cron_jobs.find { |job| job[:path] == path }
-            # body = request.body.read
-            # context, events = parse_json_body(body)
+            body = request.body.read
+            context, events = parse_json_body(body)
             self.send(cron_job[:handler], context)
             [ 200, { 'Content-Type' => 'application/json' }, context.to_json ]
           elsif File.exist?(file = File.join(".", "public", *(path.split("/"))))
