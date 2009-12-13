@@ -1,5 +1,4 @@
-$:.unshift File.dirname(File.dirname(__FILE__))
-require 'robot'
+require File.join(File.dirname(__FILE__), '..', 'robot')
 
 describe SpoonerTest::Robot do
   before :each do

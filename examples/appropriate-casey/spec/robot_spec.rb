@@ -1,7 +1,6 @@
-$:.unshift File.dirname(File.dirname(__FILE__))
-require 'robot'
+require File.join(File.dirname(__FILE__), '..', 'robot')
 
-describe SpoonerTest::Robot do
+describe AppropriateCasey::Robot do
   before :each do
     @robot = described_class.instance
   end
