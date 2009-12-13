@@ -257,9 +257,9 @@ describe Rave::Models::Blip do
   describe "to_s()" do
     it "should return the blip's class, id, state and content" do
       blip = Blip.new(:id => "b+blip", :content => "Hello!", :state => :normal,
-        :contributors => ['Dave'])
-      Context.new(:blips => { "Dave" => blip }, :robot => robot_instance)
-      blip.to_s.should == "Blip:b+blip:Dave:Hello!"
+        :contributors => ['dave'])
+      Context.new(:blips => { "dave" => blip }, :robot => robot_instance)
+      blip.to_s.should == "Blip:b+blip:dave:Hello!"
     end
 
     it "should return a string with the blip's state if deleted" do
@@ -273,45 +273,45 @@ describe Rave::Models::Blip do
     end
 
     it "should convert newlines to characters to prevent wrap" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['Hal9000'])
+      blip = Blip.new(:id => "b+blip", :content => "Hello\nDave!", :contributors => ['hal9000'])
       Context.new(:blips => { blip.id => blip }, :robot => robot_instance)
-      blip.to_s.should == "Blip:b+blip:Hal9000:Hello\\nDave!"
+      blip.to_s.should == "Blip:b+blip:hal9000:Hello\\nDave!"
     end
 
     it "should crop long content" do
-      blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['Dave'])
+      blip = Blip.new(:id => "b+blip", :content => 'abcdefghijklmnopqrstuvwxyz', :contributors => ['dave'])
       Context.new(:blips => { "b+blip" => blip }, :robot => robot_instance)
-      blip.to_s.should == "Blip:b+blip:Dave:abcdefghijklmnopqrstu..."
+      blip.to_s.should == "Blip:b+blip:dave:abcdefghijklmnopqrstu..."
     end
 
     it "should show multiple contributors in order" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Claire', 'Dave', 'Sue'])
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['claire', 'dave', 'sue'])
       Context.new(:blips => { "b+blip" => blip }, :robot => robot_instance)
-      blip.to_s.should == "Blip:b+blip:Claire,Dave,Sue:Hello!"
+      blip.to_s.should == "Blip:b+blip:claire,dave,sue:Hello!"
     end
   end
 
   describe "print_structure()" do
     it "should return the blip's to_s + a newline" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['dave'])
       Context.new(:blips => { "b+blip" => blip })
       blip.print_structure.should == "#{blip}\n"
     end
 
     it "should be indented appropriately" do
-      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['Dave'])
+      blip = Blip.new(:id => "b+blip", :content => "Hello!", :contributors => ['dave'])
       Context.new(:blips => { "b+blip" => blip })
       blip.print_structure(2).should == "    #{blip}\n"
     end
 
     it "should show complex series of replies to the blip" do
       blip1 = Blip.new(:id => 'b+1', :content => 'Goodbye!', :child_blip_ids => ['b+2', 'b+3', 'b+4'],
-        :contributors => ['Fred', 'Dave'])
-      blip2 = Blip.new(:id => 'b+2', :content => 'Cheese!', :contributors => ['Sarah'])
-      blip3 = Blip.new(:id => 'b+3', :content => 'Bleh!', :contributors => ['Karen'], :child_blip_ids => ['b+5', 'b+6'])
-      blip4 = Blip.new(:id => 'b+4', :content => 'Byeeee!', :contributors => ['Ken'])
-      blip5 = Blip.new(:id => 'b+5', :content => 'Noooo!', :contributors => ['Sarah'])
-      blip6 = Blip.new(:id => 'b+6', :content => 'Oh, shut up!', :contributors => ['Dave'])
+        :contributors => ['fred', 'dave'])
+      blip2 = Blip.new(:id => 'b+2', :content => 'Cheese!', :contributors => ['sarah'])
+      blip3 = Blip.new(:id => 'b+3', :content => 'Bleh!', :contributors => ['karen'], :child_blip_ids => ['b+5', 'b+6'])
+      blip4 = Blip.new(:id => 'b+4', :content => 'Byeeee!', :contributors => ['ken'])
+      blip5 = Blip.new(:id => 'b+5', :content => 'Noooo!', :contributors => ['sarah'])
+      blip6 = Blip.new(:id => 'b+6', :content => 'Oh, shut up!', :contributors => ['dave'])
       context = Context.new(:blips => { 'b+1' => blip1, 'b+2' => blip2, 'b+3' => blip3,
           'b+4' => blip4, 'b+5' => blip5, 'b+6' => blip6})
       
@@ -495,7 +495,7 @@ END
         @child.wavelet.should == @parent.wavelet
         @child.wavelet.should == @wavelet
         @child.contributors.size.should == 1
-        @child.contributors.first.id.should == "robot@appstore.com"
+        @child.contributors.first.id.should == "robot@appspot.com"
         @child.generated?.should be_true
       end
 

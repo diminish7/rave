@@ -113,26 +113,68 @@ module Rave
         blip
       end
       
-      #Adds a participant to the wavelet
-      def add_participant(id) # :nodoc:
-        if @context.users.has_key?(id)
+      # Adds a participant (human or robot) to the wavelet
+      # +user+:: User to add, as ID or object [String or User]
+      # Returns: The user that was added [User or nil]
+      def add_participant(user) # :nodoc:
+        id = user.to_s.downcase
+        if @participant_ids.include?(id)
           LOGGER.warning("Attempted to add a participant who was already in the wavelet(#{@id}): #{id}")
-          return
+          return nil
         end
 
         # Allow string names to be used as participant.
-        user = @context.add_user(:id => id)
+        user = if @context.users[id]
+          @context.users[id]
+        else
+          @context.add_user(:id => id)
+        end
 
         @context.add_operation(:type => Operation::WAVELET_ADD_PARTICIPANT,
           :wave_id => @wave_id, :wavelet_id => @id, :property => user)
         @participant_ids << id
+        
+        user
+      end
+
+      # Removes a participant (robot only) from the wavelet.
+      # +user+:: User to remove, as ID or object [String or User]
+      # Returns: The user that was removed [User or nil]
+      def remove_participant(user) # :nodoc:
+        id = user.to_s.downcase
+        unless @participant_ids.include?(id)
+          LOGGER.warning("Attempted to remove a participant who was not in the wavelet(#{@id}): #{id}")
+          return nil
+        end
+
+        # Allow string names to be used as participant.
+        user = @context.users[id]
+
+        unless user.robot?
+          LOGGER.warning("Attempted to remove a non-robot from wavelet(#{@id}): #{id}")
+          return nil
+        end
+
+        if user == @context.robot
+          return remove_robot
+        end
+
+        @context.add_operation(:type => Operation::WAVELET_REMOVE_PARTICIPANT,
+          :wave_id => @wave_id, :wavelet_id => @id, :property => user)
+        @participant_ids.delete id
+        
+        user
       end
       
-      #Removes this robot from the wavelet
-      #
-      # NOT IMPLEMENTED
+      # Removes the local robot from the wavelet.
+      # Returns: The local robot [Robot]
       def remove_robot
-        raise NotImplementedError
+        robot = @context.robot
+        @context.add_operation(:type => Operation::WAVELET_REMOVE_SELF,
+          :wave_id => @wave_id, :wavelet_id => @id)
+        @participant_ids.delete robot.id
+
+        robot
       end
       
       #Sets the data document for the wavelet
@@ -144,9 +186,10 @@ module Rave
       
       #Set the title
       #
-      # NOT IMPLEMENTED
       def title=(title) # :nodoc: Documented by title() as accessor.
-        raise NotImplementedError
+        title = title.to_s
+        @context.add_operation(:type => Operation::WAVELET_SET_TITLE,
+          :wave_id => @wave_id, :wavelet_id => @id, :property => title)
         @title = title
       end
 

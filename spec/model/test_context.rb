@@ -18,7 +18,7 @@ describe Rave::Models::Context do
     end
 
     it "should contain all the wavelet participants" do
-      participants = ["Dave", "Sue"]
+      participants = ["dave", "sue"]
       wavelet1 = Wavelet.new(:id => "wavelet1", :participants => participants)
       wavelet2 = Wavelet.new(:id => "wavelet2", :participants => [participants[0]])
       wavelet3 = Wavelet.new(:id => "wavelet3", :participants => [])
@@ -32,7 +32,7 @@ describe Rave::Models::Context do
     end
 
     it "should contain all the wavelet creators" do
-      creators = ["Dave", "Sue"]
+      creators = ["dave", "sue"]
       wavelet1 = Wavelet.new(:id => "wavelet1", :creator => creators[0])
       wavelet2 = Wavelet.new(:id => "wavelet2", :creator => creators[0])
       wavelet3 = Wavelet.new(:id => "wavelet3", :creator => creators[1])
@@ -51,7 +51,7 @@ describe Rave::Models::Context do
     end
 
     it "should contain all the blip contributors" do
-      contributors = ["Dave", "Sue"]
+      contributors = ["dave", "sue"]
       blip1 = Blip.new(:id => "blip1", :contributors => contributors)
       blip2 = Blip.new(:id => "blip2", :contributors => [contributors[0]])
       blip3 = Blip.new(:id => "blip3", :contributors => [])
