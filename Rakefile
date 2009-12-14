@@ -93,7 +93,7 @@ example_tasks = [
   [:build,   "Build WAR file",      [:install], "rave war"],
   [:deploy,  "Deploy to appengine", [:install], "rave appengine_deploy"],
   [:spec,    "Run specs",           [],         "jruby -S spec spec/**/*_spec.rb"],
-  [:clobber, "Clobber files",       [],         "rave clean"],
+  [:clobber, "Clobber files",       [],         "rave cleanup"],
 ]
 examples = []
 # Run rake tasks on the example robots individually.
