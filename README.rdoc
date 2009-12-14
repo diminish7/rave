@@ -157,7 +157,12 @@ Rave includes a command for deploying to appengine.  You can run:
 
   jruby -S rave appengine_deploy
 
-Note that this will also run the "war" command if needed, so there is no need run "war" first.
+For this to work, you'll need to have downloaded the Google Appengine Java SDK, and have it
+  1) on your path
+  2) defined in an environment variable called APPENGINE_JAVA_SDK, or
+  3) defined in config.yaml as appcfg['sdk]
+
+Note that running appengine_deploy will also run the "war" command if needed, so there is no need run "war" first.
 
 Note: Whenever you deploy a new version of your robot and try to use it,
 it will appear to not do anything because it takes a long time to start up the
