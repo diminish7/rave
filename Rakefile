@@ -12,8 +12,7 @@ DEPS = {
     'builder' => '>=2.1.2',
     'json-jruby' => '>=1.1.6',
     'warbler' => '>=0.9.13',
-    'RedCloth' => '>=4.2.2',
-    'appengine-gem' => '>=1.2.8'
+    'RedCloth' => '>=4.2.2'
   }
 
 SPEC = Gem::Specification.new do |s|
@@ -89,32 +88,30 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb', 'examples/*/spec/*_spec.rb']
+  t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
 # Synonym for backwards compatibility.
 task :test => :spec
 
-example_tasks = {
-  :build =>   { :desc => "Build WAR file", :depend => [:install] },
-  :deploy =>  { :desc => "Deploy",         :depend => [:install] },
-  :spec =>    { :desc => "Run specs",      :depend => [] },
-  :clobber => { :desc => "Clobber files",  :depend => [] },
-  :clean =>   { :desc => "Clean files",    :depend => [] },
-}
+example_tasks = [
+  [:build,   "Build WAR file",      [:install], "rave war"],
+  [:deploy,  "Deploy to appengine", [:install], "rave appengine_deploy"],
+  [:spec,    "Run specs",           [],         "jruby -S spec spec/**/*_spec.rb"],
+  [:clobber, "Clobber files",       [],         "rave clean"],
+]
 examples = []
 # Run rake tasks on the example robots individually.
-FileList['examples/*/Rakefile'].each do |rakefile|
-  path = File.dirname(rakefile)
+FileList['examples/*'].each do |path|
   example = File.basename(path)
   examples << example
 
   namespace example do
-    example_tasks.each_pair do |t, data|
-      desc "#{data[:desc]} for #{example} robot"
-      task t => data[:depend] do
+    example_tasks.each do |t, desc, depends, command|
+      desc "#{desc} for #{example} robot"
+      task t => depends do
         cd path do
-          system "jruby -S rake #{t}"
+          system command
         end
       end
     end
@@ -123,14 +120,14 @@ end
 
 # Perform tasks for all robots at once.
 namespace :examples do
-  example_tasks.each_pair do |t, data|
-    desc "#{data[:desc]} for all example robots"
+  example_tasks.each do |t, desc, depends, command|
+    desc "#{desc} for all example robots"
     task t => examples.map {|e| :"#{e}:#{t}" }
   end
 end
 
 # Include example robot tasks in our general ones.
-[:clobber, :clean].each do |t|
+[:clobber].each do |t|
   task t => :"examples:#{t}"
 end
 
