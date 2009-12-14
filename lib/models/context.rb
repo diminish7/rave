@@ -121,7 +121,7 @@ module Rave
       # Returns: Newly created wave [Wave]
       def create_wave(participants) # :nodoc:
         # Map participants to strings, since they could be Users.
-        wave = Wave.new(:context => self, :participants => participants.map {|p| p.to_s})
+        wave = Wave.new(:context => self, :participants => participants.map {|p| p.to_s.downcase })
         @waves[wave.id] = wave
 
         # TODO: Get wave id from sensible place?

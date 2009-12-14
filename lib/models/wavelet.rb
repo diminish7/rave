@@ -70,6 +70,7 @@ module Rave
       # - :id
       def initialize(options = {}) # :nodoc:
         @wave_id = options[:wave_id]
+        @participant_ids = options[:participants] || []
 
         if options[:id].nil? and options[:context]
           # Generate the wavelet from scratch.
@@ -79,6 +80,10 @@ module Rave
           blip = Blip.new(:wave_id => @wave_id, :wavelet_id => @id)
           @context.add_blip(blip)
           @root_blip_id = blip.id
+
+          @participant_ids.each do |id|
+            @context.add_user(:id => id) unless @context.users[id]
+          end
         else
           super(options)
           @root_blip_id = options[:root_blip_id]
@@ -88,7 +93,6 @@ module Rave
         @creation_time = time_from_json(options[:creation_time]) || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
-        @participant_ids = options[:participants] || []
         @title = options[:title] || ''
         @version = options[:version] || 0
       end

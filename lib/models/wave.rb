@@ -34,7 +34,7 @@ module Rave
       # The root wavelet (it will be nil if the event refers to a private subwavelet) [Wavelet]
       attr_reader :root_wavelet
       def root_wavelet # :nodoc:
-        @context.wavelets.values.find { |wavelet| wavelet.root? }
+        wavelets.find { |wavelet| wavelet and wavelet.root? }
       end
 
       def print_structure(indent = 0) # :nodoc:

@@ -76,10 +76,12 @@ describe Rave::Models::Context do
       @wave.generated?.should be_true
       @context.waves[@wave.id].should == @wave
     end
-    it "should create a blip within the wavelet as its root" do
+    it "should create a wavelet within the wave as its root" do
       wavelet = @wave.root_wavelet
       wavelet.should be_kind_of Wavelet
       wavelet.generated?.should be_true
+      wavelet.participants.size.should == 1
+      wavelet.participants.first.id.should == "fred"
       wavelet.wave.should == @wave
     end
     it "should create a blip within the wavelet as its root" do
