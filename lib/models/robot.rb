@@ -56,6 +56,13 @@ module Rave
       def register_cron_job(handler, seconds)
         @cron_jobs << { :path => "/_wave/cron/#{handler}", :handler => handler, :seconds => seconds }
       end
+
+      # Creates a new wave with initial participants set.
+      #
+      # Returns: The new wave, which contains a root wavelet which itself contains a root blip [Wave]
+      def create_wave(participants)
+        @context.create_wave(participants)
+      end
       
     protected
       #Register any handlers that are defined through naming convention

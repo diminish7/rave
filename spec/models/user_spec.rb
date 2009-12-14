@@ -20,6 +20,13 @@ describe Rave::Models::User do
     end
   end
 
+  describe "generated?" do
+    it "should always be false" do
+      human = Rave::Models::User.new(:id => HUMAN_ID)
+      human.generated?.should be_false
+    end
+  end
+
   describe "profile_url()" do
     it "Should be the :url passed in the constructor" do
       user = Rave::Models::User.new(:profile_url => URL, :id => "bleh")

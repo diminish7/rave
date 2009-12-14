@@ -52,7 +52,7 @@ module Rave
       def initialize(options = {})
         @type = options[:type]
         @wave_id = options[:wave_id]
-        @wavelet_id = options[:wavelet_id]
+        @wavelet_id = options[:wavelet_id] || ''
         @blip_id = options[:blip_id] || ''
         @index = options[:index] || -1
         @property = options[:property]

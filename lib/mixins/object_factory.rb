@@ -4,7 +4,9 @@ module Rave
     # it based on providing a type name.
     module ObjectFactory
       def self.included(base)
-        @@classes = {}
+        base.class_eval do
+          @@classes = {}
+        end
         
         # Object factory method.
         #

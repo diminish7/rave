@@ -75,34 +75,15 @@ describe Event::BlipDeleted do
   it_should_behave_like "event"
   
   describe "blip" do
-    it "should return a virtual blip if it is not referenced anywhere" do
+    it "should return nil" do
       wavelet = Wavelet.new(:id => "w+wavelet")
       context = Context.new(:wavelets => {'w+wavelet' => wavelet })
       event = described_class.new(:context => context,
         :properties => { 'blipId' => 'destroyed' })
 
-      deleted_blip = event.blip.should be_nil
+      event.blip.should be_nil
       context.blips['destroyed'].should be_nil
       event.blip_id.should == 'destroyed'
-    end
-
-    it "should return a new blip if it is already referenced from another blip" do
-      blip = Blip.new(:id => 'b+blip', :child_blip_ids => ['deleted'], :wavelet_id => 'w+wavelet')
-      wavelet = Wavelet.new(:id => "w+wavelet")
-      context = Context.new(:blips => {'b+blip' => blip}, :wavelets => {'w+wavelet' => wavelet })
-      event = described_class.new(:context => context,
-        :properties => { 'blipId' => 'deleted' })
-
-      deleted_blip = event.blip
-      deleted_blip.should == blip.child_blips.first
-      deleted_blip.id.should == 'deleted'
-      deleted_blip.parent_blip.should == blip
-      deleted_blip.child_blips.should == []
-      deleted_blip.wavelet.should == wavelet
-      deleted_blip.deleted?.should be_true
-      deleted_blip.null?.should be_false
-      deleted_blip.virtual?.should be_true
-      context.blips['deleted'].should == deleted_blip
     end
   end
 end

@@ -5,7 +5,7 @@ module Rave
       ROBOT_PATTERN = /@appspot\.com$/ # :nodoc:
       NOBODY_ID = "@@@nobody@@@" # :nodoc: Used as a default in certain circumstances.
       
-      # Url link to the profile of the User.
+      # Url link to the profile of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the url will be empty.
       attr_reader :profile_url
@@ -13,12 +13,17 @@ module Rave
         @profile_url.dup
       end
 
-      # Url link to the image of the User.
+      # Url link to the image of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the url will be empty.
       attr_reader :image_url
       def image_url # :nodoc:
         @image_url.dup
+      end
+
+      # Unlike other components, Users are never generated [Boolean].
+      def generated? # :nodoc:
+        false
       end
 
       # - :id
@@ -34,7 +39,7 @@ module Rave
         @image_url = options[:image_url] || ''
       end
 
-      # Printable name of the User.
+      # Printable name of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the name is the same as the @id.
       attr_reader :name

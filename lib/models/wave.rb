@@ -11,14 +11,30 @@ module Rave
       # - :wavelet_ids
       # - :id
       def initialize(options = {}) # :nodoc:
-        super(options)
-        @wavelet_ids = Set.new(options[:wavelet_ids])
+        if options[:id].nil? and options[:context]
+          super(:id => "#{GENERATED_PREFIX}_wave_#{unique_id}", :context => options[:context])
+
+          participants = options[:participants] || []
+          wavelet = Wavelet.new(:participants => participants, :wave_id => @id,
+            :creator => @context.robot.id, :context => @context)
+          @context.add_wavelet(wavelet)
+          @wavelet_ids = Set.new(wavelet.id)
+        else
+          super(options)
+          @wavelet_ids = Set.new(options[:wavelet_ids])
+        end
       end
 
       # All wavelets that are part of the wave [Array of Wavelet]
       attr_reader :wavelets
       def wavelets # :nodoc:
         @wavelet_ids.map { |id| @context.wavelets[id] }
+      end
+
+      # The root wavelet (it will be nil if the event refers to a private subwavelet) [Wavelet]
+      attr_reader :root_wavelet
+      def root_wavelet # :nodoc:
+        @context.wavelets.values.find { |wavelet| wavelet.root? }
       end
 
       def print_structure(indent = 0) # :nodoc:

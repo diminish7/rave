@@ -14,7 +14,6 @@ describe Rave::Models::Wavelet do
     @json_time_fields = [:creation_time, :last_modified_time]
   end
 
-  it_should_behave_like "Component initialize()"
   it_should_behave_like "Component id()"
   it_should_behave_like "time_from_json()"
   
@@ -41,6 +40,17 @@ describe Rave::Models::Wavelet do
       @wavelet.root_blip.should == @root_blip
       @wavelet.create_blip
       @wavelet.root_blip.should == @root_blip
+    end
+  end
+
+  describe "root?()" do
+    it "should be true for a non-root wavelet" do
+      @wavelet.root?.should be_false
+    end
+
+    it "should be false for a root wavelet" do
+      wavelet = Wavelet.new(:id => "bleh!conv+root", :wave_id => "w+wave")
+      wavelet.root?.should be_true
     end
   end
 
@@ -94,7 +104,6 @@ END
         validate_operations(@context, [Operation::WAVELET_APPEND_BLIP])
         new_blip.generated?.should be_true
         new_blip.deleted?.should be_false
-        new_blip.virtual?.should be_false
       end
 
       it "should work correctly multiple times to create a thread" do

@@ -208,8 +208,7 @@ module Rave
         factory_register
       end
 
-      # #blip will have been created virtual+deleted if it was still referenced
-      # in the json. If not, it was destroyed and all you have is the #blip_id.
+      # #blip will be nil, but #blip_id will give a sensible value.
       class BlipDeleted < Event
         # Type of event, as defined in the Wave protocol [String]
         TYPE = 'BLIP_DELETED'

@@ -33,11 +33,10 @@ describe Rave::Models::Blip do
 
     @blip = Blip.new(:id => "blip")
     @deleted_blip = Blip.new(:id => "deleted", :state => :deleted)
-    @generated_blip = Blip.new(:id => "generated", :creation => :generated)
-    @virtual_blip = Blip.new(:id => "virtual", :creation => :virtual)
+    @generated_blip = Blip.new()
 
     @wavelet = Wavelet.new(:id => "wavelet", :root_blip_id => "root")
-    @wave = Wave.new(:id => "wave", :wavelets => { "wavelet" => @wavelet })
+    @wave = Wave.new(:id => "wave", :wavelets => [@wavelet])
     
     @context = Context.new(
       :waves => { "wave" => @wave },
@@ -52,10 +51,6 @@ describe Rave::Models::Blip do
   end
 
   describe "initialize()" do
-    it "should raise an error if given an invalid :creation option" do
-      lambda { Blip.new(:id => "blip", :creation => :bleh) }.should raise_error ArgumentError
-    end
-
     it "should raise an error if given an invalid :state option" do
       lambda { Blip.new(:id => "blip", :state => :bleh) }.should raise_error ArgumentError
     end
@@ -113,32 +108,6 @@ describe Rave::Models::Blip do
 
     it "should return false if a :creation option is other than :generated" do
       @blip.generated?.should be_false
-    end
-  end
-
-  describe "virtual?" do
-    it "should return true if created with a :creation option of :virtual" do
-      @virtual_blip.virtual?.should be_true
-    end
-
-    it "should return false if a :creation option is other than :virtual" do
-      @blip.virtual?.should be_false
-      @generated_blip.virtual?.should be_false
-    end
-  end
-
-  describe "original?" do
-    it "should return true if created without a :creation option" do
-      @blip.original?.should be_true
-    end
-
-    it "should return true if created with a :creation option of :original" do
-      Blip.new(:id => "blip", :creation => :original).original?.should be_true
-    end
-
-    it "should return false if a :creation option is other than :original" do
-      @generated_blip.original?.should be_false
-      @virtual_blip.original?.should be_false
     end
   end
 
@@ -319,9 +288,11 @@ describe Rave::Models::Blip do
   #{blip1}
     #{blip3}
       #{blip6}
+
     #{blip5}
 
     #{blip4}
+
   #{blip2}
 END
     end

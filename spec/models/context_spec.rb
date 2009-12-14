@@ -65,26 +65,35 @@ describe Rave::Models::Context do
     end
   end
 
-  describe "root_wavelet()" do
-    
-    it "should return nil if there are no wavelets" do
-      context = Context.new
-      context.root_wavelet.should be_nil
+  describe "create_wave" do
+    before :each do
+      @context = Context.new(:robot => robot_instance)
+      @wave = @context.create_wave(["fred"])
     end
     
-    it "should return nil if no wavelet ids end in the root suffix" do
-      context = Context.new( :wavelets => { "foo" => Wavelet.new(:id => "foo"), "bar" => Wavelet.new(:id => "bar") } )
-      context.root_wavelet.should be_nil
+    it "should create a new generated wave" do
+      @wave.should be_kind_of Wave
+      @wave.generated?.should be_true
+      @context.waves[@wave.id].should == @wave
     end
-    
-    it "should return a wavelet if its id ends in the root suffix" do
-      foo = Wavelet.new(:id => "bleh")
-      bar = Wavelet.new(:id => "123" + Wavelet::ROOT_ID_SUFFIX)
-      context = Context.new( :wavelets => { foo.id => foo, bar.id => bar } )
-      root = context.root_wavelet
-      root.should == bar
+    it "should create a blip within the wavelet as its root" do
+      wavelet = @wave.root_wavelet
+      wavelet.should be_kind_of Wavelet
+      wavelet.generated?.should be_true
+      wavelet.wave.should == @wave
     end
-    
+    it "should create a blip within the wavelet as its root" do
+      wavelet = @wave.root_wavelet
+      blip = wavelet.root_blip
+      blip.should be_kind_of Blip
+      blip.generated?.should be_true
+      blip.wave.should == @wave
+      blip.wavelet.should == wavelet
+    end
+    it "should create an appropriate operation" do
+      validate_operations(@context, [Operation::WAVELET_CREATE])
+      @context.operations.last.property.should == @wave.root_wavelet
+    end
   end
 
   describe "add_blip()" do
@@ -148,27 +157,20 @@ describe Rave::Models::Context do
         :wavelets => { @wavelet.id => @wavelet }, :waves => { @wave.id => @wave })
     end
 
-    def check_virtual_blip(blip, expected_id)
-      blip.id.should == expected_id
-      blip.virtual?.should be_true
-      blip.deleted?.should be_false
-      blip.wave.should == @wave
-      blip.wavelet.should == @wavelet
-      @context.blips[blip.id].should == blip
+    it "should contain waves" do
+      @context.waves.should == { @wave.id => @wave }
+      context = @context
+      @wave.instance_eval { @context.should == context }
     end
-    
-    it "should create a virtual child blips that are only given as references" do
-      @blip.child_blips.size.should == 3
-      @blip.child_blips.each_with_index do |child, i|
-        check_virtual_blip(child, "b+undef#{i + 1}")
-        child.parent_blip.should == @blip
-      end
+    it "should contain wavelets" do
+      @context.wavelets.should == { @wavelet.id => @wavelet }
+      context = @context
+      @wave.instance_eval { @context.should == context }
     end
-
-    it "should create a virtual parent blip that is only given as reference" do
-      parent = @blip.parent_blip
-      check_virtual_blip(parent, "b+undef")
-      parent.child_blips.should == [@blip]
+    it "should contain blips" do
+      @context.blips.should == { @blip.id => @blip }
+      context = @context
+      @wave.instance_eval { @context.should == context }
     end
   end
 end

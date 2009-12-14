@@ -60,58 +60,10 @@ module Rave
         @users = options[:users] || {}
         @users.values.each { |user| user.context = self }          #Set up self as this user's context
 
-        resolve_blip_references
         resolve_user_references(options[:robot])
       end
 
     protected
-      # Resolve references to blips that otherwise aren't defined.
-      # NOTE: Should only be called during initialisation, since
-      # operation-generated blips can't have virtual references.
-      def resolve_blip_references # :nodoc:
-        @blips.values.each do |blip|
-          # Resolve virtual children.
-          blip.child_blip_ids.each do |child_id|
-            unless child_id.nil?
-              child = @blips[child_id]
-              if child.nil?
-                child = Blip.new(:id => child_id, :parent_blip_id => blip.id,
-                  :wavelet_id => blip.wavelet_id, :wave_id => blip.wave_id, :creation => :virtual)
-                add_blip(child)
-              else
-                # Since a child might have been created due to a reference from
-                # one of its real children, we still need to ensure that it knows
-                # about us.
-                if child.parent_blip_id.nil?
-                  child.instance_eval do
-                    @parent_blip_id = blip.id # TODO: unhack this!
-                  end
-                end
-              end
-            end
-          end
-
-          # Resolve virtual parent.
-          unless blip.parent_blip_id.nil?
-            parent = @blips[blip.parent_blip_id]
-            if parent.nil?
-              parent = Blip.new(:id => blip.parent_blip_id, :child_blip_ids => [blip.id],
-                :wavelet_id => blip.wavelet_id, :wave_id => blip.wave_id, :creation => :virtual)
-              add_blip(parent)
-            else
-              # Since there might be multiple "real" children, ensure that even
-              # if we don't have to create the virtual parent, ensure that
-              # it knows about us.
-              unless parent.child_blip_ids.include? blip.id
-                parent.instance_eval do
-                  @child_blip_ids << blip.id # TODO: unhack this!
-                end
-              end
-            end
-          end
-        end
-      end
-
       # Create users for every reference to one in the wave.
       def resolve_user_references(robot) # :nodoc:
         if robot
@@ -143,6 +95,7 @@ module Rave
 
     public
       # Add a blip to blips (Use an Operation to actually add the blip to the Wave).
+      # Returns: The blip [Blip].
       def add_blip(blip) # :nodoc:
         @blips[blip.id] = blip
         blip.context = self
@@ -150,9 +103,32 @@ module Rave
       end
 
       # Add an operation to the list to be executed.
+      # Returns: self [Context]
       def add_operation(options) # :nodoc:
         @operations << Operation.new(options)
         self
+      end
+
+      # Add a wavelet to wavelets (Use an Operation to actually add the blip to the Wave).
+      # Returns: The wavelet [Wavelet].
+      def add_wavelet(wavelet)# :nodoc:
+        @wavelets[wavelet.id] = wavelet
+        wavelet.context = self
+        wavelet
+      end
+
+      # +participants+:: Participants to exist in the new wavelet, as IDs or objects [Array of String/User]
+      # Returns: Newly created wave [Wave]
+      def create_wave(participants) # :nodoc:
+        # Map participants to strings, since they could be Users.
+        wave = Wave.new(:context => self, :participants => participants.map {|p| p.to_s})
+        @waves[wave.id] = wave
+
+        # TODO: Get wave id from sensible place?
+        add_operation(:type => Operation::WAVELET_CREATE, :wave_id => @waves.keys[0],
+          :property => wave.root_wavelet)
+
+        wave
       end
 
       # Remove a blip.
@@ -168,12 +144,6 @@ module Rave
         @users[user.id] = user
         user.context = self
         user
-      end
-  
-      # The root wavelet if it exists in this context (it will be nil if the event refers to a private subwavelet) [Wavelet]
-      attr_reader :root_wavelet
-      def root_wavelet # :nodoc:
-        @wavelets.values.find { |wavelet| wavelet.id =~ Regexp.new(Rave::Models::Wavelet::ROOT_ID_REGEXP) }
       end
            
       #Serialize the context for use in the line protocol.

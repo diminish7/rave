@@ -40,7 +40,7 @@ module Rave
       def title # :nodoc:
         @title.dup
       end
-
+      
       # ID of the wave that the wavelet is a part of [String]
       def wave_id # :nodoc:
         @wave_id.dup
@@ -51,9 +51,11 @@ module Rave
         @participant_ids.map { |id| id.dup }
       end
 
+      JAVA_CLASS = 'com.google.wave.api.impl.WaveletData'
       ROOT_ID_SUFFIX = "conv+root"   #The suffix for the root wavelet in a wave]
-      ROOT_ID_REGEXP = /conv\+root$/
-      
+      ROOT_ID_REGEXP = /#{Regexp.escape(ROOT_ID_SUFFIX)}$/
+
+      #
       # Options include:
       # - :creator
       # - :creation_time 
@@ -67,16 +69,28 @@ module Rave
       # - :context
       # - :id
       def initialize(options = {}) # :nodoc:
-        super(options)
+        @wave_id = options[:wave_id]
+
+        if options[:id].nil? and options[:context]
+          # Generate the wavelet from scratch.
+          super(:id => "#{GENERATED_PREFIX}_wavelet_#{unique_id}_#{ROOT_ID_SUFFIX}", :context => options[:context])
+          
+          # Ensure the newly created wavelet has a root blip.
+          blip = Blip.new(:wave_id => @wave_id, :wavelet_id => @id)
+          @context.add_blip(blip)
+          @root_blip_id = blip.id
+        else
+          super(options)
+          @root_blip_id = options[:root_blip_id]
+        end
+
         @creator_id = options[:creator] || User::NOBODY_ID
         @creation_time = time_from_json(options[:creation_time]) || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
         @participant_ids = options[:participants] || []
-        @root_blip_id = options[:root_blip_id]
-        @title = options[:title]
+        @title = options[:title] || ''
         @version = options[:version] || 0
-        @wave_id = options[:wave_id]
       end
 
       # Users that are currently have access the wavelet [Array of User]
@@ -90,12 +104,19 @@ module Rave
       def creator # :nodoc:
         @context.users[@creator_id]
       end
+
+      # Is this the root wavelet for its wave? [Boolean]
+      attr_reader :root?
+      def root? # :nodoc:
+        not (id =~ ROOT_ID_REGEXP).nil?
+      end
       
       #Creates a blip for this wavelet
+      # Returns: Gererated blip [Blip]
       def create_blip
         parent = final_blip
         blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => parent.id,
-          :wavelet_id => @id, :context => @context, :creation => :generated)
+          :wavelet_id => @id, :context => @context)
         parent.add_child_blip(blip)
         
         @context.add_operation(:type => Operation::WAVELET_APPEND_BLIP, :wave_id => @wave_id, :wavelet_id => @id, :property => blip)
@@ -106,8 +127,11 @@ module Rave
       def final_blip # :nodoc:
         blip = @context.blips[@root_blip_id]
         if blip
-          while not blip.child_blips.empty?
-            blip = blip.child_blips.first
+          while blip
+            # Find the first blip that is defined, if at all.
+            child_blip = blip.child_blips.find { |b| not b.nil? }
+            break unless child_blip
+            blip = child_blip
           end
         end
         blip
@@ -203,6 +227,18 @@ module Rave
       attr_reader :wave
       def wave# :nodoc:
         @context.waves[@wave_id]
+      end
+
+      # *INTERNAL*
+      # Convert to json for sending in an operation.
+      def to_json # :nodoc:
+        {
+          'waveletId' => @id,
+          'javaClass' => JAVA_CLASS,
+          'waveId' => @wave_id,
+          'rootBlipId' => @root_blip_id,
+          'participants' => @participant_ids
+        }.to_json
       end
 
       # Convert to string.
