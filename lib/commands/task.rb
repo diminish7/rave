@@ -8,7 +8,8 @@ module Rave
   class Task < Warbler::Task    
     def initialize
       warbler_config = Warbler::Config.new do |config|
-        config.gems = YAML.load(File.open(File.join(File.dirname(__FILE__), '..', 'gems.yaml'))).keys
+        gems = YAML.load(File.open(File.join(File.dirname(__FILE__), '..', 'gems.yaml'))).keys
+        config.gems = gems + ['rave'] - ['warbler']
         config.includes = %w( robot.rb config.yaml )
       end
       super(:rave, warbler_config)
