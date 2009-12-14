@@ -1,13 +1,14 @@
 require 'rake'
 require 'rake/tasklib'
 require 'fileutils'
+require 'yaml'
 require 'warbler'
 
 module Rave
   class Task < Warbler::Task    
     def initialize
       warbler_config = Warbler::Config.new do |config|
-        config.gems = %w( rave json-jruby rack builder RedCloth )
+        config.gems = YAML.load(File.open(File.join(File.dirname(__FILE__), '..', 'gems.yaml'))).keys
         config.includes = %w( robot.rb config.yaml )
       end
       super(:rave, warbler_config)

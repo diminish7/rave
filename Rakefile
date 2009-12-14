@@ -3,17 +3,12 @@ require 'rake/rdoctask'
 require 'rake/gempackagetask'
 require 'spec/rake/spectask'
 require 'rake/clean'
+require 'yaml'
 require 'fileutils'
 include FileUtils
 
 # Non-user config.
-DEPS = {
-    'rack' => '>=1.0',
-    'builder' => '>=2.1.2',
-    'json-jruby' => '>=1.1.6',
-    'warbler' => '>=0.9.13',
-    'RedCloth' => '>=4.2.2'
-  }
+DEPS = YAML.load(File.open(File.join('lib', 'gems.yaml')))
 
 SPEC = Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
@@ -55,7 +50,7 @@ Rake::GemPackageTask.new(SPEC) do |pkg|
 end
 
 # File dependencies for the gem.
-task :package => Dir['lib/**/*.rb']
+task :package => FileList[__FILE__, 'lib/**/*', 'bin/*']
 
 # TODO: How do we tell is the package is newer than the gem installed?
 file GEM_FILE => :package
@@ -68,7 +63,7 @@ end
 
 desc "Create .gemspec file (useful for github)"
 task :gemspec => SPEC_FILE
-file SPEC_FILE => FileList[__FILE__, 'lib/**/*.rb'] do
+file SPEC_FILE => FileList[__FILE__, 'lib/**/*', 'bin/*'] do
   puts "Generating #{SPEC_FILE}"
   File.open(SPEC_FILE, "w") do |f|
     f.puts SPEC.to_ruby
