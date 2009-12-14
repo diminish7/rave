@@ -2,9 +2,6 @@ require 'rake'
 require 'rake/tasklib'
 require 'fileutils'
 require 'warbler'
-require 'appengine-gem'
-
-require File.join(AppengineGem::APPENGINE_LIB_PATH, "appengine-tools-api.jar")
 
 module Rave
   class Task < Warbler::Task    
@@ -24,6 +21,7 @@ module Rave
       namespace :rave do
         desc "Post-War cleanup"
         task :create_war  => 'rave' do
+          #TODO: This needs to only run through this if the files have changed
           #Get config info
           config = YAML::load(File.open(File.join(".", "config.yaml")))
           web_inf = File.join(".", "tmp", "war", "WEB-INF")
@@ -47,11 +45,22 @@ module Rave
     def define_deploy_task
       namespace :rave do
         desc "Deploy to Appengine"
-        task :appcfg_update do #=> :create_war do
-          staging_folder = File.expand_path(File.join(".", "tmp", "war"))
-          appcfg_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'jars', 'appcfg'))
-          appcfg_jar = File.expand_path(File.join(appcfg_path, 'appengine-tools-api.jar'))
-          Java::ComGoogleAppengineToolsAdmin::AppCfg.main(["update", staging_folder].to_java(:string))
+        task :appcfg_update => :create_war do
+          staging_folder = File.join(".", "tmp", "war")
+          sdk_path = find_sdk
+          if sdk_path
+            appcfg_jar = File.join(sdk_path, 'lib', 'appengine-tools-api.jar')          
+            require appcfg_jar
+            Java::ComGoogleAppengineToolsAdmin::AppCfg.main(["update", staging_folder].to_java(:string))
+          else
+            puts "Unable to find the Google Appengine Java SDK"
+            puts "You can either"
+            puts "1. Define the path in config.yaml - e.g.:"
+            puts "appcfg:"
+            puts "  sdk: /usr/local/appengine-java-sdk/"
+            puts "2. Add the SDK to your PATH, or"
+            puts "3. Create an environment variable APPENGINE_JAVA_SDK that defines the path"
+          end
         end
       end
     end
@@ -119,6 +128,24 @@ module Rave
    </system-properties>
 </appengine-web-app>
 APPENGINE
+    end
+    
+    def find_sdk
+      unless @sdk_path
+        config = YAML::load(File.open(File.join(".", "config.yaml")))
+        @sdk_path = config['appcfg']['sdk'] if config['appcfg'] && config['appcfg']['sdk']
+        @sdk_path ||= ENV['APPENGINE_JAVA_SDK']
+        unless @sdk_path
+          #Check everything in the PATH
+          ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+            if File.exists?(File.join(path, "bin", "appcfg.sh"))
+              @sdk_path = path
+              break
+            end
+          end
+        end
+      end
+      @sdk_path
     end
     
   end
