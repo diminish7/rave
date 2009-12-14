@@ -55,11 +55,11 @@ module Rave
           else
             puts "Unable to find the Google Appengine Java SDK"
             puts "You can either"
-            puts "1. Define the path in config.yaml - e.g.:"
+            puts "1. Define the path to the main SDK folder in config.yaml - e.g.:"
             puts "appcfg:"
             puts "  sdk: /usr/local/appengine-java-sdk/"
-            puts "2. Add the SDK to your PATH, or"
-            puts "3. Create an environment variable APPENGINE_JAVA_SDK that defines the path"
+            puts "2. Add the SDK bin folder to your PATH, or"
+            puts "3. Create an environment variable APPENGINE_JAVA_SDK that defines the path to the main SDK folder"
           end
         end
       end
@@ -133,13 +133,13 @@ APPENGINE
     def find_sdk
       unless @sdk_path
         config = YAML::load(File.open(File.join(".", "config.yaml")))
-        @sdk_path = config['appcfg']['sdk'] if config['appcfg'] && config['appcfg']['sdk']
-        @sdk_path ||= ENV['APPENGINE_JAVA_SDK']
+        @sdk_path = config['appcfg']['sdk'] if config['appcfg'] && config['appcfg']['sdk'] # Points at main SDK dir.
+        @sdk_path ||= ENV['APPENGINE_JAVA_SDK'] # Points at main SDK dir.
         unless @sdk_path
-          #Check everything in the PATH
+          # Check everything in the PATH, which would point at the bin directory in the SDK.
           ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-            if File.exists?(File.join(path, "bin", "appcfg.sh"))
-              @sdk_path = path
+            if File.exists?(File.join(path, "appcfg.sh")) or File.exists?(File.join("appcfg.cmd"))
+              @sdk_path = File.dirname(path)
               break
             end
           end
