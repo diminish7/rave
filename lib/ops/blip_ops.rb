@@ -8,16 +8,7 @@ module Rave
       # Clear the content.
       def clear
         return if content.empty? # No point telling the server to clear an empty blip.
-        @context.add_operation(
-                                    :type => Operation::DOCUMENT_DELETE, 
-                                    :blip_id => @id, 
-                                    :wavelet_id => @wavelet_id,
-                                    :wave_id => @wave_id,
-                                    :index => 0,
-                                    :property => 0..(@content.length)
-                                  )
-        @content = ''
-        # TODO: Remove all annotations.
+        delete_range(0..(@content.length))
       end
       
       # Insert text at an index.
@@ -113,7 +104,7 @@ module Rave
                                     :property => range
                                   )
          @content[range] = ''
-         # TODO: Shift annotations.
+         # TODO: Shift and/or delete annotations.
       end
       
       # Annotates the entire content.
