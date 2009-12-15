@@ -29,7 +29,7 @@ describe Rave::Models::Blip do
     @middle_blip = Blip.new(:id => "middle", :child_blip_ids => ["leaf"], :parent_blip_id => "root",
       :wavelet_id => "wavelet", :wave_id => "wave")
     @leaf_blip = Blip.new(:id => "leaf", :parent_blip_id => "middle",
-      :wavelet_id => "wavelet", :wave_id => "wave")
+      :wavelet_id => "wavelet", :wave_id => "wave", :content => "Bleh")
 
     @blip = Blip.new(:id => "blip")
     @deleted_blip = Blip.new(:id => "deleted", :state => :deleted)
@@ -502,6 +502,98 @@ END
         @hello_wave_blip.instance_eval do
           strip_html_tags("   Fish          and\n\n\nfrog \n pies!   ").should == "Fish and frog pies!"
         end
+      end
+    end
+
+    describe "append_inline_blip()" do
+      before :each do
+        @leaf_blip.append_inline_blip
+      end
+
+      it "should create a new element" do
+        @leaf_blip.elements.size.should == 1
+        element = @leaf_blip.elements.values[0]
+        element.kind_of? Element::InlineBlip
+      end
+
+      it "should create a new blip inside the new element" do
+        blip = @leaf_blip.elements.values[0].blip
+        blip.parent_blip.should be_nil
+        blip.child_blips.should == []
+        blip.wave.should == @leaf_blip.wave
+        blip.wavelet.should == @leaf_blip.wavelet
+      end
+
+      it "should create an appropriate operation" do
+        validate_operations(@context, [Operation::DOCUMENT_INLINE_BLIP_APPEND])
+        @context.operations[0].index.should == -1
+        @context.operations[0].property.should == @leaf_blip.elements.values[0].blip
+      end
+    end
+
+    describe "delete_inline_blip()" do
+      before :each do
+        @leaf_blip.append_inline_blip
+        @inline_blip = @leaf_blip.elements.values[0].blip
+      end
+
+      it "should raise error if the blip is not an inline blip of this blip" do
+        lambda { @leaf_blip.delete_inline_blip("frogspawn") }.should raise_error RuntimeError
+      end
+
+      it "should delete the element" do
+        @leaf_blip.delete_inline_blip(@inline_blip)
+        @leaf_blip.elements.size.should == 0
+      end
+
+      it "should create an appropriate operation" do
+        @leaf_blip.delete_inline_blip(@inline_blip)
+        validate_operations(@context, [Operation::DOCUMENT_INLINE_BLIP_APPEND, Operation::DOCUMENT_INLINE_BLIP_DELETE])
+      end
+    end
+
+    describe "insert_inline_blip()" do
+      before :each do
+        @insert_at = 2
+        @leaf_blip.insert_inline_blip(@insert_at)
+      end
+
+      it "should create a new element" do
+        @leaf_blip.elements.size.should == 1
+        element = @leaf_blip.elements.values[0]
+        element.kind_of? Element::InlineBlip
+      end
+
+      it "should create a new blip inside the new element" do
+        blip = @leaf_blip.elements.values[0].blip
+        blip.parent_blip.should be_nil
+        blip.child_blips.should == []
+        blip.wave.should == @leaf_blip.wave
+        blip.wavelet.should == @leaf_blip.wavelet
+      end
+
+      it "should create an appropriate operation" do
+        validate_operations(@context, [Operation::DOCUMENT_INLINE_BLIP_INSERT])
+        @context.operations[0].index.should == @insert_at
+        @context.operations[0].property.should == @leaf_blip.elements.values[0].blip
+      end
+    end
+
+    describe "append_element()" do
+      it "should work" do
+        pending
+      end
+    end
+
+    describe "insert_element()" do
+      it "should work" do
+        pending
+      end
+    end
+
+    describe "delete_element()" do
+      it "should work" do
+        pending
       end
     end
   end

@@ -60,7 +60,8 @@ MESSAGE
 
     # BUG: Only seems to get sent if robot is invited into a new wave on creation.
     def wavelet_blip_created(event, context)
-      reply_blip(event, "#{event.modified_by.name} created a blip! I _would_ have done it better, though!", :format => :textile)
+      blip = event.blip.append_inline_blip
+      blip.append_text("#{event.modified_by.name} created a new blip! I _would_ have done it better, though!", :format => :textile)
     end
 
     # BUG: Never received.
@@ -87,7 +88,7 @@ MESSAGE
 
       when /^#{WAVELET_COMMAND}\s+/
         participants = $'.strip.split(/\s*,\s*/) + [event.modified_by]
-        create_wave(participants)
+        create_wavelet(participants)
         reply_wavelet(event, "Created wavelet with #{participants.join(", ")}")
 
       when /^#{INVITE_COMMAND}\s+([\w\-\.]+@[\w\-\.]+)\s*$/
@@ -141,6 +142,10 @@ MESSAGE
     def document_changed(event, context)
       return if [SPELLY_ID, id].include? event.modified_by.id
       # Do something about it
+    end
+
+    def wavelet_created(event, context)
+      reply_wavelet(event, "Created a new wavelet")
     end
 
     def operation_error(error, context)

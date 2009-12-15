@@ -4,7 +4,7 @@ module Rave
       # Reopen the blip class and add operation-related methods
 
       VALID_FORMATS = [:plain, :html, :textile] # :nodoc: For set_text/append_text
-      
+
       # Clear the content.
       def clear
         return if content.empty? # No point telling the server to clear an empty blip.
@@ -13,16 +13,11 @@ module Rave
       
       # Insert text at an index.
       def insert_text(index, text)
-        @context.add_operation(
-                                    :type => Operation::DOCUMENT_INSERT, 
-                                    :blip_id => @id, 
-                                    :wavelet_id => @wavelet_id, 
-                                    :wave_id => @wave_id,
-                                    :index => index, 
-                                    :property => text
-                                  )
+        add_operation(:type => Operation::DOCUMENT_INSERT, :index => index, :property => text)
         @content.insert(index, text)
         # TODO: Shift annotations.
+
+        text
       end
       
       # Set the content text of the blip.
@@ -32,12 +27,15 @@ module Rave
       # * :+html+ - Text marked up with HTML.
       # * :+plain+ - Plain text (default).
       # * :+textile+ - Text marked up with textile.
+      #
+      # Returns: An empty string [String]
       def set_text(text, options = {})
         clear
         append_text(text, options)
       end
       
       # Deletes the text in a given range and replaces it with the given text.
+      # Returns: The text altered [String]
       def set_text_in_range(range, text)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
         
@@ -53,6 +51,8 @@ module Rave
         end
         delete_range(range.min+text.length..range.max+text.length)
         # TODO: Shift annotations.
+
+        text
       end
       
       # Appends text to the end of the blip's current content.
@@ -62,6 +62,8 @@ module Rave
       # * :+html+ - Text marked up with HTML.
       # * :+plain+ - Plain text (default).
       # * :+textile+ - Text marked up with textile.
+      #
+      # Returns: The new content string [String]
       def append_text(text, options = {})
         format = options[:format] || :plain
         raise BadOptionError.new(:format, VALID_FORMATS, format) unless VALID_FORMATS.include? format
@@ -80,31 +82,24 @@ module Rave
           type = Operation::DOCUMENT_APPEND
         end
         
-        @context.add_operation(
-                                    :type => type,
-                                    :blip_id => @id, 
-                                    :wavelet_id => @wavelet_id, 
-                                    :wave_id => @wave_id,
-                                    :property => text # Markup sent to Wave.
-                                  )
+        add_operation(:type => type, :property => text)
         # TODO: Add annotations for the tags we removed?
         @content += plain_text # Plain text added to text field.
+
+        @content.dup
       end
       
       # Deletes text in the given range.
+      # Returns: An empty string [String]
       def delete_range(range)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
         
-        @context.add_operation(
-                                    :type => Operation::DOCUMENT_DELETE, 
-                                    :blip_id => @id, 
-                                    :wavelet_id => @wavelet_id, 
-                                    :wave_id => @wave_id,
-                                    :index => range.min,
-                                    :property => range
-                                  )
+        add_operation(:type => Operation::DOCUMENT_DELETE, :index => range.min, :property => range)
+
          @content[range] = ''
          # TODO: Shift and/or delete annotations.
+
+        ''
       end
       
       # Annotates the entire content.
@@ -129,55 +124,95 @@ module Rave
       end
       
       # Appends an inline blip to this blip.
-      #
-      # NOT IMPLEMENTED
+      # Returns: Blip created by operation [Blip]
       def append_inline_blip
-        raise NotImplementedError
+        # TODO: What happens if there already is an element at end of content?
+        blip = Blip.new(:wave_id => @wave_id, :wavelet_id => @wavelet_id)
+        @context.add_blip(blip)
+        element = Element::InlineBlip.new('blipId' => blip.id)
+        element.context = @context
+        @elements[@content.length] = element
+        add_operation(:type => Operation::DOCUMENT_INLINE_BLIP_APPEND, :property => blip)
+        
+        blip
       end
       
       # Deletes an inline blip from this blip.
+      # +value+:: Inline blip to delete [Blip]
       #
-      # NOT IMPLEMENTED
-      def delete_inline_blip(blip_id)
-        raise NotImplementedError
+      # Returns: Blip ID of the deleted blip [String]
+      def delete_inline_blip(blip) # :nodoc:
+        element = @elements.values.find { |e| e.kind_of?(Element::InlineBlip) and e.blip == blip }
+        raise "Blip '#{blip.id}' is not an inline blip of blip '#{id}'" if element.nil?
+        #element.blip.destroy_me # TODO: How to deal with children?
+        @elements.delete_if { |pos, el| el == element }
+        add_operation(:type => Operation::DOCUMENT_INLINE_BLIP_DELETE, :property => blip.id)
+
+        blip.id
       end
       
       # Inserts an inline blip at the given position.
-      #
-      # NOT IMPLEMENTED
+      # Returns: Blip element created by operation [Blip]
       def insert_inline_blip(position)
-        raise NotImplementedError
+        # TODO: Complain if element does exist at that position.
+        blip = Blip.new(:wave_id => @wave_id, :wavelet_id => @wavelet_id)
+        @context.add_blip(blip)
+        element = Element::InlineBlip.new('blipId' => blip.id)
+        element.context = @context
+        @elements[@content.length] = element
+        add_operation(:type => Operation::DOCUMENT_INLINE_BLIP_INSERT, :index => position, :property => blip)
+
+        blip
       end
       
       # Deletes an element at the given position.
-      #
-      # NOT IMPLEMENTED
       def delete_element(position)
-        raise NotImplementedError
+        element = @elements[position]
+        case element
+        when Element::InlineBlip
+          return delete_inline_blip(element.blip)
+        when Element
+          @elements[position] = nil
+          add_operation(:type => Operation::DOCUMENT_ELEMENT_DELETE, :index => position)
+        else
+          raise "No element to delete at position #{position}"
+        end
+
+        self
       end
       
       # Inserts the given element in the given position.
-      #
-      # NOT IMPLEMENTED
       def insert_element(position, element)
-        raise NotImplementedError
+        # TODO: Complain if element does exist at that position.
+        @elements[position] = element
+        add_operation(:type => Operation::DOCUMENT_ELEMENT_INSERT, :index => position, :property => element)
+
+        element
       end
       
       # Replaces the element at the given position with the given element.
-      #
-      # NOT IMPLEMENTED
       def replace_element(position, element)
-        raise NotImplementedError
+        # TODO: Complain if element does not exist at that position.
+        @elements[position] = element
+        add_operation(:type => Operation::DOCUMENT_ELEMENT_REPLACE, :index => position, :property => element)
+
+        element
       end
       
       # Appends an element
-      # 
-      # NOT IMPLEMENTED
       def append_element(element)
-        raise NotImplementedError
+        # TODO: What happens if there already is an element at end of content?
+        @elements[@content.length] = element
+        add_operation(:type => Operation::DOCUMENT_ELEMENT_APPEND, :property => element)
+
+        element
       end
 
     protected
+      def add_operation(options) # :nodoc:
+        @context.add_operation(options.merge(:blip_id => @id, :wavelet_id => @wavelet_id, :wave_id => @wave_id))
+      end
+
       # Strips all HTML tags from a string, returning what it would look like unformatted.
       def strip_html_tags(text) # :nodoc:
         # Replace existing newlines/tabs with spaces, since they don't affect layout.
