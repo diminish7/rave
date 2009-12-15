@@ -1,12 +1,18 @@
 module Rave
   module Models
-    class Element
+    # An element within a document.
+    # (abstract factory)
+    class Element < Component
       include Mixins::ObjectFactory
 
+      JAVA_CLASS = "com.google.wave.api.FormElement"
+
       def initialize(properties = {})
+        super(:id => '') # TODO: Don't actually have IDs, as such. Bad inheritance from Component?
         @properties = properties
       end
 
+      # Gets the value of an element property.
       def get(key, default = nil)
         if @properties.has_key? key
           @properties[key]
@@ -15,14 +21,23 @@ module Rave
         end
       end
 
+      # Sets the value of an element property.
       def set(key, value)
         @properties[key] = value
       end
 
+      # Alias for #set(key, value)
       alias_method :[]=, :set
-      
-      def [](key)
-        get(key)
+
+      # Alias for #get(key)
+      alias_method :[], :get
+
+      def to_json # :nodoc:
+        {
+          'javaClass' => JAVA_CLASS,
+          'properties' => @properties,
+          'type' => type,
+        }.to_json
       end
 
       # A Google Gadget element within a document.
@@ -31,15 +46,8 @@ module Rave
 
         factory_register
 
-        attr_reader :url
-        def url # :nodoc:
-          @url.dup
-        end
-
         def initialize(fields = {})
-          @url = fields['url']
-          fields = fields.dup
-          fields.delete 'url'
+          # Gadget has 'fields' rather than 'properties'.
           super(fields)
         end
       end
@@ -49,6 +57,19 @@ module Rave
         TYPE = 'IMAGE'
 
         factory_register
+      end
+
+      # An inline blip within a document.
+      class InlineBlip < Element
+        TYPE = 'INLINE_BLIP'
+
+        factory_register
+
+        # The blip contained within the element [Blip].
+        attr_reader :blip
+        def blip # :nodoc:
+          @context.blips[@properties['blipId']]
+        end
       end
 
       # A form element within a document.

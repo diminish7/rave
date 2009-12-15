@@ -121,6 +121,12 @@ module Rave
         @child_blip_ids.map { |id| @context.blips[id] }
       end
 
+      # Ensure that all elements within the blip are given a context.
+      def context=(value) # :nodoc:
+        super(value)
+        @elements.each_value { |e| e.context = value }
+      end
+
       VALID_STATES = [:normal, :null, :deleted] # :nodoc: As passed to initializer in :state option.
       
       #Options include:

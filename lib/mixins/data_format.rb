@@ -87,7 +87,7 @@ module Rave
                 :content => blip_data['content'],
                 :contributors => list_to_array(blip_data['contributors']),
                 :creator => blip_data['creator'],
-                :elements => map_to_hash(blip_data['elements']),
+                :elements => elements_from_json(blip_data['elements']),
                 :last_modified_time => blip_data['lastModifiedTime'],
                 :parent_blip_id => blip_data['parentBlipId'],
                 :version => blip_data['version'],
@@ -95,6 +95,16 @@ module Rave
                 :wavelet_id => blip_data['waveletId']
             )
         end
+      end
+
+      def elements_from_json(elements_map)
+        elements = {}
+        
+        map_to_hash(elements_map).each_pair do |position, data|
+          elements[position.to_i] = Element.create(data['type'], map_to_hash(data['properties']))
+        end
+
+        elements
       end
 
       # Convert a json-java list (which may not be defined) into an array.

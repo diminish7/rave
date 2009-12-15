@@ -15,7 +15,7 @@ require File.join(here, 'exceptions')
   require File.join(mixins, dep)
 end
 
-%w( component user annotation blip context document event operation range robot wave wavelet).each do |dep|
+%w( component user annotation blip context document event operation range robot wave wavelet element).each do |dep|
   require File.join(models, dep)
 end
 
