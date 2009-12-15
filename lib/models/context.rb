@@ -117,18 +117,29 @@ module Rave
         wavelet
       end
 
+      # Add a wave to waves (Use an Operation to actually add the wave).
+      # Returns: The wave [Wave].
+      def add_wave(wave)# :nodoc:
+        @waves[wave.id] = wave
+        wave.context = self
+        wave
+      end
+
       # +participants+:: Participants to exist in the new wavelet, as IDs or objects [Array of String/User]
       # Returns: Newly created wave [Wave]
-      def create_wave(participants) # :nodoc:
+      def create_wavelet(participants) # :nodoc:
         # Map participants to strings, since they could be Users.
-        wave = Wave.new(:context => self, :participants => participants.map {|p| p.to_s.downcase })
-        @waves[wave.id] = wave
+        participant_ids = participants.map {|p| p.to_s.downcase }
+        participant_ids << @robot.id unless participant_ids.include? @robot.id
+        
+        wavelet = Wavelet.new(:context => self, :participants => participant_ids)
+        add_wavelet(wavelet)
 
         # TODO: Get wave id from sensible place?
         add_operation(:type => Operation::WAVELET_CREATE, :wave_id => @waves.keys[0],
-          :property => wave.root_wavelet)
+          :property => wavelet)
 
-        wave
+        wavelet
       end
 
       # Remove a blip.

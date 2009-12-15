@@ -252,6 +252,14 @@ module Rave
         end
       end
 
+      # Generated when someone in the current wave creates a new wavelet (in a new wave).
+      class WaveletCreated < Event
+        # Type of event, as defined in the Wave protocol [String]
+        TYPE = 'WAVELET_CREATED'
+
+        factory_register
+      end
+
       class OperationError < Event
         # Type of event, as defined in the Wave protocol [String]
         TYPE = 'OPERATION_ERROR'

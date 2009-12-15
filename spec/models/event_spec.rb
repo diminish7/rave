@@ -43,7 +43,7 @@ end
 describe Rave::Models::Event do
   before :each do
     @json_time_fields = [:timestamp]
-    @num_classes = 14
+    @num_classes = 15
   end
 
   it_should_behave_like "event"

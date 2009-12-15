@@ -60,8 +60,8 @@ module Rave
       # Creates a new wave with initial participants set.
       # +participants+:: Humans and/or robots to start in the new wave [Array of String/User]
       # Returns: The new wave, which contains a root wavelet which itself contains a root blip [Wave]
-      def create_wave(participants)
-        @context.create_wave(participants)
+      def create_wavelet(participants)
+        @context.create_wavelet(participants)
       end
       
     protected

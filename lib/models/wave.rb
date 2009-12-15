@@ -13,16 +13,11 @@ module Rave
       def initialize(options = {}) # :nodoc:
         if options[:id].nil? and options[:context]
           super(:id => "#{GENERATED_PREFIX}_wave_#{unique_id}", :context => options[:context])
-
-          participants = options[:participants] || []
-          wavelet = Wavelet.new(:participants => participants, :wave_id => @id,
-            :creator => @context.robot.id, :context => @context)
-          @context.add_wavelet(wavelet)
-          @wavelet_ids = Set.new(wavelet.id)
         else
           super(options)
-          @wavelet_ids = Set.new(options[:wavelet_ids])
         end
+
+        @wavelet_ids = options[:wavelet_ids] || []
       end
 
       # All wavelets that are part of the wave [Array of Wavelet]

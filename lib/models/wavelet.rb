@@ -4,6 +4,9 @@ module Rave
     class Wavelet < Component
       include Rave::Mixins::TimeUtils
 
+      # Creator of the wavelet if it was generated via an operation.
+      GENERATED_CREATOR = "rusty@a.gwave.com" # :nodoc:
+
       # Current version number of the wavelet [Integer]
       attr_reader :version
 
@@ -69,27 +72,36 @@ module Rave
       # - :context
       # - :id
       def initialize(options = {}) # :nodoc:
-        @wave_id = options[:wave_id]
         @participant_ids = options[:participants] || []
 
         if options[:id].nil? and options[:context]
           # Generate the wavelet from scratch.
           super(:id => "#{GENERATED_PREFIX}_wavelet_#{unique_id}_#{ROOT_ID_SUFFIX}", :context => options[:context])
+
+          # Create a wave to live in.
+          wave = Wave.new(:wavelet_ids => [@id], :context => @context)
+          @wave_id = wave.id
+          @context.add_wave(wave)
           
           # Ensure the newly created wavelet has a root blip.
-          blip = Blip.new(:wave_id => @wave_id, :wavelet_id => @id)
+          blip = Blip.new(:wave_id => wave.id, :wavelet_id => @id,
+            :creator => @context.robot.id, :contributors => [@context.robot.id])
           @context.add_blip(blip)
           @root_blip_id = blip.id
 
           @participant_ids.each do |id|
             @context.add_user(:id => id) unless @context.users[id]
           end
+
+          @creator_id = GENERATED_CREATOR
+          @context.add_user(:id => @creator_id) unless @context.users[@creator_id]
         else
           super(options)
           @root_blip_id = options[:root_blip_id]
+          @creator_id = options[:creator] || User::NOBODY_ID
+          @wave_id = options[:wave_id]
         end
 
-        @creator_id = options[:creator] || User::NOBODY_ID
         @creation_time = time_from_json(options[:creation_time]) || Time.now
         @data_documents = options[:data_documents] || {}
         @last_modified_time = time_from_json(options[:last_modified_time]) || Time.now
@@ -241,7 +253,7 @@ module Rave
           'javaClass' => JAVA_CLASS,
           'waveId' => @wave_id,
           'rootBlipId' => @root_blip_id,
-          'participants' => @participant_ids
+          'participants' => { "javaClass" => "java.util.ArrayList", "list" => @participant_ids }
         }.to_json
       end
 

@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'set'
 require 'builder'
 require 'json'
 require 'redcloth'

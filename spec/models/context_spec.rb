@@ -65,36 +65,44 @@ describe Rave::Models::Context do
     end
   end
 
-  describe "create_wave" do
+  describe "create_wavelet()" do
     before :each do
       @context = Context.new(:robot => robot_instance)
-      @wave = @context.create_wave(["fred"])
+      @wavelet = @context.create_wavelet(["fred"])
+      @wave = @wavelet.wave
+      @blip = @wavelet.root_blip
     end
     
     it "should create a new generated wave" do
       @wave.should be_kind_of Wave
       @wave.generated?.should be_true
+      @wave.wavelets.should == [@wavelet]
+      @wave.root_wavelet.should == @wavelet
       @context.waves[@wave.id].should == @wave
     end
     it "should create a wavelet within the wave as its root" do
-      wavelet = @wave.root_wavelet
-      wavelet.should be_kind_of Wavelet
-      wavelet.generated?.should be_true
-      wavelet.participants.size.should == 1
-      wavelet.participants.first.id.should == "fred"
-      wavelet.wave.should == @wave
+      @wavelet.should be_kind_of Wavelet
+      @wavelet.generated?.should be_true
+      @wavelet.participants.map { |user| user.to_s }.sort.should == ["fred", robot_instance.id]
+      @wavelet.creator.id.should == "rusty@a.gwave.com"
+      @wavelet.wave.should == @wave
+      @wavelet.root?.should be_true
+      @wavelet.root_blip.should == @blip
+      @context.wavelets[@wavelet.id].should == @wavelet
     end
     it "should create a blip within the wavelet as its root" do
-      wavelet = @wave.root_wavelet
-      blip = wavelet.root_blip
-      blip.should be_kind_of Blip
-      blip.generated?.should be_true
-      blip.wave.should == @wave
-      blip.wavelet.should == wavelet
+      @blip.should be_kind_of Blip
+      @blip.generated?.should be_true
+      @blip.creator.should == robot_instance
+      @blip.contributors.should == [robot_instance]
+      @blip.root?.should be_true
+      @blip.wave.should == @wave
+      @blip.wavelet.should == @wavelet
+      @context.blips[@blip.id].should == @blip
     end
     it "should create an appropriate operation" do
       validate_operations(@context, [Operation::WAVELET_CREATE])
-      @context.operations.last.property.should == @wave.root_wavelet
+      @context.operations.last.property.should == @wavelet
     end
   end
 
