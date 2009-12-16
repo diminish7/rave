@@ -65,10 +65,7 @@ module Rave
 
     public
       class WaveletBlipCreated < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_BLIP_CREATED'
-
-        factory_register
+        factory_register 'WAVELET_BLIP_CREATED'
         
         # Newly created blip [Blip]
         attr_reader :new_blip
@@ -78,10 +75,7 @@ module Rave
       end
       
       class WaveletBlipRemoved < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_BLIP_REMOVED'
-
-        factory_register
+        factory_register 'WAVELET_BLIP_REMOVED'
         
         # ID for blip which has now been removed [String]
         attr_reader :removed_blip_id
@@ -91,10 +85,7 @@ module Rave
       end
       
       class WaveletParticipantsChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_PARTICIPANTS_CHANGED'
-
-        factory_register
+        factory_register 'WAVELET_PARTICIPANTS_CHANGED'
 
         ADDED = 'participantsAdded' # :nodoc:
         REMOVED = 'participantsRemoved' # :nodoc:
@@ -120,24 +111,15 @@ module Rave
       end
       
       class WaveletSelfAdded < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_SELF_ADDED'
-
-        factory_register
+        factory_register 'WAVELET_SELF_ADDED'
       end
       
       class WaveletSelfRemoved < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_SELF_REMOVED'
-
-        factory_register
+        factory_register 'WAVELET_SELF_REMOVED'
       end
       
       class WaveletTimestampChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_TIMESTAMP_CHANGED'
-
-        factory_register
+        factory_register 'WAVELET_TIMESTAMP_CHANGED'
 
         # Time that the wavelet was changed [Time]
         attr_reader :new_timestamp
@@ -147,10 +129,7 @@ module Rave
       end
       
       class WaveletTitleChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_TITLE_CHANGED'
-
-        factory_register
+        factory_register 'WAVELET_TITLE_CHANGED'
 
         attr_reader :new_title
         def new_title # :nodoc:
@@ -159,10 +138,7 @@ module Rave
       end
             
       class WaveletVersionChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_VERSION_CHANGED'
-
-        factory_register
+        factory_register 'WAVELET_VERSION_CHANGED'
 
         attr_reader :new_version
         def new_version # :nodoc:
@@ -173,10 +149,7 @@ module Rave
       # Blip events
       
       class BlipContributorsChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'BLIP_CONTRIBUTORS_CHANGED'
-
-        factory_register
+        factory_register 'BLIP_CONTRIBUTORS_CHANGED'
 
         ADDED = 'contributorsAdded' # :nodoc:
         REMOVED = 'contributorsRemoved' # :nodoc:
@@ -202,18 +175,12 @@ module Rave
       end
       
       class BlipSubmitted < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'BLIP_SUBMITTED'
-
-        factory_register
+        factory_register 'BLIP_SUBMITTED'
       end
 
       # #blip will be nil, but #blip_id will give a sensible value.
       class BlipDeleted < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'BLIP_DELETED'
-
-        factory_register
+        factory_register 'BLIP_DELETED'
 
         # ID of the blip that was deleted [String]
         #-- This dummy method just added for the purposes of rdoc.
@@ -233,17 +200,11 @@ module Rave
       # General events.
       
       class DocumentChanged < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'DOCUMENT_CHANGED'
-
-        factory_register
+        factory_register 'DOCUMENT_CHANGED'
       end
       
       class FormButtonClicked < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'FORM_BUTTON_CLICKED'
-
-        factory_register
+        factory_register 'FORM_BUTTON_CLICKED'
         
         # Name of button that was clicked.
         attr_reader :button
@@ -254,17 +215,11 @@ module Rave
 
       # Generated when someone in the current wave creates a new wavelet (in a new wave).
       class WaveletCreated < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'WAVELET_CREATED'
-
-        factory_register
+        factory_register 'WAVELET_CREATED'
       end
 
       class OperationError < Event
-        # Type of event, as defined in the Wave protocol [String]
-        TYPE = 'OPERATION_ERROR'
-
-        factory_register
+        factory_register 'OPERATION_ERROR'
 
         # Message describing what caused the error [String]
         attr_reader :message

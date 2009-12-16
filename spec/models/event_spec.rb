@@ -55,7 +55,7 @@ describe Rave::Models::Event do
       wavelet = Wavelet.new(:id => "wavelet")
       context = Context.new(:wavelets => {"wavelet" => wavelet})
       described_class.classes.each do |event|
-        new_event = described_class.create(event::TYPE, :context => context)
+        new_event = described_class.create(event.type, :context => context)
         new_event.should be_a_kind_of event
       end
     end

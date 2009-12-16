@@ -42,9 +42,7 @@ module Rave
 
       # A Google Gadget element within a document.
       class Gadget < Element
-        TYPE = 'GADGET'
-
-        factory_register
+        factory_register 'GADGET'
 
         def initialize(fields = {})
           # Gadget has 'fields' rather than 'properties'.
@@ -54,16 +52,12 @@ module Rave
 
       # An image element within a document.
       class Image < Element
-        TYPE = 'IMAGE'
-
-        factory_register
+        factory_register 'IMAGE'
       end
 
       # An inline blip within a document.
       class InlineBlip < Element
-        TYPE = 'INLINE_BLIP'
-
-        factory_register
+        factory_register 'INLINE_BLIP'
 
         # The blip contained within the element [Blip].
         attr_reader :blip
@@ -79,58 +73,42 @@ module Rave
 
       # A button form element within a document.
       class Button < FormElement
-        TYPE = 'BUTTON'
-
-        factory_register
+        factory_register 'BUTTON'
       end
 
       # A check form element within a document.
       class Check < FormElement
-        TYPE = 'CHECK'
-
-        factory_register
+        factory_register 'CHECK'
       end
 
       # A input form element within a document.
       class Input < FormElement
-        TYPE = 'INPUT'
-
-        factory_register
+        factory_register 'INPUT'
       end
 
       # A password form element within a document.
       class Password < FormElement
-        TYPE = 'PASSWORD'
-
-        factory_register
+        factory_register 'PASSWORD'
       end
 
       # A label form element within a document.
       class Label < FormElement
-        TYPE = 'LABEL'
-
-        factory_register
+        factory_register 'LABEL'
       end
 
       # A radio button form element within a document.
       class RadioButton < FormElement
-        TYPE = 'RADIO_BUTTON'
-
-        factory_register
+        factory_register 'RADIO_BUTTON'
       end
 
       # A radio button group form element within a document.
       class RadioButtonGroup < FormElement
-        TYPE = 'RADIO_BUTTON_GROUP'
-
-        factory_register
+        factory_register 'RADIO_BUTTON_GROUP'
       end
 
       # A text-area form element within a document.
       class TextArea < FormElement
-        TYPE = 'TEXTAREA'
-
-        factory_register
+        factory_register 'TEXTAREA'
       end
     end
   end
