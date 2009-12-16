@@ -121,13 +121,19 @@ END
     describe "title=" do
       before :each do
         @title = "Frogosaurus Rex".freeze
+        @wavelet.root_blip.set_text("Title\nmore stuff")
         @wavelet.title = "Frogosaurus Rex"
+      end
+      it "should change the first line in the root blip" do
+        pending "synchronising of wavelet title and root blip content" do
+          @wavelet.root_blip.content.should == "Frogosaurus Rex\nmore stuff"
+        end
       end
       it "should change the title attribute" do
         @wavelet.title.should == @title
       end
       it "should add an operation" do
-        validate_operations(@context, [Operation::WAVELET_SET_TITLE])
+        validate_operations(@context, [Operation::DOCUMENT_APPEND, Operation::WAVELET_SET_TITLE])
         @context.operations.last.property.should == @title
       end
     end
