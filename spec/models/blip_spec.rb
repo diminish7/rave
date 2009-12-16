@@ -154,7 +154,7 @@ describe Rave::Models::Blip do
   describe "add_annotation()" do
     it "should add annotations to the list" do
       blip = Blip.new(:id => "bleh")
-      annotation = Annotation.new(:name => "test")
+      annotation = Annotation::Language.new("en", 5..50)
       blip.add_annotation(annotation)
       blip.annotations.should == [annotation]
     end
@@ -163,9 +163,11 @@ describe Rave::Models::Blip do
   describe "has_annotation?()" do
     it "should return true if the blip has an annotation with the given name" do
       blip = Blip.new(:id => "bleh")
-      blip.has_annotation?("test").should be_false
-      blip.add_annotation(Annotation.new(:name => "test"))
-      blip.has_annotation?("test").should be_true
+      annotation = Annotation::Language.new("en", 5..50)
+      name = annotation.name
+      blip.has_annotation?(name).should be_false
+      blip.add_annotation(annotation)
+      blip.has_annotation?(name).should be_true
     end
   end
 

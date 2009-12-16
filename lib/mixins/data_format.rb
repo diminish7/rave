@@ -129,12 +129,17 @@ module Rave
       
       def annotations_from_json(json)
         list_to_array(json['annotation']).collect do |annotation|
-          Rave::Models::Annotation.new(
-                :name => annotation['name'],
-                :value => annotation['value'],
-                :range => Range.new(annotation['range']['start'], annotation['range']['end'])
-            )
+          Rave::Models::Annotation.create(
+            annotation['name'],
+            annotation['value'],
+            range_from_json(annotation['range'])
+          )
+          
         end
+      end
+
+      def range_from_json(json)
+         Range.new(json['start'], json['end'])
       end
       
       def events_from_json(json, context)
