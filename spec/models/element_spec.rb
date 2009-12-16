@@ -56,7 +56,7 @@ describe Element::Gadget do
   end
 end
 
-describe Element::Button do
+describe Element::Form::Button do
   before :each do
     @element = Element.create('BUTTON', "name" => "saveButton",
       "value" => "Save Preferences", "label" => "", "defaultValue" => "Save Preferences")

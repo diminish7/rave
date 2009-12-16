@@ -3,7 +3,7 @@ module Rave
     # An element within a document.
     # (abstract factory)
     class Element < Component
-      include Mixins::ObjectFactory
+      include Rave::Mixins::ObjectFactory
 
       JAVA_CLASS = "com.google.wave.api.FormElement"
 
@@ -68,47 +68,46 @@ module Rave
 
       # A form element within a document.
       # (Abstract)
-      class FormElement < Element
-      end
+      class Form < Element
+        # A button form element within a document.
+        class Button < Form
+          factory_register 'BUTTON'
+        end
 
-      # A button form element within a document.
-      class Button < FormElement
-        factory_register 'BUTTON'
-      end
+        # A check form element within a document.
+        class Check < Form
+          factory_register 'CHECK'
+        end
 
-      # A check form element within a document.
-      class Check < FormElement
-        factory_register 'CHECK'
-      end
+        # A input form element within a document.
+        class Input < Form
+          factory_register 'INPUT'
+        end
 
-      # A input form element within a document.
-      class Input < FormElement
-        factory_register 'INPUT'
-      end
+        # A password form element within a document.
+        class Password < Form
+          factory_register 'PASSWORD'
+        end
 
-      # A password form element within a document.
-      class Password < FormElement
-        factory_register 'PASSWORD'
-      end
+        # A label form element within a document.
+        class Label < Form
+          factory_register 'LABEL'
+        end
 
-      # A label form element within a document.
-      class Label < FormElement
-        factory_register 'LABEL'
-      end
+        # A radio button form element within a document.
+        class RadioButton < Form
+          factory_register 'RADIO_BUTTON'
+        end
 
-      # A radio button form element within a document.
-      class RadioButton < FormElement
-        factory_register 'RADIO_BUTTON'
-      end
+        # A radio button group form element within a document.
+        class RadioButtonGroup < Form
+          factory_register 'RADIO_BUTTON_GROUP'
+        end
 
-      # A radio button group form element within a document.
-      class RadioButtonGroup < FormElement
-        factory_register 'RADIO_BUTTON_GROUP'
-      end
-
-      # A text-area form element within a document.
-      class TextArea < FormElement
-        factory_register 'TEXTAREA'
+        # A text-area form element within a document.
+        class TextArea < Form
+          factory_register 'TEXTAREA'
+        end
       end
     end
   end
