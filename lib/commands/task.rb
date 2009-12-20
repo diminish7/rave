@@ -19,7 +19,7 @@ module Rave
   private
     
     def robot_config
-      @robot_config ||= config = YAML::load(File.open(File.join(".", "config.yaml")))
+      @robot_config ||= YAML::load(File.open(File.join(".", "config.yaml")))
     end
     
     def define_post_war_processes
