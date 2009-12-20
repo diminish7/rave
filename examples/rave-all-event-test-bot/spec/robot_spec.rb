@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), '..', 'robot')
 
-describe SpoonerTest::Robot do
+describe RaveAllEventTestBot::Robot do
   before :each do
     @robot = described_class.instance
   end

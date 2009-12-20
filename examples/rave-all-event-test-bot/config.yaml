@@ -1,0 +1,14 @@
+robot:
+  id: rave-all-event-test-bot@appspot.com
+  name: Rave All-Event Test Bot
+  image_url: http://rave-all-event-test-bot.appspot.com/icon.png
+  profile_url: http://rave-all-event-test-bot.appspot.com/
+  version: 12
+appcfg:
+  version: 12
+gems:
+  - rave
+  - json-jruby
+  - rack
+  - builder
+  - RedCloth
