@@ -51,7 +51,7 @@ module Rave
           staging_folder = File.join(".", "tmp", "war")
           sdk_path = find_sdk
           if sdk_path
-            appcfg_jar = File.join(sdk_path, 'lib', 'appengine-tools-api.jar')          
+            appcfg_jar = File.expand_path(File.join(sdk_path, 'lib', 'appengine-tools-api.jar'))
             require appcfg_jar
             Java::ComGoogleAppengineToolsAdmin::AppCfg.main(["update", staging_folder].to_java(:string))
           else
