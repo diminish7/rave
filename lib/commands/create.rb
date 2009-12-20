@@ -132,6 +132,12 @@ robot:
   version: #{options[:version]}
 appcfg:
   version: 1
+gems:
+  - rave
+  - json-jruby
+  - rack
+  - builder
+  - RedCloth
 CONFIG
 end
 

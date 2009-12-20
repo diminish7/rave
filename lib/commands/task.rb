@@ -8,8 +8,7 @@ module Rave
   class Task < Warbler::Task    
     def initialize
       warbler_config = Warbler::Config.new do |config|
-        gems = YAML.load(File.open(File.join(File.dirname(__FILE__), '..', 'gems.yaml'))).keys
-        config.gems = gems + ['rave'] - ['warbler']
+        config.gems = robot_config['gems']
         config.includes = %w( robot.rb config.yaml )
       end
       super(:rave, warbler_config)
@@ -19,13 +18,16 @@ module Rave
     
   private
     
+    def robot_config
+      @robot_config ||= config = YAML::load(File.open(File.join(".", "config.yaml")))
+    end
+    
     def define_post_war_processes
       namespace :rave do
         desc "Post-War cleanup"
         task :create_war  => 'rave' do
           #TODO: This needs to only run through this if the files have changed
           #Get config info
-          config = YAML::load(File.open(File.join(".", "config.yaml")))
           web_inf = File.join(".", "tmp", "war", "WEB-INF")
           rave_jars = File.join(File.dirname(__FILE__), "..", "jars")
           #Delete the complete JRuby jar that warbler sticks in lib
@@ -37,8 +39,8 @@ module Rave
           #Fix the broken paths in json-jruby
           fix_json_jruby_paths(File.join(web_inf, "gems", "gems"))
           #Add the appengine-web.xml file
-          robot_name = config['robot']['id'].gsub(/@.+/, '')
-          version = config['appcfg'] && config['appcfg']['version'] ? config['appcfg']['version'] : 1
+          robot_name = robot_config['robot']['id'].gsub(/@.+/, '')
+          version = robot_config['appcfg'] && robot_config['appcfg']['version'] ? robot_config['appcfg']['version'] : 1
           create_appengine_web(File.join(web_inf, "appengine-web.xml"), robot_name, version)
         end
       end
@@ -134,8 +136,7 @@ APPENGINE
     
     def find_sdk
       unless @sdk_path
-        config = YAML::load(File.open(File.join(".", "config.yaml")))
-        @sdk_path = config['appcfg']['sdk'] if config['appcfg'] && config['appcfg']['sdk'] # Points at main SDK dir.
+        @sdk_path = robot_config['appcfg']['sdk'] if robot_config['appcfg'] && robot_config['appcfg']['sdk'] # Points at main SDK dir.
         @sdk_path ||= ENV['APPENGINE_JAVA_SDK'] # Points at main SDK dir.
         unless @sdk_path
           # Check everything in the PATH, which would point at the bin directory in the SDK.

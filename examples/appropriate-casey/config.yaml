@@ -6,3 +6,9 @@ robot:
   version: 2
 appcfg:
   version: 1
+gems:
+  - rave
+  - json-jruby
+  - rack
+  - builder
+  - RedCloth
