@@ -33,6 +33,8 @@ module Rave
           #Get config info
           web_inf = File.join(".", "tmp", "war", "WEB-INF")
           rave_jars = File.join(File.dirname(__FILE__), "..", "jars")
+          #Cleanup unneeded gems that warbler copies in
+          cleanup_gems(File.join(web_inf, "gems", "gems"), robot_config['gems'] || [])
           #Copy the appengine sdk jar to the robot
           copy_appengine_jar_to_robot(rave_jars, File.join(web_inf, "lib"))
           #Fix the broken paths in json-jruby
@@ -64,6 +66,17 @@ module Rave
             puts "2. Add the SDK bin folder to your PATH, or"
             puts "3. Create an environment variable APPENGINE_JAVA_SDK that defines the path to the main SDK folder"
           end
+        end
+      end
+    end
+    
+    #Remove warbler and jruby-jars - added by warbler but unneeded
+    def cleanup_gems(gem_dir, gems)
+      ["warbler", "jruby-jars"].each do |g|
+        dir = Dir[File.join(gem_dir, "#{g}*")].first
+        unless dir.nil? || gems.include?(g)
+          puts "Removing #{g} from war"
+          FileUtils.rm_rf(dir)
         end
       end
     end
