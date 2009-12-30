@@ -69,7 +69,7 @@ module Rave
     end
     
     def copy_appengine_jar_to_robot(rave_jar_dir, warbler_jar_dir)
-      jar = "appengine-api-1.0-sdk-1.2.8.jar"
+      jar = "appengine-api-1.0-sdk-1.3.0.jar"
       rave_jar = File.join(rave_jar_dir, jar)
       warbler_jar = File.join(warbler_jar_dir, jar)
       puts "Copying appengine jar from #{rave_jar} to #{warbler_jar}"
