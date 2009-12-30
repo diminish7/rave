@@ -132,12 +132,11 @@ robot:
   version: #{options[:version]}
 appcfg:
   version: 1
-gems:
-  - rave
-  - json-jruby
-  - rack
-  - builder
-  - RedCloth
+# Uncomment this section to add gems required by your robot.
+# They will unpacked in your project at appengine deploy time
+# gems:
+#  - some_gem         # Replace this with the name of the gem you require
+#  - some_other_gem   # Replace this with the name of the gem you require
 CONFIG
 end
 

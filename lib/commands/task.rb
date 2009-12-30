@@ -5,10 +5,13 @@ require 'yaml'
 require 'warbler'
 
 module Rave
-  class Task < Warbler::Task    
+  class Task < Warbler::Task
+    
+    REQUIRED_GEMS = ["rave", "json-jruby", "rack", "builder", "RedCloth"]
+    
     def initialize
       warbler_config = Warbler::Config.new do |config|
-        config.gems = robot_config['gems']
+        config.gems = ((robot_config['gems'] || []) + REQUIRED_GEMS).uniq
         config.includes = %w( robot.rb config.yaml )
       end
       super(:rave, warbler_config)
