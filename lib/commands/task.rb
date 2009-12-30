@@ -33,12 +33,8 @@ module Rave
           #Get config info
           web_inf = File.join(".", "tmp", "war", "WEB-INF")
           rave_jars = File.join(File.dirname(__FILE__), "..", "jars")
-          #Delete the complete JRuby jar that warbler sticks in lib
-          delete_jruby_from_lib(File.join(web_inf, "lib"))
-          #Delete the complete JRuby jar from warbler itself 
-          delete_jruby_from_warbler(File.join(web_inf, "gems", "gems"))
-          #Copy the broken up JRuby jar into warbler #TODO Is warbler necessary? Can we just delete warbler?
-          copy_jruby_chunks_to_warbler(rave_jars, Dir[File.join(web_inf, "gems", "gems", "warbler-*", "lib")].first)
+          #Copy the appengine sdk jar to the robot
+          copy_appengine_jar_to_robot(rave_jars, File.join(web_inf, "lib"))
           #Fix the broken paths in json-jruby
           fix_json_jruby_paths(File.join(web_inf, "gems", "gems"))
           #Add the appengine-web.xml file
@@ -72,23 +68,12 @@ module Rave
       end
     end
     
-    def delete_jruby_from_lib(web_inf_lib)
-      jar = Dir[File.join(web_inf_lib, "jruby-complete-*.jar")].first
-      puts "Deleting #{jar}"
-      File.delete(jar) if jar
-    end
-
-    def delete_jruby_from_warbler(web_inf_gems)
-      jar = Dir[File.join(web_inf_gems, "warbler-*", "lib", "jruby-complete-*.jar")].first
-      puts "Deleting #{jar}"
-      File.delete(jar) if jar
-    end
-
-    def copy_jruby_chunks_to_warbler(rave_jar_dir, warbler_jar_dir)
-      puts "Copying jruby chunks"
-      %w( jruby-core.jar ruby-stdlib.jar ).each do |jar|
-        File.copy(File.join(rave_jar_dir, jar), File.join(warbler_jar_dir, jar))
-      end
+    def copy_appengine_jar_to_robot(rave_jar_dir, warbler_jar_dir)
+      jar = "appengine-api-1.0-sdk-1.2.8.jar"
+      rave_jar = File.join(rave_jar_dir, jar)
+      warbler_jar = File.join(warbler_jar_dir, jar)
+      puts "Copying appengine jar from #{rave_jar} to #{warbler_jar}"
+      File.copy(rave_jar, warbler_jar)
     end
 
     def fix_json_jruby_paths(web_inf_gems)

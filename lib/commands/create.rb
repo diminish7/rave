@@ -29,10 +29,7 @@ def create_robot(args)
   config = File.join(dir, "config.yaml")
   public_folder = File.join(dir, "public")
   html = File.join(public_folder, "index.html")
-  here = File.dirname(__FILE__)
-  jar_dir = File.join(here, "..", "jars")
-  jars = %w( appengine-api-1.0-sdk-1.2.8.jar jruby-core.jar ruby-stdlib.jar )
-
+  
   #Create the project dir
   puts "Creating directory #{File.expand_path(dir)}"
   Dir.mkdir(dir)
@@ -65,13 +62,9 @@ def create_robot(args)
     f.puts html_file_contents(robot_name, options[:id])
   end
 
-  #Copy jars over
+  #Create lib directory
   puts "Creating lib directory #{File.expand_path(lib)}"
   Dir.mkdir(lib)
-  jars.each do |jar|
-    puts "Adding jar #{jar}"
-    File.copy(File.join(jar_dir, jar), File.join(lib, jar))
-  end
 end
 
 def robot_file_contents(module_name)
