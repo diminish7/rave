@@ -59,7 +59,7 @@ def create_robot(args)
   # Make up the html index file.
   puts "Creating html index file #{File.expand_path(html)}"
   File.open(html, "w") do |f|
-    f.puts html_file_contents(robot_name, options[:id])
+    f.puts html_file_contents(robot_name, options[:id], options[:image_url])
   end
 
   #Create lib directory
@@ -133,7 +133,8 @@ appcfg:
 CONFIG
 end
 
-def html_file_contents(name, id)
+def html_file_contents(name, id, image_url)
+  img_tag = image_url ? "\n  <img src=\"#{image_url}\" alt=\"#{name} icon\" />\n" : ""
   <<-HTML
 <html>
 <head>
@@ -141,9 +142,7 @@ def html_file_contents(name, id)
 </head>
 <body>
   <h1>#{name}</h1>
-
-  <img src="icon.png" alt="#{name} icon" />
-
+  #{img_tag}
   <p>This is a Google Wave robot using <a href="http://github.com/diminish7/rave">Rave</a> running in JRuby.
    Use this robot in your Google Waves by adding <em>#{id}</em> as a participant</p>
 
