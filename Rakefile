@@ -8,10 +8,10 @@ require 'fileutils'
 include FileUtils
 
 # Non-user config.
-DEPS = YAML.load(File.open(File.join('lib', 'gems.yaml')))
+DEPS = YAML.load_file(File.join('lib', 'gems.yaml'))
 
 SPEC = Gem::Specification.new do |s|
-  s.platform = Gem::Platform::RUBY
+  s.platform = (RUBY_PLATFORM == 'java') ? 'java' : 'ruby'
   s.required_ruby_version = '>= 1.8.6'
   s.name = "rave"
   s.rubyforge_project = 'rave'
@@ -26,7 +26,9 @@ SPEC = Gem::Specification.new do |s|
   s.executables = []
   s.require_path = "lib"
   s.has_rdoc = true
-  DEPS.each { | name, version | s.add_runtime_dependency( name, version ) }
+  DEPS['all'].each { | name, version | s.add_runtime_dependency( name, version ) }
+  DEPS['jruby'].each { | name, version | s.add_runtime_dependency( name, version ) if s.platform.to_s == 'java' }
+  DEPS['mri'].each { | name, version | s.add_runtime_dependency( name, version ) if s.platform.to_s == 'ruby' }
   s.executables = 'rave'
 end
 

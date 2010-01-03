@@ -1,6 +1,9 @@
-rack: >=1.0
-builder: >=2.1.2
-json-jruby: >=1.1.6
-warbler: >=0.9.14
-RedCloth: >=4.2.2
-
+all:
+  rack: >=1.0
+  builder: >=2.1.2
+  warbler: >=0.9.14
+  RedCloth: >=4.2.2
+jruby:
+  json-jruby: >=1.1.6
+mri:
+  json: >=1.2.0
