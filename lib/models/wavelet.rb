@@ -3,6 +3,7 @@ module Rave
     # Represents a Wavelet, owned by a Wave
     class Wavelet < Component
       include Rave::Mixins::TimeUtils
+      include Rave::Mixins::Logger
 
       # Creator of the wavelet if it was generated via an operation.
       GENERATED_CREATOR = "rusty@a.gwave.com" # :nodoc:
@@ -122,7 +123,6 @@ module Rave
       end
 
       # Is this the root wavelet for its wave? [Boolean]
-      attr_reader :root?
       def root? # :nodoc:
         not (id =~ ROOT_ID_REGEXP).nil?
       end
@@ -159,7 +159,7 @@ module Rave
       def add_participant(user) # :nodoc:
         id = user.to_s.downcase
         if @participant_ids.include?(id)
-          LOGGER.warning("Attempted to add a participant who was already in the wavelet(#{@id}): #{id}")
+          logger.warning("Attempted to add a participant who was already in the wavelet(#{@id}): #{id}")
           return nil
         end
 
@@ -183,7 +183,7 @@ module Rave
       def remove_participant(user) # :nodoc:
         id = user.to_s.downcase
         unless @participant_ids.include?(id)
-          LOGGER.warning("Attempted to remove a participant who was not in the wavelet(#{@id}): #{id}")
+          logger.warning("Attempted to remove a participant who was not in the wavelet(#{@id}): #{id}")
           return nil
         end
 
@@ -191,7 +191,7 @@ module Rave
         user = @context.users[id]
 
         unless user.robot?
-          LOGGER.warning("Attempted to remove a non-robot from wavelet(#{@id}): #{id}")
+          logger.warning("Attempted to remove a non-robot from wavelet(#{@id}): #{id}")
           return nil
         end
 

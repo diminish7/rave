@@ -52,7 +52,7 @@ describe Rave::Models::Blip do
 
   describe "initialize()" do
     it "should raise an error if given an invalid :state option" do
-      lambda { Blip.new(:id => "blip", :state => :bleh) }.should raise_error ArgumentError
+      lambda { Blip.new(:id => "blip", :state => :bleh) }.should raise_error(ArgumentError)
     end
   end
   
@@ -342,14 +342,14 @@ END
         validate_operations(@context, [Operation::DOCUMENT_INSERT])
       end
       it "should raise error if index is outside the content string" do
-        lambda { @hello_wave_blip.insert_text(12, " google") }.should raise_error IndexError
-        lambda { @hello_wave_blip.insert_text(-13, " google") }.should raise_error IndexError
+        lambda { @hello_wave_blip.insert_text(12, " google") }.should raise_error(IndexError)
+        lambda { @hello_wave_blip.insert_text(-13, " google") }.should raise_error(IndexError)
       end
     end
     
     describe "set_text()" do
       it "should raise an error if :format is unrecognised" do
-        lambda { @hello_wave_blip.set_text("What up, blip?", :format => :fish)}.should raise_error Rave::BadOptionError
+        lambda { @hello_wave_blip.set_text("What up, blip?", :format => :fish)}.should raise_error(Rave::BadOptionError)
       end
 
       TEXT_FORMATS.each do |format, input, operation, sent, plain|
@@ -398,10 +398,10 @@ END
         @hello_wave_blip.content.should == "Heave!"
       end
       it "should raise error if range is outside the content string" do
-        lambda { @hello_wave_blip.delete_range(200..201) }.should raise_error RangeError
+        lambda { @hello_wave_blip.delete_range(200..201) }.should raise_error(RangeError)
       end
       it "should raise error if range is not a Range" do
-        lambda { @hello_wave_blip.delete_range(5) }.should raise_error ArgumentError
+        lambda { @hello_wave_blip.delete_range(5) }.should raise_error(ArgumentError)
       end
     end
     
@@ -419,16 +419,16 @@ END
         @hello_wave_blip.content.should == "Hexagonal wave!"
       end
       it "should raise error if range is outside the content string" do
-        lambda { @hello_wave_blip.set_text_in_range(200..201, "bleh") }.should raise_error RangeError
+        lambda { @hello_wave_blip.set_text_in_range(200..201, "bleh") }.should raise_error(RangeError)
       end
       it "should raise error if range is not a Range" do
-        lambda { @hello_wave_blip.set_text_in_range(5, "bleh") }.should raise_error ArgumentError
+        lambda { @hello_wave_blip.set_text_in_range(5, "bleh") }.should raise_error(ArgumentError)
       end
     end
     
     describe "append_text" do
       it "should raise an error if :format is unrecognised" do
-        lambda { @hello_wave_blip.append_text(" Hello world!", :format => :fish)}.should raise_error Rave::BadOptionError
+        lambda { @hello_wave_blip.append_text(" Hello world!", :format => :fish)}.should raise_error(Rave::BadOptionError)
       end
 
       TEXT_FORMATS.each do |format, input, operation, sent, plain|
@@ -540,7 +540,7 @@ END
       end
 
       it "should raise error if the blip is not an inline blip of this blip" do
-        lambda { @leaf_blip.delete_inline_blip("frogspawn") }.should raise_error RuntimeError
+        lambda { @leaf_blip.delete_inline_blip("frogspawn") }.should raise_error(RuntimeError)
       end
 
       it "should delete the element" do

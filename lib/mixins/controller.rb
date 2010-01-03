@@ -2,14 +2,13 @@
 module Rave
   module Mixins
     module Controller
-      
-      LOGGER = java.util.logging.Logger.getLogger("Controller")
-      
+      include Logger
+            
       def call(env)
         request = Rack::Request.new(env)
         path = request.path_info
         method = request.request_method
-        LOGGER.info("#{method}ing #{path}")
+        logger.info("#{method}ing #{path}")
         begin
           #There are only 3 URLs that Wave can access: 
           #  robot capabilities, robot profile, and event notification
@@ -24,8 +23,8 @@ module Rave
               handle_event(event, context)
             end
             response = context.to_json
-            LOGGER.info("Structure (after):\n#{context.print_structure}")
-            LOGGER.info("Response:\n#{response}")
+            logger.info("Structure (after):\n#{context.print_structure}")
+            logger.info("Response:\n#{response}")
             [ 200, { 'Content-Type' => 'application/json' }, response ]
           elsif cron_job = @cron_jobs.find { |job| job[:path] == path }
             body = request.body.read
@@ -39,12 +38,12 @@ module Rave
             #Let the custom route method defined in the robot take care of the call
             self.custom_routes(request, path, method)
           else
-            LOGGER.warning("404 - Not Found: #{path}")
+            logger.warning("404 - Not Found: #{path}")
             [ 404, { 'Content-Type' => 'text/html' }, "404 - Not Found" ]
           end
         rescue Exception => e
-          LOGGER.warning("500 - Internal Server Error: #{path}")
-          LOGGER.warning("#{e.class}: #{e.message}\n\n#{e.backtrace.join("\n")}")
+          logger.warning("500 - Internal Server Error: #{path}")
+          logger.warning("#{e.class}: #{e.message}\n\n#{e.backtrace.join("\n")}")
           [ 500, { 'Content-Type' => 'text/html' }, "500 - Internal Server Error"]
         end
       end

@@ -15,7 +15,7 @@ shared_examples_for "event" do
 
   describe "modified_by()" do
     it "should return the User object associated with the :modified_by option" do
-      @_event.modified_by.should be_kind_of User
+      @_event.modified_by.should be_kind_of(User)
       @_event.modified_by.id.should == "fred"
       @_context.users["fred"].should == @_event.modified_by
     end
@@ -56,17 +56,17 @@ describe Rave::Models::Event do
       context = Context.new(:wavelets => {"wavelet" => wavelet})
       described_class.classes.each do |event|
         new_event = described_class.create(event.type, :context => context)
-        new_event.should be_a_kind_of event
+        new_event.should be_a_kind_of(event)
       end
     end
 
     it "should raise an exception for an invalid event" do
       lambda { described_class.create("INVALID_EVENT",
-           :context => Context.new) }.should raise_error Exception
+           :context => Context.new) }.should raise_error(Exception)
     end
 
     it "should raise an exception without a context given" do
-      lambda { described_class.create("BLIP_DELETED") }.should raise_error ArgumentError
+      lambda { described_class.create("BLIP_DELETED") }.should raise_error(ArgumentError)
     end
   end
 end

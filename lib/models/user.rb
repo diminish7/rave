@@ -48,7 +48,6 @@ module Rave
       end
 
       # Is the User a robot client rather than a human client? [Boolean]
-      attr_reader :robot?
       def robot? # :nodoc:
         not (@id =~ ROBOT_PATTERN).nil?
       end

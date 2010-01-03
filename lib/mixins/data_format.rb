@@ -2,11 +2,10 @@
 module Rave
   module Mixins
     module DataFormat
-    
+      include Logger
+      
       PROFILE_JAVA_CLASS = 'com.google.wave.api.ParticipantProfile'
-      
-      LOGGER = java.util.logging.Logger.getLogger("DataFormat") unless defined?(LOGGER)
-      
+            
       #Returns this robot's capabilities in XML
       def capabilities_xml
         xml = Builder::XmlMarkup.new
@@ -44,14 +43,14 @@ module Rave
       
       #Parses context and event info from JSON input
       def parse_json_body(json)
-        LOGGER.info("Received:\n#{json.to_s}")
+        logger.info("Received:\n#{json.to_s}")
         data = JSON.parse(json)
         #Create Context
         context = context_from_json(data)
         #Create events
         events = events_from_json(data, context)
-        LOGGER.info("Structure (before):\n#{context.print_structure}")
-        LOGGER.info("Events: #{events.map { |e| e.type }.join(', ')}")
+        logger.info("Structure (before):\n#{context.print_structure}")
+        logger.info("Events: #{events.map { |e| e.type }.join(', ')}")
         return context, events
       end
       

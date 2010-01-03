@@ -74,14 +74,14 @@ describe Rave::Models::Context do
     end
     
     it "should create a new generated wave" do
-      @wave.should be_kind_of Wave
+      @wave.should be_kind_of(Wave)
       @wave.generated?.should be_true
       @wave.wavelets.should == [@wavelet]
       @wave.root_wavelet.should == @wavelet
       @context.waves[@wave.id].should == @wave
     end
     it "should create a wavelet within the wave as its root" do
-      @wavelet.should be_kind_of Wavelet
+      @wavelet.should be_kind_of(Wavelet)
       @wavelet.generated?.should be_true
       @wavelet.participants.map { |user| user.to_s }.sort.should == ["fred", robot_instance.id]
       @wavelet.creator.id.should == "rusty@a.gwave.com"
@@ -91,7 +91,7 @@ describe Rave::Models::Context do
       @context.wavelets[@wavelet.id].should == @wavelet
     end
     it "should create a blip within the wavelet as its root" do
-      @blip.should be_kind_of Blip
+      @blip.should be_kind_of(Blip)
       @blip.generated?.should be_true
       @blip.creator.should == robot_instance
       @blip.contributors.should == [robot_instance]

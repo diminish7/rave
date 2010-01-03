@@ -4,6 +4,7 @@ module Rave
     # It is part of a Wavelet within a Wave.
     class Blip < Component
       include Rave::Mixins::TimeUtils
+      include Rave::Mixins::Logger
       
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
 
@@ -73,25 +74,21 @@ module Rave
       end
 
       # Returns true if this is a root blip (no parent blip) [Boolean]
-      attr_reader :root?
       def root? # :nodoc:
         @parent_blip_id.nil?
       end
 
       # Returns true if this is a leaf node (has no children). [Boolean]
-      attr_reader :leaf?
       def leaf? # :nodoc:
         @child_blip_ids.empty?
       end
 
       # Has the blip been deleted? [Boolean]
-      attr_reader :deleted?
       def deleted? # :nodoc:
         [:deleted, :null].include? @state
       end
 
       # Has the blip been completely destroyed? [Boolean]
-      attr_reader :null?
       def null? # :nodoc:
         @state == :null
       end
@@ -210,9 +207,9 @@ module Rave
       # Returns the blip id.
       def delete
         if deleted?
-          LOGGER.warning("Attempt to delete blip that has already been deleted: #{id}")
+          logger.warning("Attempt to delete blip that has already been deleted: #{id}")
         elsif root?
-          LOGGER.warning("Attempt to delete root blip: #{id}")
+          logger.warning("Attempt to delete root blip: #{id}")
         else
           @context.add_operation(:type => Operation::BLIP_DELETE,
             :blip_id => @id, :wave_id => @wave_id, :wavelet_id => @wavelet_id)

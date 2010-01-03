@@ -163,9 +163,9 @@ END
       describe "add_participant()" do
         it "should add a participant to the wavelet as an id" do
           user = @wavelet.add_participant("fish@frog.com")
-          user.should be_kind_of User
+          user.should be_kind_of(User)
           @wavelet.participant_ids.should == @initial_participant_ids + ["fish@frog.com"]
-          @context.users["fish@frog.com"].should be_kind_of User
+          @context.users["fish@frog.com"].should be_kind_of(User)
         end
         it "should add a participant to the wavelet as a User" do
           user = @context.add_user(:id => "fish@frog.com")
@@ -187,7 +187,7 @@ END
       describe "remove_participant()" do
         it "should remove a participant from the wavelet as id" do
           user = @wavelet.remove_participant(@remote_robot_id)
-          user.should be_kind_of User
+          user.should be_kind_of(User)
           @wavelet.participant_ids.should == @initial_participant_ids - [@remote_robot_id]
         end
         it "should remove a participant from the wavelet as User" do

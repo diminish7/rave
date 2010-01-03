@@ -5,8 +5,8 @@ ELEMENTS_JSON = '{"elements":{"map":{"134":{"javaClass":"com.google.wave.api.For
 
 shared_examples_for "Element" do
   it "should be an appropriately classed Element" do
-    @element.should be_kind_of Element
-    @element.should be_kind_of described_class
+    @element.should be_kind_of(Element)
+    @element.should be_kind_of(described_class)
   end
 
   it "should have no id" do

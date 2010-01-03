@@ -47,7 +47,7 @@ end
 
 shared_examples_for "Component", "initialize()" do
   it "should raise an error without an :id option" do
-    lambda { described_class.new() }.should raise_error ArgumentError
+    lambda { described_class.new() }.should raise_error(ArgumentError)
   end
 end
 
@@ -77,7 +77,7 @@ shared_examples_for "ObjectFactory" do
     end
     it "should contain only creatable classes" do
       described_class.classes do |event|
-        event.should be_kind_of Event
+        event.should be_kind_of(Event)
       end
     end
     it "should contain only unique classes" do
@@ -91,7 +91,7 @@ shared_examples_for "ObjectFactory" do
     end
     it "should contain only Strings" do
       described_class.types do |type|
-        type.should be_kind_of String
+        type.should be_kind_of(String)
       end
     end
   end
@@ -109,7 +109,7 @@ end
 def validate_user_list(users, user_ids)
   users.size.should == user_ids.length
   users.each_with_index do |user, i|
-    user.should be_kind_of User
+    user.should be_kind_of(User)
     user.id.should == user_ids[i]
   end
 end

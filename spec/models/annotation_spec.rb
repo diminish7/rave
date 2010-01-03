@@ -4,7 +4,7 @@ require 'json'
 shared_examples_for "Annotation" do
   describe "after creation" do
     it "should be an appropriately classed Element" do
-      @annotation.should be_kind_of described_class
+      @annotation.should be_kind_of(described_class)
     end
 
     it "should have correctly set name" do
