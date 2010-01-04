@@ -105,6 +105,7 @@ describe Rave::Models::Robot do
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
       @obj.register_cron_job(*cron2)
+      #TODO: XML is in different order on MRI, need to parse and compare nodes
       @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
     end
     
@@ -113,6 +114,7 @@ describe Rave::Models::Robot do
       event2 = Rave::Models::Event.create(Rave::Models::Event::WaveletVersionChanged.type, :context => Context.new)
       @obj.register_handler(event1.type, :handler1)
       @obj.register_handler(event2.type, :handler2)
+      #TODO: XML is in different order on MRI, need to parse and compare nodes
       @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
     end
     
@@ -129,6 +131,7 @@ describe Rave::Models::Robot do
       @obj.register_handler(event2.type, :handler2)
       @obj.register_cron_job(*cron1)
       @obj.register_cron_job(*cron2)
+      #TODO: XML is in different order on MRI, need to parse and compare nodes
       @obj.capabilities_xml.should == "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"DOCUMENT_CHANGED\"/><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
     end
     
@@ -136,7 +139,12 @@ describe Rave::Models::Robot do
   
   describe "profile_json()" do
     it "should return the robot's profile information in json format" do
-      @obj.profile_json.should == "{\"name\":\"testbot\",\"imageUrl\":\"http://localhost/image.png\",\"profileUrl\":\"http://localhost/profile\",\"javaClass\":\"com.google.wave.api.ParticipantProfile\"}"
+      JSON.parse(@obj.profile_json).should == {
+                                                "name" => "testbot",
+                                                "imageUrl" => "http://localhost/image.png",
+                                                "profileUrl" => "http://localhost/profile",
+                                                "javaClass" => "com.google.wave.api.ParticipantProfile"
+                                              }
     end
   end
   

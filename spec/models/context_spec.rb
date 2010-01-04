@@ -129,14 +129,49 @@ describe Rave::Models::Context do
   describe "to_json()" do
     it "should serialize the context to json without ops" do
       context, events = Robot.instance.parse_json_body(TEST_JSON)
-      context.to_json.should == "{\"operations\":{\"javaClass\":\"java.util.ArrayList\",\"list\":[]},\"javaClass\":\"com.google.wave.api.impl.OperationMessageBundle\"}"
+      JSON.parse(context.to_json).should == {
+                                              "operations" => {
+                                                                "javaClass" => "java.util.ArrayList",
+                                                                "list" => []
+                                                              },
+                                              "javaClass" => "com.google.wave.api.impl.OperationMessageBundle"
+                                            }
     end
     it "should serialize the context to json with ops" do
       context, events = Robot.instance.parse_json_body(TEST_JSON)
       wavelet = context.wavelets.values.first
       blip = context.blips[wavelet.root_blip_id]
       blip.set_text("Hello, wave!")
-      context.to_json.should == "{\"operations\":{\"javaClass\":\"java.util.ArrayList\",\"list\":[{\"blipId\":\"wdykLROk*13\",\"index\":0,\"waveletId\":\"conv+root\",\"waveId\":\"wdykLROk*11\",\"type\":\"DOCUMENT_DELETE\",\"javaClass\":\"com.google.wave.api.impl.OperationImpl\",\"property\":{\"javaClass\":\"com.google.wave.api.Range\",\"start\":0,\"end\":1}},{\"blipId\":\"wdykLROk*13\",\"index\":-1,\"waveletId\":\"conv+root\",\"waveId\":\"wdykLROk*11\",\"type\":\"DOCUMENT_APPEND\",\"javaClass\":\"com.google.wave.api.impl.OperationImpl\",\"property\":\"Hello, wave!\"}]},\"javaClass\":\"com.google.wave.api.impl.OperationMessageBundle\"}"
+      JSON.parse(context.to_json).should == {
+                                              "operations" => {
+                                                                "javaClass" => "java.util.ArrayList",
+                                                                "list" => [
+                                                                            {
+                                                                              "blipId" => "wdykLROk*13",
+                                                                              "index" => 0,
+                                                                              "waveletId" => "conv+root",
+                                                                              "waveId" => "wdykLROk*11",
+                                                                              "type" => "DOCUMENT_DELETE",
+                                                                              "javaClass" => "com.google.wave.api.impl.OperationImpl",
+                                                                              "property" => {
+                                                                                              "javaClass" => "com.google.wave.api.Range",
+                                                                                              "start" => 0,
+                                                                                              "end" => 1
+                                                                                            }
+                                                                            },
+                                                                            {
+                                                                              "blipId" => "wdykLROk*13",
+                                                                              "index" => -1,
+                                                                              "waveletId" => "conv+root",
+                                                                              "waveId" => "wdykLROk*11",
+                                                                              "type" => "DOCUMENT_APPEND",
+                                                                              "javaClass" => "com.google.wave.api.impl.OperationImpl",
+                                                                              "property" => "Hello, wave!"
+                                                                            }
+                                                                          ]
+                                                                },
+                                                "javaClass" => "com.google.wave.api.impl.OperationMessageBundle"
+                                              }
     end
   end
 

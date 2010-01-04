@@ -32,7 +32,7 @@ shared_examples_for "time_from_json()" do
     @json_time_fields.each_with_index do |time_field, i|
       obj = described_class.new(:id => "id#{i}", :context => context, time_field => timestamp)
       #Should be equal down to the millisecond now
-      obj.send(time_field).should == time
+      obj.send(time_field).to_i.should == time.to_i
     end
   end
 end
