@@ -3,7 +3,7 @@ module Rave
     # Abstract object that allows you to create instances of the classes inside
     # it based on providing a type name.
     module ObjectFactory
-      WILDCARD = '*'
+      WILDCARD = '*' unless defined? WILDCARD
       
       def self.included(base)
         base.class_eval do
