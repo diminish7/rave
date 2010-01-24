@@ -17,19 +17,16 @@ module Rave
       end
 
       # Time the wavelet was created [Time]
-      attr_reader :creation_time
       def creation_time # :nodoc:
         @creation_time.dup
       end
 
       # Documents contained within the wavelet [Array of Document]
-      attr_reader :data_documents
       def data_documents # :nodoc:
         @data_documents.dup
       end
 
       # The last time the wavelet was modified [Time]
-      attr_reader :last_modified_time
       def last_modified_time # :nodoc:
         @last_modified_time.dup
       end
@@ -40,7 +37,6 @@ module Rave
       end
 
       # Wavelet title [String]
-      attr_accessor :title
       def title # :nodoc:
         @title.dup
       end
@@ -111,13 +107,11 @@ module Rave
       end
 
       # Users that are currently have access the wavelet [Array of User]
-      attr_reader :participants
       def participants # :nodoc:
         @participant_ids.map { |p| @context.users[p] }
       end
 
       # Users that originally created the wavelet [User]
-      attr_reader :creator
       def creator # :nodoc:
         @context.users[@creator_id]
       end
@@ -234,13 +228,11 @@ module Rave
       end
 
       # First blip in the wavelet [Blip]
-      attr_reader :root_blip
       def root_blip # :nodoc:
         @context.blips[@root_blip_id]
       end
 
       # Wave that the wavelet is contained within.
-      attr_reader :wave
       def wave# :nodoc:
         @context.waves[@wave_id]
       end

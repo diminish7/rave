@@ -24,7 +24,6 @@ module Rave
       end
 
       # ID [String]
-      attr_reader :id
       def id # :nodoc:
         @id.dup
       end

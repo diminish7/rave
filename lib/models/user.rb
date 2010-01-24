@@ -8,7 +8,6 @@ module Rave
       # Url link to the profile of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the url will be empty.
-      attr_reader :profile_url
       def profile_url # :nodoc:
         @profile_url.dup
       end
@@ -16,7 +15,6 @@ module Rave
       # Url link to the image of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the url will be empty.
-      attr_reader :image_url
       def image_url # :nodoc:
         @image_url.dup
       end
@@ -42,7 +40,6 @@ module Rave
       # Printable name of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the name is the same as the @id.
-      attr_reader :name
       def name # :nodoc:
         @name || @id
       end

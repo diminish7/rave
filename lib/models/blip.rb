@@ -9,10 +9,11 @@ module Rave
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
 
       # Version number of the contents of the blip [Integer]
-      attr_reader :version
+      def version
+        @version.dup
+      end
 
       # Annotations on the blip [Array of Annotation]
-      attr_reader :annotations
       def annotations # :nodoc:
         @annotations.dup
       end
@@ -28,13 +29,11 @@ module Rave
       end
 
       # Elements contained within this blip [Array of Element]
-      attr_reader :elements
       def elements # :nodoc:
         @elements.dup
       end
 
       # Last time the blip was altered [Time]
-      attr_reader :last_modified_time
       def last_modified_time # :nodoc:
         @last_modified_time.dup
       end
@@ -55,20 +54,17 @@ module Rave
       end
 
       # Wavelet that the blip is a part of [Wavelet]
-      attr_reader :wavelet
       def wavelet # :nodoc:
         @context.wavelets[@wavelet_id]
       end
 
       # Wave that this blip is a part of [Wave]
-      attr_reader :wave
       def wave # :nodoc:
         @context.waves[@wave_id]
       end
 
       # Blip that this Blip is a direct reply to. Will be nil if the root blip
       # in a wavelet [Blip or nil for a root blip]
-      attr_reader :parent_blip
       def parent_blip # :nodoc:
         @context.blips[@parent_blip_id]
       end
@@ -94,26 +90,22 @@ module Rave
       end
 
       # Text contained in the blip [String]
-      attr_reader :content
       def content # :nodoc:
         @content.dup
       end
 
       # Users that have made a contribution to the blip [Array of User]
-      attr_reader :contributors
       def contributors # :nodoc:
         @contributor_ids.map { |c| @context.users[c] }
       end
 
       # Original creator of the blip [User]
-      attr_reader :creator
       def creator # :nodoc:
         @context.users[@creator]
       end
 
       # List of direct children of this blip. The first one will be continuing
       # the thread, others will be indented replies [Array of Blip]
-      attr_reader :child_blips
       def child_blips # :nodoc:
         @child_blip_ids.map { |id| @context.blips[id] }
       end

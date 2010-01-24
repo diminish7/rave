@@ -60,7 +60,6 @@ module Rave
         factory_register 'INLINE_BLIP'
 
         # The blip contained within the element [Blip].
-        attr_reader :blip
         def blip # :nodoc:
           @context.blips[@properties['blipId']]
         end

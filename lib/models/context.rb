@@ -7,19 +7,16 @@ module Rave
       attr_reader :robot # The robot managing this context.
 
       # All waves by ID [Hash of String => Wave]
-      attr_reader :waves
       def waves # :nodoc:
         @waves.dup
       end
 
       # All wavelets by ID [Hash of String => Wavelet]
-      attr_reader :wavelets
       def wavelets # :nodoc:
         @wavelets.dup
       end
 
       # All wavelets by ID [Hash of String => Wavelet]
-      attr_reader :blips
       def blips # :nodoc:
         @blips.dup
       end
@@ -30,7 +27,6 @@ module Rave
       end
 
       # All users by ID [Hash of String => User]
-      attr_reader :users
       def users # :nodoc:
         @users.dup
       end

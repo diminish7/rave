@@ -9,20 +9,17 @@ module Rave
       JAVA_CLASS = "com.google.wave.api.Annotation"
 
       # Name of the annotation type [String]
-      attr_reader :name
       def name # :nodoc:
         # If @id is defined, then put that into the type, otherwise just the type is fine.
         @id ? type.sub(WILDCARD, @id) : type
       end
 
       # Value of the annotation [String]
-      attr_reader :value
       def value # :nodoc:
         @value.dup
       end
 
       # Range of characters over which the annotation applies [Range]
-      attr_reader :range
       def range # :nodoc:
         @range.dup
       end
@@ -125,7 +122,6 @@ module Rave
         factory_register 'user/*' # Accept all unrecognised user annotations.
 
         # Session ID for the user annotation.
-        attr_reader :session_id
         def session_id # :nodoc:
           name =~ %r!/([^/]+)$!
           $1

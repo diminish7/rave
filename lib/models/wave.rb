@@ -21,13 +21,11 @@ module Rave
       end
 
       # All wavelets that are part of the wave [Array of Wavelet]
-      attr_reader :wavelets
       def wavelets # :nodoc:
         @wavelet_ids.map { |id| @context.wavelets[id] }
       end
 
       # The root wavelet (it will be nil if the event refers to a private subwavelet) [Wavelet]
-      attr_reader :root_wavelet
       def root_wavelet # :nodoc:
         wavelets.find { |wavelet| wavelet and wavelet.root? }
       end
