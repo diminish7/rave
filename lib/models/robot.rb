@@ -50,11 +50,13 @@ module Rave
             self.send(handler, event, context)
           end
         end
+        nil
       end
       
       #Registers a cron job
       def register_cron_job(handler, seconds)
         @cron_jobs << { :path => "/_wave/cron/#{handler}", :handler => handler, :seconds => seconds }
+        nil
       end
 
       # Creates a new wave with initial participants set.
