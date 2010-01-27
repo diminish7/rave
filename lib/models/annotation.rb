@@ -1,5 +1,3 @@
-require 'mixins/object_factory'
-
 module Rave
   module Models
     # An annotation applying styling or other meta-data to a section of text.
