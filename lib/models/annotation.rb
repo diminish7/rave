@@ -43,7 +43,7 @@ module Rave
           'javaClass' => JAVA_CLASS,
           'name' => name,
           'value' => value,
-          'range' => range,
+          'range' => range.to_rave_hash,
         }.to_json
       end
 

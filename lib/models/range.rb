@@ -4,11 +4,11 @@ class Range # :nodoc:
   JAVA_CLASS = 'com.google.wave.api.Range'
   
   # Convert to a hash for sending in an operation.
-  def to_json
+  def to_rave_hash
     {
       'javaClass' => JAVA_CLASS,
       'start' => min,
       'end' => max
-    }.to_json
+    }
   end
 end

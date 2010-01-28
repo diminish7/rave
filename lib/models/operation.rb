@@ -55,7 +55,8 @@ module Rave
         @wavelet_id = options[:wavelet_id] || ''
         @blip_id = options[:blip_id] || ''
         @index = options[:index] || -1
-        @property = options[:property]
+        #Convert property to a rave hash if possible (to better serialize to json later)
+        @property = (property = options[:property]).respond_to?(:to_rave_hash) ? property.to_rave_hash : property
       end
       
       #Serialize the operation to json
