@@ -224,9 +224,19 @@ module Rave
         title = title.to_s
         @context.add_operation(:type => Operation::WAVELET_SET_TITLE,
           :wave_id => @wave_id, :wavelet_id => @id, :property => title)
+        # Update the first line of the root blip
+        blip = self.root_blip
+        #If there is not content, or there is exactly one line, just replace the content with the title
+        # Otherwise, replace the first line with the title
+        if blip.content.nil? || blip.content.strip.empty? || (lines = blip.content.split("\n")).length == 1
+          blip.set_text(title)
+        else
+          blip.delete_range(0..lines.first.length-1)
+          blip.insert_text(0, title)
+        end
         @title = title
       end
-
+      
       # First blip in the wavelet [Blip]
       def root_blip # :nodoc:
         @context.blips[@root_blip_id]
