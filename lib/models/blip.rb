@@ -283,8 +283,24 @@ module Rave
 
         @id
       end
+      
 
     protected
+      # * INTERNAL *
+      # Set the first line of the blips content to title if this is the root blip
+      def set_title_text(title)
+        if self.root?
+          if @content.nil? || @content.empty?  || (lines = @content.split("\n")).length == 1
+            #Set the entire content to the title
+            @content = title
+          else
+            #Set the first line of the content to the title
+            @content = lines[1..-1].unshift(title).join("\n")
+          end
+          title
+        end
+      end
+      
       # *INTERNAL*
       # Remove the blip entirely, leaving it null.
       def destroy_me # :nodoc:

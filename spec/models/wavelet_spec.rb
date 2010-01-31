@@ -132,12 +132,8 @@ END
         @wavelet.title.should == @title
       end
       it "should add an operation" do
-        validate_operations(@context, [Operation::DOCUMENT_APPEND, Operation::WAVELET_SET_TITLE, Operation::DOCUMENT_DELETE, Operation::DOCUMENT_INSERT])
-        @context.operations[0].property.should == @old_title
-        @context.operations[1].property.should == @title
-        @context.operations[2].property["start"].should == 0
-        @context.operations[2].property["end"].should == 4  #First line
-        @context.operations[3].property.should == @title
+        validate_operations(@context, [Operation::DOCUMENT_APPEND, Operation::WAVELET_SET_TITLE])
+        @context.operations.last.property.should == @title
       end
     end
 

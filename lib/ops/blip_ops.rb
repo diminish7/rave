@@ -8,6 +8,7 @@ module Rave
       # Clear the content.
       def clear
         return if content.empty? # No point telling the server to clear an empty blip.
+        udpate_title_if_needed
         delete_range(0..(@content.length))
       end
       
@@ -16,7 +17,7 @@ module Rave
         add_operation(:type => Operation::DOCUMENT_INSERT, :index => index, :property => text)
         @content.insert(index, text)
         # TODO: Shift annotations.
-
+        udpate_title_if_needed
         text
       end
       
@@ -31,6 +32,7 @@ module Rave
       # Returns: An empty string [String]
       def set_text(text, options = {})
         clear
+        udpate_title_if_needed
         append_text(text, options)
       end
       
@@ -51,7 +53,7 @@ module Rave
         end
         delete_range(range.min+text.length..range.max+text.length)
         # TODO: Shift annotations.
-
+        udpate_title_if_needed
         text
       end
       
@@ -85,7 +87,7 @@ module Rave
         add_operation(:type => type, :property => text)
         # TODO: Add annotations for the tags we removed?
         @content += plain_text # Plain text added to text field.
-
+        udpate_title_if_needed
         @content.dup
       end
       
@@ -96,9 +98,9 @@ module Rave
         
         add_operation(:type => Operation::DOCUMENT_DELETE, :index => range.min, :property => range)
 
-         @content[range] = ''
-         # TODO: Shift and/or delete annotations.
-
+        @content[range] = ''
+        # TODO: Shift and/or delete annotations.
+        udpate_title_if_needed
         ''
       end
       
@@ -228,6 +230,19 @@ module Rave
         # Compress all adjacent spaces into a single space.
         str.gsub(/ {2,}/, ' ')
       end
+      
+      #Update the title of the wavelet from the first line of content if this is the root blip
+      def udpate_title_if_needed
+        if self.root? && self.wavelet
+          new_title = if @content.nil? || @content.empty?
+            ''
+          else
+            @content.split("\n").first
+          end
+          self.wavelet.send(:set_title_locally, new_title)
+        end
+      end
+      
     end
   end
 end
