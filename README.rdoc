@@ -72,6 +72,8 @@ is define your robot's event listeners.  Here is a list of the events that Googl
 * BLIP_VERSION_CHANGED
 * DOCUMENT_CHANGED
 * FORM_BUTTON_CLICKED
+* WAVELET_CREATED
+* OPERATION_ERROR
 
 Note: Not all of these events are actually sent by Wave, even if you ask for them.
 
