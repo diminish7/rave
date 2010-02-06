@@ -8,6 +8,12 @@ of the Google Wave protocol, check out http://www.waveprotocol.org/
 
 Thanks to Spooner (Bil Bas) and  Wijnand (Wijnand Wiersma) for their contributions!
 
+Want to contribute? Just fork this project, make a branch, do some stuff and send me a merge request.
+There are several issues under the issue tracker at http://github.com/diminish7/rave/issues. If someone is
+actively working on an issue, it will be tagged with the developer's name (one of the blue labels), but
+other than those, they're all up for grabs.  Just try to let me know what you're planning on so we don't
+overlap work.
+
 == Warning!
 
 Both Rave and Google Wave are super-alpha. There are a lot of things in the protocol that aren't
