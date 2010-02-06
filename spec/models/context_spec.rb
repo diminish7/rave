@@ -156,7 +156,7 @@ describe Rave::Models::Context do
                                                                               "property" => {
                                                                                               "javaClass" => "com.google.wave.api.Range",
                                                                                               "start" => 0,
-                                                                                              "end" => 1
+                                                                                              "end" => 2
                                                                                             }
                                                                             },
                                                                             {

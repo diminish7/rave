@@ -43,7 +43,7 @@ describe Annotation do
     @range = 1..9
     @annotation = Annotation.create(@name, @value, @range)
 
-    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":9},"name":"frogs/take/over/the/world","value":"yay","javaClass":"com.google.wave.api.Annotation"}'
+    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":10},"name":"frogs/take/over/the/world","value":"yay","javaClass":"com.google.wave.api.Annotation"}'
   end
 
   it_should_behave_like "ObjectFactory"
@@ -61,7 +61,7 @@ describe Annotation::Language do
     @value = "en"
     @range = 1..9
     @annotation = Annotation.create(@name, @value, @range)
-    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":9},"name":"lang","value":"en","javaClass":"com.google.wave.api.Annotation"}'
+    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":10},"name":"lang","value":"en","javaClass":"com.google.wave.api.Annotation"}'
 
   end
   
@@ -76,7 +76,7 @@ describe Annotation::User do
     @value = "xxx"
     @range = 1..9
     @annotation = Annotation.create(@name, @value, @range)
-    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":9},"name":"user/z/1ZZ654","value":"xxx","javaClass":"com.google.wave.api.Annotation"}'
+    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":10},"name":"user/z/1ZZ654","value":"xxx","javaClass":"com.google.wave.api.Annotation"}'
   end
 
   describe "session_id" do
@@ -96,7 +96,7 @@ describe Annotation::User::Selection do
     @value = "yyy"
     @range = 1..3
     @annotation = Annotation.create(@name, @value, @range)
-    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":3},"name":"user/r/1PPPZ","value":"yyy","javaClass":"com.google.wave.api.Annotation"}'
+    @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":4},"name":"user/r/1PPPZ","value":"yyy","javaClass":"com.google.wave.api.Annotation"}'
   end
 
   it_should_behave_like "Annotation"
