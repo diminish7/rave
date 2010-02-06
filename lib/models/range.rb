@@ -8,7 +8,7 @@ class Range # :nodoc:
     {
       'javaClass' => JAVA_CLASS,
       'start' => min,
-      'end' => max
+      'end' => max+1
     }
   end
 end
