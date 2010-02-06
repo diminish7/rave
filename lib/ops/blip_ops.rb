@@ -8,8 +8,9 @@ module Rave
       # Clear the content.
       def clear
         return if content.empty? # No point telling the server to clear an empty blip.
+        text = delete_range(0..(@content.length))
         udpate_title_if_needed
-        delete_range(0..(@content.length))
+        text
       end
       
       # Insert text at an index.
