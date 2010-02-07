@@ -12,6 +12,20 @@ shared_examples_for "Element" do
   it "should have no id" do
     @element.id.should == ''
   end
+  
+  it "should have accessors for properties" do
+    if @properties
+      @properties.each do |property|
+        getter = property.to_s
+        setter = getter + "="
+        prop = getter.gsub(/_\w/) { |match| match[1..1].upcase }
+        new_val = "new #{property}"
+        @element.send(setter, new_val)
+        @element.send(getter).should == new_val
+        @element[prop].should == new_val
+      end
+    end
+  end
 
   describe "get()" do
     it "should return nil for non-existant properties" do
@@ -41,11 +55,21 @@ describe Element do
   it_should_behave_like "ObjectFactory"
 end
 
+describe Element::Image do
+  before :each do
+    @element = Element.create('IMAGE', 'caption' => 'mycaption', 'url' => 'http://my.url.com/', 'height' => '20', 'width' => '30', 'attachmentId' => '12')
+    @properties = [:caption, :url, :height, :width, :attachment_id]
+  end
+  
+  it_should_behave_like 'Element'
+end
+
 describe Element::Gadget do
   before :each do
     @url = 'http://mygadget.fish.com/'
     @element = Element.create('GADGET', 'url' => @url)
     @json = '{"javaClass":"com.google.wave.api.FormElement","type":"BUTTON,"properties":{"map":{"url":"http://mygadget.fish.com/"},"javaClass":"java.util.HashMap"}'
+    @properties = [:url]
   end
   
   it_should_behave_like "Element"
@@ -54,6 +78,7 @@ describe Element::Gadget do
     @element.get('url').should == @url
     @element['url'].should == @url
   end
+  
 end
 
 describe Element::Form::Button do
@@ -61,6 +86,7 @@ describe Element::Form::Button do
     @element = Element.create('BUTTON', "name" => "saveButton",
       "value" => "Save Preferences", "label" => "", "defaultValue" => "Save Preferences")
     @json = '{"javaClass":"com.google.wave.api.FormElement","type":"BUTTON,"properties":{"map":{"name":"saveButton","value":"Save Preferences","label":"","defaultValue":"Save Preferences"},"javaClass":"java.util.HashMap"}'
+    @properties = [:label, :name, :value, :default_value]
   end
 
   it_should_behave_like "Element"
