@@ -30,9 +30,9 @@ module Rave
       def users # :nodoc:
         @users.dup
       end
-      
+
       JAVA_CLASS = 'com.google.wave.api.impl.OperationMessageBundle' # :nodoc:
-      
+
       #Options include:
       # - :waves
       # - :wavelets
@@ -47,12 +47,12 @@ module Rave
         @wavelets.values.each { |wavelet| wavelet.context = self } #Set up self as this wavelet's context
         @primary_wavelet = @wavelets.values[0] # As opposed to any that are created later.
 
-        
+
         @blips = options[:blips] || {}
         @blips.values.each { |blip| blip.context = self }          #Set up self as this blip's context
-        
+
         @operations = options[:operations] || []
-        
+
         @users = options[:users] || {}
         @users.values.each { |user| user.context = self }          #Set up self as this user's context
 
@@ -67,19 +67,19 @@ module Rave
           robot.context = self
           @robot = robot
         end
-        
+
         @wavelets.each_value do |wavelet|
           wavelet.participant_ids.each do |id|
             unless @users[id]
               add_user(:id => id)
             end
           end
-          
+
           unless @users[wavelet.creator_id]
             add_user(:id => wavelet.creator_id)
           end
         end
-        
+
         @blips.each_value do |blip|
           blip.contributor_ids.each do |id|
             unless @users[id]
@@ -127,7 +127,7 @@ module Rave
         # Map participants to strings, since they could be Users.
         participant_ids = participants.map {|p| p.to_s.downcase }
         participant_ids << @robot.id unless participant_ids.include? @robot.id
-        
+
         wavelet = Wavelet.new(:context => self, :participants => participant_ids)
         add_wavelet(wavelet)
 
@@ -152,7 +152,7 @@ module Rave
         user.context = self
         user
       end
-           
+
       #Serialize the context for use in the line protocol.
       def to_json # :nodoc:
         hash = {

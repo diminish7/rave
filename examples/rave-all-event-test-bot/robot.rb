@@ -3,7 +3,7 @@ require 'rave'
 
 module RaveAllEventTestBot
   class Robot < Rave::Models::Robot
-    
+
     SPELLY_ID = 'spelly@gwave.com'
     DELETE_COMMAND = 'DELETE'
     INVITE_COMMAND = 'INVITE'
@@ -24,7 +24,7 @@ module RaveAllEventTestBot
       blip = event.wavelet.create_blip
       blip.append_text(message, options)
     end
-    
+
     def wavelet_self_added(event, context)
       message =<<-MESSAGE
 Hello everyone, I am #{name} (#{id})!
@@ -47,12 +47,12 @@ MESSAGE
     def wavelet_self_removed(event, context)
       reply_wavelet(event, "Goodbye world!")
     end
-    
+
     def wavelet_participants_changed(event, context)
       event.participants_added.each do |user|
         reply_wavelet(event, "Hello #{user.name}!") unless user == self
       end
-      
+
       event.participants_removed.each do |user|
         reply_wavelet(event, "Goodbye #{user.name}!") unless user == self
       end
@@ -128,7 +128,7 @@ MESSAGE
       when /^#{HTML_COMMAND}\s+/
         # Parse and stylise HTML.
         event.blip.set_text($', :format => :html) unless $'.empty?
-        
+
       else
         reply_blip(event, "#{event.modified_by.name} submitted a blip! Show off!")
       end
@@ -138,7 +138,7 @@ MESSAGE
     def wavelet_title_changed(event, context)
       reply_wavelet(event, "#{event.modified_by.name} changed the title to: #{event.title}")
     end
-    
+
     def document_changed(event, context)
       return if [SPELLY_ID, id].include? event.modified_by.id
       # Do something about it

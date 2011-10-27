@@ -6,9 +6,9 @@ require 'warbler'
 
 module Rave
   class Task < Warbler::Task
-    
+
     REQUIRED_GEMS = ["rave", "json-jruby", "rack", "builder", "RedCloth"]
-    
+
     def initialize
       warbler_config = Warbler::Config.new do |config|
         config.gems = ((robot_config['gems'] || []) + REQUIRED_GEMS).uniq
@@ -18,13 +18,13 @@ module Rave
       define_post_war_processes
       define_deploy_task
     end
-    
+
   private
-    
+
     def robot_config
       @robot_config ||= YAML::load(File.open(File.join(".", "config.yaml")))
     end
-    
+
     def define_post_war_processes
       namespace :rave do
         desc "Post-War cleanup"
@@ -46,7 +46,7 @@ module Rave
         end
       end
     end
-    
+
     def define_deploy_task
       namespace :rave do
         desc "Deploy to Appengine"
@@ -69,7 +69,7 @@ module Rave
         end
       end
     end
-    
+
     #Remove warbler and jruby-jars - added by warbler but unneeded
     def cleanup_gems(gem_dir, gems)
       ["warbler", "jruby-jars"].each do |g|
@@ -80,7 +80,7 @@ module Rave
         end
       end
     end
-    
+
     def copy_appengine_jar_to_robot(rave_jar_dir, warbler_jar_dir)
       jar = "appengine-api-1.0-sdk-1.3.0.jar"
       rave_jar = File.join(rave_jar_dir, jar)
@@ -134,7 +134,7 @@ module Rave
 </appengine-web-app>
 APPENGINE
     end
-    
+
     def find_sdk
       unless @sdk_path
         @sdk_path = robot_config['appcfg']['sdk'] if robot_config['appcfg'] && robot_config['appcfg']['sdk'] # Points at main SDK dir.
@@ -151,6 +151,6 @@ APPENGINE
       end
       @sdk_path
     end
-    
+
   end
 end

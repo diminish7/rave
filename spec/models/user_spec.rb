@@ -7,13 +7,13 @@ URL = 'http://googlewave.com'
 describe Rave::Models::User do
   it_should_behave_like "Component id()"
   it_should_behave_like "Component initialize()"
-  
+
   describe "robot?()" do
     it "should return false for a human user" do
       human = Rave::Models::User.new(:id => HUMAN_ID)
       human.robot?.should be_false
     end
-    
+
     it "should return true for a robot" do
       robot = Rave::Models::User.new(:id => ROBOT_ID)
       robot.robot?.should be_true

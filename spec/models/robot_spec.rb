@@ -1,7 +1,7 @@
 
 require File.join(File.dirname(__FILE__), "helper")
 describe Rave::Models::Robot do
-  
+
   before :each do
     #Create a subclass of Robot with some handlers defined
     robot_class = Class.new(Rave::Models::Robot) do
@@ -28,7 +28,7 @@ describe Rave::Models::Robot do
 
     @obj = robot_class.instance
   end
-  
+
   describe "register_handler()" do
     it "should automatically register correctly named handlers" do
       @obj.instance_eval do
@@ -67,7 +67,7 @@ describe Rave::Models::Robot do
       end
     end
   end
-  
+
   describe "handle_event()" do
     it "should ignore unhandled events" do
       event = Rave::Models::Event.create(Rave::Models::Event::WaveletTitleChanged.type, :context => Context.new)
@@ -85,7 +85,7 @@ describe Rave::Models::Robot do
       end
     end
   end
-  
+
   describe "register_cron_job()" do
     it "should add the job to the list of cron jobs" do
       @obj.register_cron_job(:cron_handler, 60)
@@ -94,7 +94,7 @@ describe Rave::Models::Robot do
       end
     end
   end
-  
+
   describe "capabilities_xml()" do
     it "should return the list of capabilities" do
       event1 = Rave::Models::Event.create(Rave::Models::Event::WaveletTitleChanged.type, :context => Context.new)
@@ -111,7 +111,7 @@ describe Rave::Models::Robot do
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/><w:capability name=\"DOCUMENT_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
       ].include?(@obj.capabilities_xml).should be_true
     end
-    
+
     it "should not include an empty crons tag" do
       event1 = Rave::Models::Event.create(Rave::Models::Event::WaveletTitleChanged.type, :context => Context.new)
       event2 = Rave::Models::Event.create(Rave::Models::Event::WaveletVersionChanged.type, :context => Context.new)
@@ -123,7 +123,7 @@ describe Rave::Models::Robot do
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/><w:capability name=\"DOCUMENT_CHANGED\"/></w:capabilities><w:profile name=\"testbot\" imageurl=\"http://localhost/image.png\" profileurl=\"http://localhost/profile\"/></w:robot>"
       ].include?(@obj.capabilities_xml).should be_true
     end
-    
+
     it "should not include empty profile or image urls" do
       @obj.instance_eval do
         @image_url = nil
@@ -143,9 +143,9 @@ describe Rave::Models::Robot do
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><w:robot xmlns:w=\"http://wave.google.com/extensions/robots/1.0\"><w:version>1</w:version><w:capabilities><w:capability name=\"WAVELET_TITLE_CHANGED\"/><w:capability name=\"WAVELET_VERSION_CHANGED\"/><w:capability name=\"DOCUMENT_CHANGED\"/></w:capabilities><w:crons><w:cron path=\"/_wave/cron/cron_handler1\" timerinseconds=\"60\"/><w:cron path=\"/_wave/cron/cron_handler2\" timerinseconds=\"3600\"/></w:crons><w:profile name=\"testbot\"/></w:robot>"
       ].include?(@obj.capabilities_xml).should be_true
     end
-    
+
   end
-  
+
   describe "profile_json()" do
     it "should return the robot's profile information in json format" do
       JSON.parse(@obj.profile_json).should == {
@@ -156,7 +156,7 @@ describe Rave::Models::Robot do
                                               }
     end
   end
-  
+
   describe "parse_json_body()" do
     it "should parse the json into context and events" do
       #Response JSON taken from Google's Python tests
@@ -176,5 +176,5 @@ describe Rave::Models::Robot do
       validate_user_list(event.participants_added, ['monty@appspot.com'])
     end
   end
-  
+
 end

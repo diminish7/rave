@@ -18,7 +18,7 @@ TEXT_FORMATS = [
 ]
 
 describe Rave::Models::Blip do
-  
+
   before :all do
     Rave::Models::Robot::CONFIG_FILE.sub!(/.*/, File.join(File.dirname(__FILE__), 'config.yaml'))
   end
@@ -37,7 +37,7 @@ describe Rave::Models::Blip do
 
     @wavelet = Wavelet.new(:id => "wavelet", :root_blip_id => "root")
     @wave = Wave.new(:id => "wave", :wavelets => [@wavelet])
-    
+
     @context = Context.new(
       :waves => { "wave" => @wave },
       :wavelets => {"wavelet" => @wavelet},
@@ -55,10 +55,10 @@ describe Rave::Models::Blip do
       lambda { Blip.new(:id => "blip", :state => :bleh) }.should raise_error(ArgumentError)
     end
   end
-  
+
   it_should_behave_like "Component id()"
   it_should_behave_like "time_from_json()"
-  
+
   describe "root?()" do
     it "should return true if a blip has no parent" do
       @root_blip.root?.should be_true
@@ -73,7 +73,7 @@ describe Rave::Models::Blip do
     it "should return true if a blip has no children" do
       @leaf_blip.leaf?.should be_true
     end
-    
+
     it "should return false if a blip has children" do
       @middle_blip.leaf?.should be_false
     end
@@ -131,7 +131,7 @@ describe Rave::Models::Blip do
       @root_blip.deleted?.should be_false
       @context.blips["root"].should == @root_blip
     end
-    
+
     it "should cause a chain of nullification if a leaf is destroyed below a previously deleted, non-root blip" do
       @middle_blip.delete # Should delete, but not nullify.
       @leaf_blip.delete # Should destroy both blips.
@@ -159,7 +159,7 @@ describe Rave::Models::Blip do
       blip.annotations.should == [annotation]
     end
   end
-  
+
   describe "has_annotation?()" do
     it "should return true if the blip has an annotation with the given name" do
       blip = Blip.new(:id => "bleh")
@@ -285,7 +285,7 @@ describe Rave::Models::Blip do
       blip6 = Blip.new(:id => 'b+6', :content => 'Oh, shut up!', :contributors => ['dave'])
       context = Context.new(:blips => { 'b+1' => blip1, 'b+2' => blip2, 'b+3' => blip3,
           'b+4' => blip4, 'b+5' => blip5, 'b+6' => blip6})
-      
+
       blip1.print_structure(1).should ==<<END
   #{blip1}
     #{blip3}
@@ -299,9 +299,9 @@ describe Rave::Models::Blip do
 END
     end
   end
-  
+
   describe "operations" do
-  
+
     before :each do
       @empty_blip = Blip.new(:id => "empty", :context => @context)
       @hello_wave_blip = Blip.new(:content => "Hello wave!", :id => "hello_world", :context => @context)
@@ -331,7 +331,7 @@ END
         end
       end
     end
-    
+
     describe "insert_text()" do
       it "should set the content of the blip" do
         @hello_wave_blip.insert_text(5, " google")
@@ -346,7 +346,7 @@ END
         lambda { @hello_wave_blip.insert_text(-13, " google") }.should raise_error(IndexError)
       end
     end
-    
+
     describe "set_text()" do
       it "should raise an error if :format is unrecognised" do
         lambda { @hello_wave_blip.set_text("What up, blip?", :format => :fish)}.should raise_error(Rave::BadOptionError)
@@ -383,7 +383,7 @@ END
         end
       end
     end
-    
+
     describe "delete_range()" do
       it "should delete the inclusive range of content from the blip" do
         @hello_wave_blip.delete_range(2..6)
@@ -404,7 +404,7 @@ END
         lambda { @hello_wave_blip.delete_range(5) }.should raise_error(ArgumentError)
       end
     end
-    
+
     describe "set_text_in_range()" do
       it "should replace the inclusive range of content with the given text" do
         @hello_wave_blip.set_text_in_range(2..4, "xagonal")
@@ -425,7 +425,7 @@ END
         lambda { @hello_wave_blip.set_text_in_range(5, "bleh") }.should raise_error(ArgumentError)
       end
     end
-    
+
     describe "append_text" do
       it "should raise an error if :format is unrecognised" do
         lambda { @hello_wave_blip.append_text(" Hello world!", :format => :fish)}.should raise_error(Rave::BadOptionError)
@@ -437,7 +437,7 @@ END
             @initial_content = @hello_wave_blip.content
             @hello_wave_blip.append_text(input, :format => format)
           end
-          
+
           it "should append the given text, sans markup, to the blip's content" do
             @hello_wave_blip.content.should == "#{@initial_content}#{plain}"
           end

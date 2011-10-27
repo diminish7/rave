@@ -10,7 +10,7 @@ shared_examples_for "Annotation" do
     it "should have correctly set name" do
       @annotation.name.should == @name
     end
-    
+
     it "should have correctly set type" do
       @annotation.type.should == @type
     end
@@ -64,7 +64,7 @@ describe Annotation::Language do
     @json = '{"range":{"start":1,"javaClass":"com.google.wave.api.Range","end":10},"name":"lang","value":"en","javaClass":"com.google.wave.api.Annotation"}'
 
   end
-  
+
   it_should_behave_like "Annotation"
 end
 

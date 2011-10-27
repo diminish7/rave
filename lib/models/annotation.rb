@@ -60,7 +60,7 @@ module Rave
       class Style < Annotation
 
         factory_register 'style/*' # Accept all unrecognised style annotations.
-        
+
         class BackgroundColor < Style
           factory_register 'style/backgroundColor'
         end

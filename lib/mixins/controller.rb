@@ -3,14 +3,14 @@ module Rave
   module Mixins
     module Controller
       include Logger
-            
+
       def call(env)
         request = Rack::Request.new(env)
         path = request.path_info
         method = request.request_method
         logger.info("#{method}ing #{path}")
         begin
-          #There are only 3 URLs that Wave can access: 
+          #There are only 3 URLs that Wave can access:
           #  robot capabilities, robot profile, and event notification
           if path == "/_wave/capabilities.xml" && method == "GET"
             [ 200, { 'Content-Type' => 'text/xml' }, capabilities_xml ]
@@ -47,7 +47,7 @@ module Rave
           [ 500, { 'Content-Type' => 'text/html' }, "500 - Internal Server Error"]
         end
       end
-      
+
     protected
       def static_resource_content_type(path)
         case (ext = File.extname(path))
@@ -67,6 +67,6 @@ module Rave
           "application/#{ext}"
         end
       end
-    end 
+    end
   end
 end

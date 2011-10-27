@@ -16,14 +16,14 @@ shared_examples_for "time_from_json()" do
       ((obj.send(time_field) - time) < 1).should be_true
     end
   end
-  
+
   it "should default to the current time" do
     @json_time_fields.each do |time_field|
       obj = described_class.new(:id => 'id', :context => Context.new)
       ((Time.now - obj.send(time_field)) < 1).should be_true
     end
   end
-  
+
   it "should interpret a timestamp greater than 10 digits as a float" do
     time = Time.now
     timestamp = time.to_f.to_s.gsub(".", "").to_i

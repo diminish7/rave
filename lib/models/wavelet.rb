@@ -40,7 +40,7 @@ module Rave
       def title # :nodoc:
         @title.dup
       end
-      
+
       # ID of the wave that the wavelet is a part of [String]
       def wave_id # :nodoc:
         @wave_id.dup
@@ -58,7 +58,7 @@ module Rave
       #
       # Options include:
       # - :creator
-      # - :creation_time 
+      # - :creation_time
       # - :data_documents
       # - :last_modifed_time
       # - :participants
@@ -79,7 +79,7 @@ module Rave
           wave = Wave.new(:wavelet_ids => [@id], :context => @context)
           @wave_id = wave.id
           @context.add_wave(wave)
-          
+
           # Ensure the newly created wavelet has a root blip.
           blip = Blip.new(:wave_id => wave.id, :wavelet_id => @id,
             :creator => @context.robot.id, :contributors => [@context.robot.id])
@@ -120,7 +120,7 @@ module Rave
       def root? # :nodoc:
         not (id =~ ROOT_ID_REGEXP).nil?
       end
-      
+
       #Creates a blip for this wavelet
       # Returns: Gererated blip [Blip]
       def create_blip
@@ -128,7 +128,7 @@ module Rave
         blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => parent.id,
           :wavelet_id => @id, :context => @context)
         parent.add_child_blip(blip)
-        
+
         @context.add_operation(:type => Operation::WAVELET_APPEND_BLIP, :wave_id => @wave_id, :wavelet_id => @id, :property => blip)
         blip
       end
@@ -146,7 +146,7 @@ module Rave
         end
         blip
       end
-      
+
       # Adds a participant (human or robot) to the wavelet
       # +user+:: User to add, as ID or object [String or User]
       # Returns: The user that was added [User or nil]
@@ -167,7 +167,7 @@ module Rave
         @context.add_operation(:type => Operation::WAVELET_ADD_PARTICIPANT,
           :wave_id => @wave_id, :wavelet_id => @id, :property => user)
         @participant_ids << id
-        
+
         user
       end
 
@@ -196,10 +196,10 @@ module Rave
         @context.add_operation(:type => Operation::WAVELET_REMOVE_PARTICIPANT,
           :wave_id => @wave_id, :wavelet_id => @id, :property => user)
         @participant_ids.delete id
-        
+
         user
       end
-      
+
       # Removes the local robot from the wavelet.
       # Returns: The local robot [Robot]
       def remove_robot
@@ -210,14 +210,14 @@ module Rave
 
         robot
       end
-      
+
       #Sets the data document for the wavelet
       #
       # NOT IMPLEMENTED
       def set_data_document(name, data)
         raise NotImplementedError
       end
-      
+
       #Set the title
       #
       def title=(title) # :nodoc: Documented by title() as accessor.
@@ -230,7 +230,7 @@ module Rave
         end
         @title = title
       end
-      
+
       # First blip in the wavelet [Blip]
       def root_blip # :nodoc:
         @context.blips[@root_blip_id]
@@ -261,21 +261,21 @@ module Rave
 
       def print_structure(indent = 0) # :nodoc:
         str = "#{'  ' * indent}#{to_s}\n"
-        
+
         if root_blip
           str << root_blip.print_structure(indent + 1)
         end
 
         str
       end
-      
+
     protected
       # * INTERNAL *
       # Set the title locally - used when the first line of the root blip is updated
       def set_title_locally(title)
         @title = title
       end
-      
+
     end
   end
 end

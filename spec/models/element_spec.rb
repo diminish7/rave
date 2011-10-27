@@ -12,7 +12,7 @@ shared_examples_for "Element" do
   it "should have no id" do
     @element.id.should == ''
   end
-  
+
   it "should have accessors for properties" do
     if @properties
       @properties.each do |property|
@@ -60,7 +60,7 @@ describe Element::Image do
     @element = Element.create('IMAGE', 'caption' => 'mycaption', 'url' => 'http://my.url.com/', 'height' => '20', 'width' => '30', 'attachmentId' => '12')
     @properties = [:caption, :url, :height, :width, :attachment_id]
   end
-  
+
   it_should_behave_like 'Element'
 end
 
@@ -71,14 +71,14 @@ describe Element::Gadget do
     @json = '{"javaClass":"com.google.wave.api.FormElement","type":"BUTTON,"properties":{"map":{"url":"http://mygadget.fish.com/"},"javaClass":"java.util.HashMap"}'
     @properties = [:url]
   end
-  
+
   it_should_behave_like "Element"
 
   it "should have fields available" do
     @element.get('url').should == @url
     @element['url'].should == @url
   end
-  
+
 end
 
 describe Element::Form::Button do

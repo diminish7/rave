@@ -4,7 +4,7 @@ module Rave
     # it based on providing a type name.
     module ObjectFactory
       WILDCARD = '*' unless defined? WILDCARD
-      
+
       def self.included(base)
         base.class_eval do
           # Store the registered classes in a class instance variable.
@@ -56,7 +56,7 @@ module Rave
             if type[WILDCARD]
               classes_by_pattern[/^#{type.sub(WILDCARD, '(.*)')}$/] = self
             end
-            
+
             class << self
               def type; @type.dup; end
             end

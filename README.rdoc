@@ -22,7 +22,7 @@ likely to break at some point. I will try to keep up, but if you notice anything
 you have a need for something that isn't implemented yet, shoot me an email: diminish7 at gmail dot com.
 
 Okay.  You've been warned.
-	
+
 == The Basics
 
 Since Google currently requires that all robots run on App Engine, this tutorial assumes you are using JRuby.
@@ -36,16 +36,16 @@ http://code.google.com/appengine/downloads.html
 
 === Start a new Rave Project
 
-Rave comes with a "rave" executable that, among other things, sets up the project structure for you. 
+Rave comes with a "rave" executable that, among other things, sets up the project structure for you.
 Setting up a new project looks like this:
 
    jruby -S rave create [robot_name] [options]
 
-The options include profile_url and image_url, which will set the URL for the robot's profile and avatar, 
+The options include profile_url and image_url, which will set the URL for the robot's profile and avatar,
 respectively. Here's how the example project "appropriate casey" was set up:
 
    jruby -S rave create appropriate-casey profile_url=http://appropriate-casey.appspot.com/ image_url=http://appropriate-casey.appspot.com/image.png
-   
+
 This will stub out a project called "appropriate-casey".  It automatically creates a robot class AppropriateCasey,
 creates the config files for both Rack and Warbler, and creates the appengine-web.xml file that App Engine will need.
 For the App Engine file, it assumes that the App Engine project name is the same as the robot's name.  So in this
@@ -84,7 +84,7 @@ whenever a blip is submitted (the BLIP_SUBMITTED event), so I add the following 
    def blip_submitted(event, context)
       # Do some stuff
    end
-   
+
 The Event object contains the following properties:
 
 * type (The type of Event, "BLIP_SUBMITTED" in this case)
@@ -92,7 +92,7 @@ The Event object contains the following properties:
 * modified_by (the User who modified the document)
 * blip (The Blip that the Event is associated with, otherwise the root Blip of the Wavelet that the Event is associated with)
 * ...other attributes, varying by Event type (see the rdoc documentation for details).
- 
+
 The Context object contains the following properties:
 
 * waves (A hash - the keys are the wave IDs, and the values are the Waves)
@@ -115,9 +115,9 @@ I just create a blip_submitted method in my robot that looks like this:
     text.gsub!(/\?+/, '?') # Calm down question marks.
     blip.set_text(text) if text != blip.content
   end
-    
+
 Here's what's going on: First, I grab the blip that's been modified (event.blip) and check it's content.  Any character that is capital
-that isn't the start of a sentence gets downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations 
+that isn't the start of a sentence gets downcased, any character that is lower case and DOES start a sentence gets upper cased.  Exclamations
 get turned into a period (and additional exclamation points get dropped). There is one API method being called: Blip#set_text.  This methods updates
 the content of the blip locally (so the changes happen optimistically) and then sends an operation request back to the server so that all
 users can see the changes.
@@ -136,20 +136,20 @@ in the "rave" executable for this, so from your robot's top-level folder, run:
 
 This is basically just a wrapper around the warbler gem, but with some additional cleanup to get things
 in the right format for App Engine.  For example, the complete JRuby jar is too large for App Engine,
-so Rave replaces it with two jars.  Once you've run "rave war", you'll see a tmp/ folder, and a .war file. 
+so Rave replaces it with two jars.  Once you've run "rave war", you'll see a tmp/ folder, and a .war file.
 You can ignore the .war file, as App Engine needs the unpacked version. The tmp/war folder is what will get deployed.
 
 === Testing
 
-The worst part about App Engine is testing... 
+The worst part about App Engine is testing...
 
 Rave includes a "server" command that starts up Rack for your application, but that is of limited use, since
 App Engine has many App Engine-specific issues. Better to use the App Engine SDK (which is still not a perfect
-match to the deployed environment, but it's better).  The App Engine SDK comes with a dev_server command.  
+match to the deployed environment, but it's better).  The App Engine SDK comes with a dev_server command.
 From your project directory run:
 
    path/to/appengine_sdk/bin/dev_server tmp/war
-   
+
 This will start the development server on port 8080.  You can now hit the following three URLs:
 
 * http://localhost:8080/_wave/capabilities.xml
@@ -177,10 +177,10 @@ it will appear to not do anything because it takes a long time to start up the
 system on appengine.
 You probably won't get anything happening for about 30 seconds after the bot first
 receives a Wave event, but after that it should work fine.
-  
+
 === Using the robot
 
-From a Google Wave client, start a new wave, and invite your robot as a participant.  Your robot's 
+From a Google Wave client, start a new wave, and invite your robot as a participant.  Your robot's
 user name will be [robot_name]@appspot.com.  So Casey is at appropriate-casey@appspot.com.
 
 === The End

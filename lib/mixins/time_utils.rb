@@ -1,7 +1,7 @@
 module Rave
   module Mixins
     module TimeUtils
-      
+
       def time_from_json(time)
         if time
           time_s = time.to_s
@@ -13,7 +13,7 @@ module Rave
           Time.at(epoch)
         end
       end
-      
+
     end
   end
 end

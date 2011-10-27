@@ -43,7 +43,7 @@ module Rave
       # A Google Gadget element within a document.
       class Gadget < Element
         factory_register 'GADGET'
-        
+
         # Returns the URL of the gadget
         def url
           @properties["url"]
@@ -52,7 +52,7 @@ module Rave
         def url=(new_url)
           @properties["url"] = new_url
         end
-        
+
         def initialize(fields = {})
           # Gadget has 'fields' rather than 'properties'.
           super(fields)
@@ -62,7 +62,7 @@ module Rave
       # An image element within a document.
       class Image < Element
         factory_register 'IMAGE'
-        
+
         # Returns the caption for the image
         def caption
           @properties["caption"]
@@ -103,7 +103,7 @@ module Rave
         def attachment_id=(new_attachment_id)
           @properties["attachmentId"] = new_attachment_id
         end
-          
+
       end
 
       # An inline blip within a document.
@@ -119,7 +119,7 @@ module Rave
       # A form element within a document.
       # (Abstract)
       class Form < Element
-        
+
         # Returns the label of the form element
         def label
           @properties["label"]
@@ -152,7 +152,7 @@ module Rave
         def default_value=(new_default_value)
           @properties["defaultValue"] = new_default_value
         end
-        
+
         # A button form element within a document.
         class Button < Form
           factory_register 'BUTTON'
