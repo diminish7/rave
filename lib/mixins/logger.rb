@@ -1,7 +1,7 @@
 module Rave
   module Mixins
     module Logger
-      
+
       def logger
         if @logger.nil?
           if RUBY_PLATFORM == 'java'
@@ -13,7 +13,7 @@ module Rave
         end
         @logger
       end
-      
+
     end
   end
 end

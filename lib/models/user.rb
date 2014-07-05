@@ -4,7 +4,7 @@ module Rave
     class User < Component
       ROBOT_PATTERN = /@appspot\.com$/ # :nodoc:
       NOBODY_ID = "@@@nobody@@@" # :nodoc: Used as a default in certain circumstances.
-      
+
       # Url link to the profile of the User [String].
       # NOTE: Due to a limitation in Wave, for all users except the local robot
       # the url will be empty.

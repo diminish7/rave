@@ -10,12 +10,12 @@ module Rave
       include Singleton
 
       CONFIG_FILE = 'config.yaml' # :nodoc:
-      
+
       # Version of the robot, as in the yaml config [String]
       def version # :nodoc:
         @version.dup
       end
-      
+
       def initialize() # :nodoc:
         config = config_from_file
         super(config)
@@ -32,7 +32,7 @@ module Rave
         config['robot'].each_pair { |k, v| hash[k.to_sym] = v }
         hash
       end
-      
+
       # Register a handler. Multiple handlers may be applied to a single event.
       # +event_type+:: Must be one of Rave::Models::Event::*::TYPE [String]
       def register_handler(event_type, handler)
@@ -41,7 +41,7 @@ module Rave
         @handlers[event_type] ||= []
         @handlers[event_type] << handler unless @handlers[event_type].include?(handler)
       end
-      
+
       #Dispatches events to the appropriate handler
       def handle_event(event, context) # :nodoc:
         #Ignore unhandled events
@@ -52,7 +52,7 @@ module Rave
         end
         nil
       end
-      
+
       #Registers a cron job
       def register_cron_job(handler, seconds)
         @cron_jobs << { :path => "/_wave/cron/#{handler}", :handler => handler, :seconds => seconds }
@@ -65,7 +65,7 @@ module Rave
       def create_wavelet(participants)
         @context.create_wavelet(participants)
       end
-      
+
     protected
       #Register any handlers that are defined through naming convention
       def register_default_handlers # :nodoc:

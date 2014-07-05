@@ -5,7 +5,7 @@ module Rave
     class Blip < Component
       include Rave::Mixins::TimeUtils
       include Rave::Mixins::Logger
-      
+
       JAVA_CLASS = 'com.google.wave.api.impl.BlipData' # :nodoc:
 
       # Version number of the contents of the blip [Integer]
@@ -117,7 +117,7 @@ module Rave
       end
 
       VALID_STATES = [:normal, :null, :deleted] # :nodoc: As passed to initializer in :state option.
-      
+
       #Options include:
       # - :annotations
       # - :child_blip_ids
@@ -159,7 +159,7 @@ module Rave
 
         super(options)
       end
-      
+
       #Returns true if an annotation with the given name exists in this blip
       def has_annotation?(name)
         @annotations.any? { |a| a.name == name }
@@ -170,7 +170,7 @@ module Rave
         @annotations << annotation
         self
       end
-      
+
       #Creates a child blip under this blip
       def create_child_blip
         blip = Blip.new(:wave_id => @wave_id, :parent_blip_id => @id, :wavelet_id => @wavelet_id,
@@ -194,7 +194,7 @@ module Rave
         # Destroy oneself completely if you are no longer useful to structure.
         destroy_me if deleted? and leaf? and not root?
       end
-      
+
       # Delete this blip from its wavelet.
       # Returns the blip id.
       def delete
@@ -213,7 +213,7 @@ module Rave
       def to_s
         str = @content.gsub(/\n/, "\\n")
         str = str.length > 24 ? "#{str[0..20]}..." : str
-        
+
         str = case @state
         when :normal
           "#{contributors.join(',')}:#{str}"
@@ -239,7 +239,7 @@ module Rave
           # All children, except the first, should be indented.
           blip_ids.each_with_index do |blip_id, index|
             is_last_blip = (index == blip_ids.size - 1)
-            
+
             # All except the last one should be indented again.
             ind = is_last_blip ? indent : indent + 1
             blip = @context.blips[blip_id]
@@ -283,7 +283,7 @@ module Rave
 
         @id
       end
-      
+
 
     protected
       # * INTERNAL *
@@ -300,7 +300,7 @@ module Rave
           title
         end
       end
-      
+
       # *INTERNAL*
       # Remove the blip entirely, leaving it null.
       def destroy_me # :nodoc:

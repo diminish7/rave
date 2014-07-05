@@ -12,7 +12,7 @@ module Rave
         udpate_title_if_needed
         text
       end
-      
+
       # Insert text at an index.
       def insert_text(index, text)
         add_operation(:type => Operation::DOCUMENT_INSERT, :index => index, :property => text)
@@ -21,7 +21,7 @@ module Rave
         udpate_title_if_needed
         text
       end
-      
+
       # Set the content text of the blip.
       #
       # === Options
@@ -36,12 +36,12 @@ module Rave
         udpate_title_if_needed
         append_text(text, options)
       end
-      
+
       # Deletes the text in a given range and replaces it with the given text.
       # Returns: The text altered [String]
       def set_text_in_range(range, text)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
-        
+
         #Note: I'm doing this in the opposite order from the python API, because
         # otherwise, if you are setting text at the end of the content, the cursor
         # gets moved to the start of the range...
@@ -57,9 +57,9 @@ module Rave
         udpate_title_if_needed
         text
       end
-      
+
       # Appends text to the end of the blip's current content.
-      # 
+      #
       # === Options
       # :+format+ - Format of the text, which can be any one of:
       # * :+html+ - Text marked up with HTML.
@@ -70,9 +70,9 @@ module Rave
       def append_text(text, options = {})
         format = options[:format] || :plain
         raise BadOptionError.new(:format, VALID_FORMATS, format) unless VALID_FORMATS.include? format
-        
+
         plain_text = text
-        
+
         if format == :textile
           text = RedCloth.new(text).to_html
           format = :html # Can now just treat it as HTML.
@@ -84,19 +84,19 @@ module Rave
         else
           type = Operation::DOCUMENT_APPEND
         end
-        
+
         add_operation(:type => type, :property => text)
         # TODO: Add annotations for the tags we removed?
         @content += plain_text # Plain text added to text field.
         udpate_title_if_needed
         @content.dup
       end
-      
+
       # Deletes text in the given range.
       # Returns: An empty string [String]
       def delete_range(range)
         raise ArgumentError.new("Requires a Range, not a #{range.class.name}") unless range.kind_of? Range
-        
+
         add_operation(:type => Operation::DOCUMENT_DELETE, :index => range.min, :property => range)
 
         @content[range] = ''
@@ -104,28 +104,28 @@ module Rave
         udpate_title_if_needed
         ''
       end
-      
+
       # Annotates the entire content.
       #
       # NOT IMPLEMENTED
       def annotate_document(name, value)
         raise NotImplementedError
       end
-      
+
       # Deletes the annotation with the given name.
       #
       # NOT IMPLEMENTED
       def delete_annotation_by_name(name)
         raise NotImplementedError
       end
-      
+
       # Deletes the annotations with the given key in the given range.
       #
       # NOT IMPLEMENTED
       def delete_annotation_in_range(range, name)
         raise NotImplementedError
       end
-      
+
       # Appends an inline blip to this blip.
       # Returns: Blip created by operation [Blip]
       def append_inline_blip
@@ -136,10 +136,10 @@ module Rave
         element.context = @context
         @elements[@content.length] = element
         add_operation(:type => Operation::DOCUMENT_INLINE_BLIP_APPEND, :property => blip)
-        
+
         blip
       end
-      
+
       # Deletes an inline blip from this blip.
       # +value+:: Inline blip to delete [Blip]
       #
@@ -153,7 +153,7 @@ module Rave
 
         blip.id
       end
-      
+
       # Inserts an inline blip at the given position.
       # Returns: Blip element created by operation [Blip]
       def insert_inline_blip(position)
@@ -167,7 +167,7 @@ module Rave
 
         blip
       end
-      
+
       # Deletes an element at the given position.
       def delete_element(position)
         element = @elements[position]
@@ -183,7 +183,7 @@ module Rave
 
         self
       end
-      
+
       # Inserts the given element in the given position.
       def insert_element(position, element)
         # TODO: Complain if element does exist at that position.
@@ -192,7 +192,7 @@ module Rave
 
         element
       end
-      
+
       # Replaces the element at the given position with the given element.
       def replace_element(position, element)
         # TODO: Complain if element does not exist at that position.
@@ -201,7 +201,7 @@ module Rave
 
         element
       end
-      
+
       # Appends an element
       def append_element(element)
         # TODO: What happens if there already is an element at end of content?
@@ -231,7 +231,7 @@ module Rave
         # Compress all adjacent spaces into a single space.
         str.gsub(/ {2,}/, ' ')
       end
-      
+
       #Update the title of the wavelet from the first line of content if this is the root blip
       def udpate_title_if_needed
         if self.root? && self.wavelet
@@ -243,7 +243,7 @@ module Rave
           self.wavelet.send(:set_title_locally, new_title)
         end
       end
-      
+
     end
   end
 end

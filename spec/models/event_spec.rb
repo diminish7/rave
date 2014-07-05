@@ -49,7 +49,7 @@ describe Rave::Models::Event do
   it_should_behave_like "event"
   it_should_behave_like "time_from_json()"
   it_should_behave_like "ObjectFactory"
-  
+
   describe "self.create()" do
      it "should return the appropriate event sub-class for all valid events" do
       wavelet = Wavelet.new(:id => "wavelet")
@@ -73,7 +73,7 @@ end
 
 describe Event::BlipDeleted do
   it_should_behave_like "event"
-  
+
   describe "blip" do
     it "should return nil" do
       wavelet = Wavelet.new(:id => "w+wavelet")
@@ -90,7 +90,7 @@ end
 
 describe Event::WaveletParticipantsChanged do
   it_should_behave_like "event"
-  
+
   before :each do
     wavelet = Wavelet.new(:id => "w+wavelet")
     context = Context.new(:wavelets => {'w+wavelet' => wavelet })

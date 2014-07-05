@@ -72,7 +72,7 @@ describe Rave::Models::Context do
       @wave = @wavelet.wave
       @blip = @wavelet.root_blip
     end
-    
+
     it "should create a new generated wave" do
       @wave.should be_kind_of(Wave)
       @wave.generated?.should be_true
@@ -125,7 +125,7 @@ describe Rave::Models::Context do
       context.blips.should == { }
     end
   end
-  
+
   describe "to_json()" do
     it "should serialize the context to json without ops" do
       context, events = Robot.instance.parse_json_body(TEST_JSON)

@@ -3,9 +3,9 @@ module Rave
   module Mixins
     module DataFormat
       include Logger
-      
+
       PROFILE_JAVA_CLASS = 'com.google.wave.api.ParticipantProfile'
-            
+
       #Returns this robot's capabilities in XML
       def capabilities_xml
         xml = Builder::XmlMarkup.new
@@ -15,7 +15,7 @@ module Rave
           xml.tag!("w:capabilities") do
             @handlers.keys.each do |capability|
               xml.tag!("w:capability", "name" => capability)
-            end  
+            end
           end
           unless @cron_jobs.empty?
             xml.tag!("w:crons") do
@@ -30,7 +30,7 @@ module Rave
           xml.tag!("w:profile", attrs)
         end
       end
-      
+
       #Returns the robot's profile in json format
       def profile_json
         {
@@ -40,7 +40,7 @@ module Rave
           'javaClass' => PROFILE_JAVA_CLASS,
         }.to_json.gsub('\/','/')
       end
-      
+
       #Parses context and event info from JSON input
       def parse_json_body(json)
         logger.info("Received:\n#{json.to_s}")
@@ -53,7 +53,7 @@ module Rave
         logger.info("Events: #{events.map { |e| e.type }.join(', ')}")
         return context, events
       end
-      
+
     protected
       def context_from_json(json)
         blips = {}
@@ -76,7 +76,7 @@ module Rave
               :robot => self
           )
       end
-      
+
       def blips_from_json(json)
         map_to_hash(json['blips']).values.collect do |blip_data|
           Rave::Models::Blip.new(
@@ -98,7 +98,7 @@ module Rave
 
       def elements_from_json(elements_map)
         elements = {}
-        
+
         map_to_hash(elements_map).each_pair do |position, data|
           elements[position.to_i] = Element.create(data['type'], map_to_hash(data['properties']))
         end
@@ -125,7 +125,7 @@ module Rave
           map['map'] || {}
         end
       end
-      
+
       def annotations_from_json(json)
         list_to_array(json['annotation']).collect do |annotation|
           Rave::Models::Annotation.create(
@@ -133,14 +133,14 @@ module Rave
             annotation['value'],
             range_from_json(annotation['range'])
           )
-          
+
         end
       end
 
       def range_from_json(json)
          Range.new(json['start'], json['end'])
       end
-      
+
       def events_from_json(json, context)
         list_to_array(json['events']).collect do |event|
           properties = {}
@@ -163,7 +163,7 @@ module Rave
              )
         end
       end
-      
+
       def wavelets_from_json(json)
         #Currently only one wavelet is sent back
         #TODO: should this look at the wavelet's children too?
@@ -187,7 +187,7 @@ module Rave
           []
         end
       end
-      
+
       def waves_from_wavelets(wavelets)
         wave_wavelet_map = {}
         if wavelets
@@ -200,7 +200,7 @@ module Rave
           Rave::Models::Wave.new(:id => wave_id, :wavelet_ids => wavelet_ids)
         end
       end
-      
+
     end
   end
 end

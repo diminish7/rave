@@ -6,7 +6,7 @@ module Rave
       def wavelet_ids # :nodoc:
         @wavelet_ids.map { |id| id.dup }
       end
-      
+
       #Options include:
       # - :wavelet_ids
       # - :id

@@ -8,9 +8,9 @@ module Rave
       def wave_id; @wave_id.dup; end
       def wavelet_id; @wavelet_id.dup; end
       def blip_id; @blip_id.dup; end
-      
+
       JAVA_CLASS = 'com.google.wave.api.impl.OperationImpl' # :nodoc:
-      
+
       #Constants
       # Types of operations
       WAVELET_APPEND_BLIP = 'WAVELET_APPEND_BLIP'
@@ -58,7 +58,7 @@ module Rave
         #Convert property to a rave hash if possible (to better serialize to json later)
         @property = (property = options[:property]).respond_to?(:to_rave_hash) ? property.to_rave_hash : property
       end
-      
+
       #Serialize the operation to json
       def to_json
         hash = {
@@ -69,9 +69,9 @@ module Rave
           'type' => @type,
           'javaClass' => JAVA_CLASS
         }
-        
+
         hash['property'] = @property unless @property.nil?
-        
+
         hash.to_json
       end
     end

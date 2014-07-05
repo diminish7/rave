@@ -6,7 +6,7 @@ require File.join(File.dirname(__FILE__), 'task.rb')
 # then does some cleanup that is specific to App Engine:
 # => Deletes the complete JRuby jar from both the app's lib folder and
 #    the frozen warbler gem, and replaces them with a broken up version
-# => Changes the file path json-jruby 
+# => Changes the file path json-jruby
 #    TODO: Not sure why this is necessary, but it doesn't run on appengine without it
 def create_war(args)
   Rake.application.standard_exception_handling do

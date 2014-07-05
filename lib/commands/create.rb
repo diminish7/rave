@@ -9,7 +9,7 @@ def create_robot(args)
   robot_name = args.first
   module_name = robot_name.split(/_|-/).collect { |word| word.capitalize }.join
   robot_class_name = "#{module_name}::Robot"
-  
+
   options = { :name => robot_name, :version => 1, :id => "#{robot_name}@appspot.com" }
   args[1, args.length-1].each do |arg|
     key, value = arg.split("=").collect { |part| part.strip }
@@ -21,7 +21,7 @@ def create_robot(args)
     puts "Directory #{dir}/ already exists. Exiting..."
     exit
   end
-  
+
   lib = File.join(dir, "lib")
   config_dir = File.join(dir, "config")
   file = File.join(dir, "robot.rb")
@@ -29,7 +29,7 @@ def create_robot(args)
   config = File.join(dir, "config.yaml")
   public_folder = File.join(dir, "public")
   html = File.join(public_folder, "index.html")
-  
+
   #Create the project dir
   puts "Creating directory #{File.expand_path(dir)}"
   Dir.mkdir(dir)
@@ -76,19 +76,19 @@ module #{module_name}
   class Robot < Rave::Models::Robot
     #Define handlers here:
     # e.g. if the robot should act on a DOCUMENT_CHANGED event:
-    # 
+    #
     # def document_changed(event, context)
     #   #Do some stuff
     # end
-    # 
-    # Events are: 
-    # 
+    #
+    # Events are:
+    #
     # WAVELET_BLIP_CREATED, WAVELET_BLIP_REMOVED, WAVELET_PARTICIPANTS_CHANGED,
     # WAVELET_TIMESTAMP_CHANGED, WAVELET_TITLE_CHANGED, WAVELET_VERSION_CHANGED,
     # BLIP_CONTRIBUTORS_CHANGED, BLIP_DELETED, BLIP_SUBMITTED, BLIP_TIMESTAMP_CHANGED,
     # BLIP_VERSION_CHANGED, DOCUMENT_CHANGED, FORM_BUTTON_CLICKED
     #
-    # If you want to name your event handler something other than the default name, 
+    # If you want to name your event handler something other than the default name,
     # or you need to have more than one handler for an event, you can register handlers
     # in the robot's constructor:
     #
@@ -96,13 +96,13 @@ module #{module_name}
     #   super
     #   register_handler(Rave::Models::Event::DOCUMENT_CHANGED, :custom_doc_changed_handler)
     # end
-    # 
+    #
     # def custom_doc_changed_handler(event, context)
     #   #Do some stuff
     # end
-    # 
+    #
     # Note: Don't forget to call super if you define #initialize
-    
+
   end
 end
 ROBOT

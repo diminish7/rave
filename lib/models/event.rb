@@ -6,7 +6,7 @@ module Rave
       include Rave::Mixins::ObjectFactory
 
       BLIP_ID = 'blipId' # :nodoc:
-      
+
       # Time at which the event was created [Time]
       def timestamp # :nodoc:
         @timestamp.dup
@@ -56,28 +56,28 @@ module Rave
           @context.add_user(:id => id) unless @context.users[id]
         end
       end
-      
+
       # Wavelet events
 
     public
       class WaveletBlipCreated < Event
         factory_register 'WAVELET_BLIP_CREATED'
-        
+
         # Newly created blip [Blip]
         def new_blip # :nodoc:
           @context.blips[@properties['newBlipId']]
         end
       end
-      
+
       class WaveletBlipRemoved < Event
         factory_register 'WAVELET_BLIP_REMOVED'
-        
+
         # ID for blip which has now been removed [String]
         def removed_blip_id # :nodoc:
           @properties['removedBlipId'].dup
         end
       end
-      
+
       class WaveletParticipantsChanged < Event
         factory_register 'WAVELET_PARTICIPANTS_CHANGED'
 
@@ -86,30 +86,30 @@ module Rave
 
         def initialize(options = {}) # :nodoc:
           super(options)
-          
+
           add_user_ids(@properties[ADDED]) if @properties[ADDED]
           add_user_ids(@properties[REMOVED]) if @properties[REMOVED]
         end
-        
+
         # Array of participants added to the wavelet [Array of User]
         def participants_added # :nodoc:
           @properties[ADDED].map { |id| @context.users[id] }
         end
-        
+
         # Array of participants removed from the wavelet [Array of User].
         def participants_removed # :nodoc:
           @properties[REMOVED].map { |id| @context.users[id] }
         end
       end
-      
+
       class WaveletSelfAdded < Event
         factory_register 'WAVELET_SELF_ADDED'
       end
-      
+
       class WaveletSelfRemoved < Event
         factory_register 'WAVELET_SELF_REMOVED'
       end
-      
+
       class WaveletTimestampChanged < Event
         factory_register 'WAVELET_TIMESTAMP_CHANGED'
 
@@ -118,7 +118,7 @@ module Rave
           @properties['timestamp'].dup
         end
       end
-      
+
       class WaveletTitleChanged < Event
         factory_register 'WAVELET_TITLE_CHANGED'
 
@@ -126,7 +126,7 @@ module Rave
           @properties['title'].dup
         end
       end
-            
+
       class WaveletVersionChanged < Event
         factory_register 'WAVELET_VERSION_CHANGED'
 
@@ -134,9 +134,9 @@ module Rave
           @properties['version'].dup
         end
       end
-      
+
       # Blip events
-      
+
       class BlipContributorsChanged < Event
         factory_register 'BLIP_CONTRIBUTORS_CHANGED'
 
@@ -154,13 +154,13 @@ module Rave
         def contributors_added # :nodoc:
           @properties[ADDED].map { |id| @context.users[id] }
         end
-        
+
         # Array of contributors removed from the wavelet [Array of User].
         def contributors_removed # :nodoc:
           @properties[REMOVED].map { |id| @context.users[id] }
         end
       end
-      
+
       class BlipSubmitted < Event
         factory_register 'BLIP_SUBMITTED'
       end
@@ -182,16 +182,16 @@ module Rave
           blip.delete_me(false) if @properties[BLIP_ID] and blip
         end
       end
-      
+
       # General events.
-      
+
       class DocumentChanged < Event
         factory_register 'DOCUMENT_CHANGED'
       end
-      
+
       class FormButtonClicked < Event
         factory_register 'FORM_BUTTON_CLICKED'
-        
+
         # Name of button that was clicked.
         def button # :nodoc:
           @properties['button'].dup
